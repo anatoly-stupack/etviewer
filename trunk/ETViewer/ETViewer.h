@@ -277,7 +277,7 @@ public:
 	void UpdateFileMonitor();
 	void UpdateFileAssociations();
 	void ProcessSessionChange();
-	void ProcessCommandLine(int argc,char **argv);
+	BOOL ProcessCommandLine(int argc,char **argv);
 
 	void LookupError(const char *pText);
 	bool FilterTrace(const char *pText);

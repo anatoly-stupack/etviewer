@@ -338,10 +338,10 @@
 				RelativePath=".\res\ico00003.ico">
 			</File>
 			<File
-				RelativePath=".\ico00004.ico">
+				RelativePath=".\res\ico00004.ico">
 			</File>
 			<File
-				RelativePath=".\res\ico00004.ico">
+				RelativePath=".\ico00004.ico">
 			</File>
 			<File
 				RelativePath=".\res\ico00005.ico">
@@ -491,10 +491,6 @@
 		</Filter>
 		<File
 			RelativePath=".\res\ETViewer.manifest">
-		</File>
-		<File
-			RelativePath=".\FindDialog.htm"
-			DeploymentContent="TRUE">
 		</File>
 		<File
 			RelativePath=".\ReadMe.txt">

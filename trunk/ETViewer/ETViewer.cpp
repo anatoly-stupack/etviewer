@@ -160,6 +160,9 @@ BOOL CETViewerApp::InitInstance()
 		return FALSE;
 
 	AddDocTemplate(pDocTemplate);
+
+	this->m_nCmdShow = SW_HIDE;
+
 	// Analizar línea de comandos para comandos Shell estándar, DDE, Archivo Abrir
 	CCommandLineInfo cmdInfo;
 	//ParseCommandLine(cmdInfo);
@@ -171,8 +174,6 @@ BOOL CETViewerApp::InitInstance()
 	m_SourceFileContainer.Create(IDD_SOURCE_FILE_CONTAINER,m_pFrame);
 
 	// Se ha inicializado la única ventana; mostrarla y actualizarla
-	m_pMainWnd->ShowWindow(SW_SHOW);
-	m_pMainWnd->UpdateWindow();
 	m_pFrame=dynamic_cast<CMainFrame *>(m_pMainWnd);
 	// Llamar a DragAcceptFiles sólo si existe un sufijo
 	//  En una aplicación SDI, esto debe ocurrir después de ProcessShellCommand
@@ -181,8 +182,13 @@ BOOL CETViewerApp::InitInstance()
 
 	RefreshRecentFilesMenus();
 	ProcessSessionChange();
-	ProcessCommandLine(__argc,__argv);
-	return TRUE;
+	BOOL bContinue=ProcessCommandLine(__argc,__argv);
+	if(bContinue)
+	{
+		m_pMainWnd->ShowWindow(SW_SHOW);
+		m_pMainWnd->UpdateWindow();
+	}
+	return bContinue;
 }
 
 void CETViewerApp::SetFileAssociation(char *pExtension,char *pFileTypeName,char *pFileDescription,char *pCommandLineTag)
@@ -239,7 +245,7 @@ void CETViewerApp::SetFileAssociation(char *pExtension,char *pFileTypeName,char 
 	}
 }
 
-void CETViewerApp::ProcessCommandLine(int argc,char **argv)
+BOOL CETViewerApp::ProcessCommandLine(int argc,char **argv)
 {
 	unsigned x=0;
 	bool bPDBSpecified=false,bSilent=false,bSourceSpecified=false;
@@ -255,8 +261,20 @@ void CETViewerApp::ProcessCommandLine(int argc,char **argv)
 		char *sTemp=new char [strlen(argv[x])+1];
 		strcpy(sTemp,argv[x]);
 		strupr(sTemp);
-		if(	strncmp(sTemp,"-PDB:",strlen("-PDB:"))==0 || 
-			strncmp(sTemp,"/PDB:",strlen("/PDB:"))==0)
+		if(	strcmp(sTemp,"-V")==0 || 
+			strcmp(sTemp,"/V")==0)
+		{
+			MessageBox(NULL,"ETViewer v0.8.5.1\n","ETViewer",MB_OK);
+			return FALSE;
+		}
+		else if(strcmp(sTemp,"-H")==0 || 
+			    strcmp(sTemp,"/H")==0)
+		{
+			MessageBox(NULL,"ETViewer v0.8.5.1\n\nCommand line options:\n\n  -v   Show version\n  -h   Show this help\n  -s   Silent: Do not warn about statup errors\n  -pdb:<file filter>  PDB files to load, for example -pdb:C:\\Sample\\*.pdb\n  -src:<file filter>   Source files to load, for example -src:C:\\Sample\\*.cpp\n  -etl:<file> Load the specified .etl file on startup\n  -l:<level> Initial tracing level:\n     FATAL\n     ERROR\n     WARNING\n     INFORMATION\n     VERBOSE\n     RESERVED6\n     RESERVED7\n     RESERVED8\n     RESERVED9","ETViewer",MB_OK);
+			return FALSE;
+		}
+		else if(strncmp(sTemp,"-PDB:",strlen("-PDB:"))==0 || 
+			    strncmp(sTemp,"/PDB:",strlen("/PDB:"))==0)
 		{
 			char drive[MAX_PATH]={0};
 			char path[MAX_PATH]={0};
@@ -379,6 +397,7 @@ void CETViewerApp::ProcessCommandLine(int argc,char **argv)
 	{
 		m_pFrame->GetProviderTree()->SetAllProviderLevel(dwLevel);
 	}
+	return TRUE;
 }
 
 
