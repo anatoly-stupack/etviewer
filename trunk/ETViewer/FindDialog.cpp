@@ -129,8 +129,6 @@ BOOL CFindDialog::OnInitDialog()
 {
 	CFindReplaceDialog::OnInitDialog();
 
-//	LoadFromRegistry("VADebug\\Find Dialog");
-
 	unsigned x;
 	m_CBFindInPIDName.SetCheck(m_pFindClient->m_bFindInPIDName?BST_CHECKED:BST_UNCHECKED);
 	m_CBFindInPIDName.ShowWindow(m_pFindClient->m_bHideTracingOptions?SW_HIDE:SW_SHOW);
@@ -231,8 +229,6 @@ void CFindDialog::Save()
 		m_COTextToFind.GetLBText(x,sTemp);
 		m_TextList.push_back(sTemp);
 	}
-
-//	SaveToRegistry("VADebug\\Find Dialog");
 }
 
 void CFindDialog::OnDestroy() 

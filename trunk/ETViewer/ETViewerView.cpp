@@ -1029,7 +1029,7 @@ void CETViewerView::ClearSelected()
 
 void CETViewerView::Copy(bool bAllTraces) 
 {
-	if(!OpenClipboard()){MessageBox("No se puede abrir el portapapeles","Error",MB_OK);}
+	if(!OpenClipboard()){MessageBox("Failed to open clipboard","Error",MB_OK);}
 
 	EmptyClipboard();
 	char			*buffer=NULL;
@@ -1047,7 +1047,7 @@ void CETViewerView::Copy(bool bAllTraces)
 	GlobalUnlock(hglbCopy); 
 
 	if(SetClipboardData(CF_TEXT, hglbCopy)==NULL)
-	{MessageBox("No se puede copiar la informacion en el portapapeles","Error",MB_OK);}
+	{MessageBox("Failed to copy data to clipboard","Error",MB_OK);}
 
 	CloseClipboard();
 	delete [] buffer;

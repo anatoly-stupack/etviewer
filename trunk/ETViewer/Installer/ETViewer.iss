@@ -11,7 +11,7 @@ AppUpdatesURL=http://code.msdn.microsoft.com/etviewer
 DefaultDirName={pf}\ETViewer
 DefaultGroupName=ETViewer
 AllowNoIcons=yes
-InfoAfterFile=D:\Desarrollo\EventTracing\ETViewer\ReadMe.txt
+InfoAfterFile=..\ReadMe.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
@@ -30,7 +30,7 @@ Source: "C:\Program Files\Debugging Tools for Windows\DBGHelp.dll"; DestDir: "{a
 
 [Icons]
 Name: "{group}\ETViewer"; Filename: "{app}\ETViewer.exe"
-Name: "{group}\{cm:ProgramOnTheWeb,ETViewer}"; Filename: "http://code.msdn.microsoft.com/etviewer"
+Name: "{group}\{cm:ProgramOnTheWeb,ETViewer}"; Filename: "http://etviewer.codeplex.com"
 Name: "{group}\{cm:UninstallProgram,ETViewer}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: quicklaunchicon
