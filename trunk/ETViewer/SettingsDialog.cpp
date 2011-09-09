@@ -188,8 +188,19 @@ void CSettingsDialog::OnOk()
 
 	theApp.m_bAssociateETL=(m_CBAssociateETL.GetCheck()==BST_CHECKED);
 	theApp.m_bAssociatePDB=(m_CBAssociatePDB.GetCheck()==BST_CHECKED);
-	theApp.m_bAssociateSources=(m_CBAssociateSources.GetCheck()==BST_CHECKED);
+	bool bSources=(m_CBAssociateSources.GetCheck()==BST_CHECKED);
 
+	if(!theApp.m_bAssociateSources && bSources)
+	{
+		if(MessageBox("Do you really want to associate Source Files with ETViewer?","ETViewer",MB_ICONEXCLAMATION|MB_YESNO)==IDYES)
+		{
+			theApp.m_bAssociateSources=bSources;
+		}
+	}
+	else
+	{
+		theApp.m_bAssociateSources=bSources;
+	}
 	theApp.UpdateFileAssociations();
 
 	theApp.m_pFrame->GetTracePane()->SetTraceFont(m_sTraceFont,m_dwTraceFontSize);
