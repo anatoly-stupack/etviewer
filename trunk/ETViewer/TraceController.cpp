@@ -257,6 +257,12 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData *pData)
 			currentLen+=sprintf(sTraceText+currentLen,pElement->pFormatString,dwValue);
 			break;
 
+		case eTraceFormatElementType_QuadPointer:
+			qValue=*(LARGE_INTEGER*)pCurrentParam;
+			pCurrentParam+=sizeof(LARGE_INTEGER);
+			currentLen+=sprintf(sTraceText+currentLen,pElement->pFormatString,qValue);
+			break;
+
 		case eTraceFormatElementType_AnsiString:
 			{
 				DWORD dwBytes=sprintf(sTraceText+currentLen,pElement->pFormatString,pCurrentParam);

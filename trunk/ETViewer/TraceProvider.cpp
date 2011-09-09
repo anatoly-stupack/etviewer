@@ -29,6 +29,21 @@ using namespace std;
 
 #define PARAMETER_INDEX_BASE 10
 
+struct STypeEnumerationData
+{
+	bool			b64BitPDB;
+	HANDLE          hProcess;
+	DWORD64         nBaseAddress;
+	CTracePDBReader *pThis;
+	STypeEnumerationData(){pThis=NULL;hProcess=NULL;b64BitPDB=false;nBaseAddress=0;}
+};
+
+struct SSymbolEnumerationData
+{
+	bool			b64BitPDB;
+	CTracePDBReader *pThis;
+	SSymbolEnumerationData(){pThis=NULL;b64BitPDB=false;}
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +55,9 @@ using namespace std;
 
 
 typedef BOOL (WINAPI *pfSymSearch)(HANDLE hProcess,ULONG64 BaseOfDll,DWORD Index,DWORD SymTag,PCTSTR Mask,DWORD64 Address,PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback,PVOID UserContext,DWORD Options);
-eTraceFormatElementType GetElementTypeFromString(char *pString)
+typedef BOOL (WINAPI *pfSymEnumTypes)(HANDLE hProcess,ULONG64 BaseOfDll,PSYM_ENUMERATESYMBOLS_CALLBACK EnumSymbolsCallback,PVOID UserContext);
+
+eTraceFormatElementType GetElementTypeFromString(char *pString,bool b64BitPDB)
 {
 	if(strcmp(pString,"ItemString")==0){return eTraceFormatElementType_AnsiString;}
 	if(strcmp(pString,"ItemWString")==0){return eTraceFormatElementType_UnicodeString;}
@@ -54,7 +71,7 @@ eTraceFormatElementType GetElementTypeFromString(char *pString)
 	if(strcmp(pString,"ItemLongLongXX")==0){return eTraceFormatElementType_Quad;}
 	if(strcmp(pString,"ItemULongLongX")==0){return eTraceFormatElementType_Quad;}
 	if(strcmp(pString,"ItemULongLongXX")==0){return eTraceFormatElementType_Quad;}
-	if(strcmp(pString,"ItemPtr")==0){return eTraceFormatElementType_Pointer;}
+	if(strcmp(pString,"ItemPtr")==0){return b64BitPDB?eTraceFormatElementType_QuadPointer:eTraceFormatElementType_Pointer;}
 	return eTraceFormatElementType_Unknown;
 }
 
@@ -137,11 +154,25 @@ void STraceFormatEntry::InitializeFromBuffer(char *pBuffer)
 
 				if(tempLen)
 				{
-					// Modify the format buffer. ETW formats 'doubles' as %s instead of '%f'.
+					// Modify the format buffers if needed. 
+
+					//ETW formats 'doubles' as %s instead of '%f'.
 					if(element.eType==eTraceFormatElementType_Float || 
 						element.eType==eTraceFormatElementType_Double)
 					{
 						if(element.pFormatString[tempLen-1]=='s'){element.pFormatString[tempLen-1]='f';}
+					}
+					// 64 bit %p must be translated to %I64X
+					if(element.eType==eTraceFormatElementType_QuadPointer) 
+					{
+						if(element.pFormatString[tempLen-1]=='p')
+						{
+							char *pOld=element.pFormatString;
+							element.pFormatString=new char [tempLen+6+1];
+							strcpy(element.pFormatString,pOld);
+							strcpy(element.pFormatString+(tempLen-1),"016I64X");
+							delete [] pOld;
+						}
 					}
 				}
 
@@ -397,6 +428,7 @@ eTracePDBReaderError CTracePDBReader::LoadFromPDB(const char *pPDB,vector<CTrace
 	m_sFileName=pPDB;
 
 	pfSymSearch pSymSearch=NULL;
+	pfSymEnumTypes pSymEnumTypes=NULL;
 
 	HANDLE hFile=CreateFile(pPDB,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 	if(hFile==INVALID_HANDLE_VALUE)
@@ -412,7 +444,8 @@ eTracePDBReaderError CTracePDBReader::LoadFromPDB(const char *pPDB,vector<CTrace
 	if(hDbgHelp)
 	{
 		pSymSearch=(pfSymSearch)GetProcAddress(hDbgHelp,"SymSearch");
-		if(pSymSearch)
+		pSymEnumTypes=(pfSymEnumTypes)GetProcAddress(hDbgHelp,"SymEnumTypes");
+		if(pSymSearch && pSymEnumTypes)
 		{
 			VOID *pVirtual=VirtualAlloc(NULL,dwFileSize,MEM_RESERVE,PAGE_READWRITE);
 			if(pVirtual)
@@ -424,8 +457,29 @@ eTracePDBReaderError CTracePDBReader::LoadFromPDB(const char *pPDB,vector<CTrace
 					DWORD64 dwModuleBase=SymLoadModuleEx(hProcess,NULL,const_cast<char*>(pPDB),const_cast<char*>(pPDB),(DWORD64)pVirtual,dwFileSize,NULL,0);
 					if(dwModuleBase)
 					{
+
+						STypeEnumerationData typeData;
+						typeData.b64BitPDB=false;
+						typeData.hProcess=hProcess;
+						typeData.nBaseAddress=dwModuleBase;
+						typeData.pThis=this;
+
+						// Temporal solution to 64 bit %p parameters.
+						// %p parameters are identified as ItemPtr in both 32 and 64 bit PDBs
+						// We need to distinguish this two cases.
+						// For the time being we have no clean solution.
+						// The current solution is to find some well known pointer 
+						// types such as PVOID and check their sizes.
+
+						// Enum types to identify 64 bit PDBs
+						SymEnumTypes(hProcess,dwModuleBase,TypeEnumerationCallback,&typeData);
+						
+						SSymbolEnumerationData symbolData;
+						symbolData.b64BitPDB=typeData.b64BitPDB;
+						symbolData.pThis=this;
+
 						// 8 = SymTagAnnotation
-						if(!pSymSearch(hProcess,dwModuleBase,0,8,0,0,SymbolEnumerationCallback,this,2))
+						if(!pSymSearch(hProcess,dwModuleBase,0,8,0,0,SymbolEnumerationCallback,&symbolData,2))
 						{
 							eResult=eTracePDBReaderError_FailedToEnumerateSymbols;
 						}
@@ -546,15 +600,37 @@ eTracePDBReaderError CTracePDBReader::LoadFromPDB(const char *pPDB,vector<CTrace
 	return eResult;
 }
 
+BOOL CALLBACK CTracePDBReader::TypeEnumerationCallback(PSYMBOL_INFO pSymInfo,ULONG SymbolSize,PVOID UserContext)
+{
+	if(pSymInfo->Name==NULL){return TRUE;}
+	if(pSymInfo->Tag!=17 || pSymInfo->Size!=8){return TRUE;}
+
+	STypeEnumerationData *pData=(STypeEnumerationData *)UserContext;
+	CTracePDBReader *pThis=pData->pThis;
+
+	if( strcmp(pSymInfo->Name,"HANDLE")==0 ||
+		strcmp(pSymInfo->Name,"PBYTE")==0 ||
+		strcmp(pSymInfo->Name,"PVOID")==0 ||
+		strcmp(pSymInfo->Name,"UINT_PTR")==0||
+		strcmp(pSymInfo->Name,"ULONG_PTR")==0)
+	{
+		pData->b64BitPDB=true;
+		return FALSE;
+	}
+	return TRUE;
+}
+
 BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo,ULONG SymbolSize,PVOID UserContext)
 {
-	CTracePDBReader *pThis=(CTracePDBReader*)UserContext;
+	SSymbolEnumerationData *pData=(SSymbolEnumerationData*)UserContext;
+	CTracePDBReader *pThis=pData->pThis;
 
 	char *pTemp=pSymInfo->Name;
 	char *pCompName=NULL;
 	char *pGUIDName=NULL;
 	char *pFlagName=NULL;
 	BOOL bOK=FALSE;
+
 	// 8 = SymTagAnnotation
 	if(pSymInfo->Tag==8)
 	{
@@ -618,7 +694,9 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo,U
 				char *pFullString=new char [nTempLen+1];
 				strcpy(pFullString,pTemp);
 
-		//		OutputDebugString(pTemp);
+				//OutputDebugString(pTemp);
+				//OutputDebugString("\n");
+
 				if(stringIndex==0) // <GUID> <module> // SRC=<source>
 				{
 					int tokenindex=0;
@@ -717,7 +795,7 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo,U
 								{
 									pFormatEntry->m_vParams.resize(nParamIndex+1);
 								}
-								parameter.eType=GetElementTypeFromString(sParamType);
+								parameter.eType=GetElementTypeFromString(sParamType,pData->b64BitPDB);
 								pFormatEntry->m_vParams[nParamIndex]=parameter;
 							}
 						}

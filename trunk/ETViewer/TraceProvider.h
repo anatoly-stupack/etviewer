@@ -64,6 +64,7 @@ enum eTraceFormatElementType
 	eTraceFormatElementType_Double,
 	eTraceFormatElementType_Quad,
 	eTraceFormatElementType_Pointer,
+	eTraceFormatElementType_QuadPointer,
 	eTraceFormatElementType_AnsiString,
 	eTraceFormatElementType_UnicodeString
 };
@@ -206,6 +207,7 @@ class CTracePDBReader
 	CTraceProvider		*FindOrCreateProvider(std::string sProviderName);
 	CTraceProvider		*FindProviderByFlag(std::string sFlagName);
 
+	static BOOL CALLBACK TypeEnumerationCallback(PSYMBOL_INFO pSymInfo,ULONG SymbolSize,PVOID UserContext);
 	static BOOL CALLBACK SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo,ULONG SymbolSize,PVOID UserContext);
 
 public:
