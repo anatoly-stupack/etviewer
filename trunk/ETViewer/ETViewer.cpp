@@ -79,7 +79,6 @@ CETViewerApp::CETViewerApp()
 	m_ConfigFile.Open(m_sConfigFile.c_str());
 
 	m_pFileMonitor=new CFileMonitor(this);
-	m_pFileMonitor->Start();
 
 	LoadFrom(&m_ConfigFile,"Application");
 	UpdateHighLightFilters();
@@ -135,7 +134,7 @@ BOOL CETViewerApp::InitInstance()
 				ATOM hAtom=GlobalAddAtom(__argv[x]);
 				if(hAtom)
 				{
-					::SendMessage(HWND_BROADCAST,g_dwRegisteredMessage,hAtom,0);
+					::PostMessage(HWND_BROADCAST,g_dwRegisteredMessage,hAtom,0);
 					GlobalDeleteAtom(hAtom);
 				}
 			}
@@ -187,6 +186,7 @@ BOOL CETViewerApp::InitInstance()
 	{
 		m_pMainWnd->ShowWindow(SW_SHOW);
 		m_pMainWnd->UpdateWindow();
+		m_pFileMonitor->Start();
 	}
 	return bContinue;
 }
@@ -703,14 +703,13 @@ bool CETViewerApp::OpenETL(const char *pFile)
 
 	if(m_Controller.OpenLog(pFile,m_pFrame->GetTracePane())!=ERROR_SUCCESS)
 	{
-		theApp.AddRecentLogFile(pFile);
-
 		m_Controller.StartRealTime("ETVIEWER_SESSION",m_pFrame->GetTracePane());
 		ProcessSessionChange();
 		return false;
 	}
 	else
 	{
+		theApp.AddRecentLogFile(pFile);
 		ProcessSessionChange();
 		return true;
 	}
@@ -724,16 +723,15 @@ bool CETViewerApp::CreateETL(const char *pFile)
 	m_Controller.Stop();
 	ProcessSessionChange();
 
-	if(!m_Controller.CreateLog(pFile,m_pFrame->GetTracePane()))
+	if(m_Controller.CreateLog(pFile,m_pFrame->GetTracePane())!=ERROR_SUCCESS)
 	{
-		theApp.AddRecentLogFile(pFile);
-
 		m_Controller.StartRealTime("ETVIEWER_SESSION",m_pFrame->GetTracePane());
 		ProcessSessionChange();
 		return false;
 	}
 	else
 	{
+		theApp.AddRecentLogFile(pFile);
 		ProcessSessionChange();
 		return true;
 	}
