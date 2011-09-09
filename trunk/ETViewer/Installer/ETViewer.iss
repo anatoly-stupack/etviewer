@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=ETViewer
-AppVerName=ETViewer 0.8.5.1
+AppVerName=ETViewer 0.9.0.0
 AppPublisher=Javier Martín García
 AppPublisherURL=http://code.msdn.microsoft.com/etviewer
 AppSupportURL=http://code.msdn.microsoft.com/etviewer

@@ -264,13 +264,13 @@ BOOL CETViewerApp::ProcessCommandLine(int argc,char **argv)
 		if(	strcmp(sTemp,"-V")==0 || 
 			strcmp(sTemp,"/V")==0)
 		{
-			MessageBox(NULL,"ETViewer v0.8.5.1\n","ETViewer",MB_OK);
+			MessageBox(NULL,"ETViewer v0.9\n","ETViewer",MB_OK);
 			return FALSE;
 		}
 		else if(strcmp(sTemp,"-H")==0 || 
 			    strcmp(sTemp,"/H")==0)
 		{
-			MessageBox(NULL,"ETViewer v0.8.5.1\n\nCommand line options:\n\n  -v   Show version\n  -h   Show this help\n  -s   Silent: Do not warn about statup errors\n  -pdb:<file filter>  PDB files to load, for example -pdb:C:\\Sample\\*.pdb\n  -src:<file filter>   Source files to load, for example -src:C:\\Sample\\*.cpp\n  -etl:<file> Load the specified .etl file on startup\n  -l:<level> Initial tracing level:\n     FATAL\n     ERROR\n     WARNING\n     INFORMATION\n     VERBOSE\n     RESERVED6\n     RESERVED7\n     RESERVED8\n     RESERVED9","ETViewer",MB_OK);
+			MessageBox(NULL,"ETViewer v0.9\n\nCommand line options:\n\n  -v   Show version\n  -h   Show this help\n  -s   Silent: Do not warn about statup errors\n  -pdb:<file filter>  PDB files to load, for example -pdb:C:\\Sample\\*.pdb\n  -src:<file filter>   Source files to load, for example -src:C:\\Sample\\*.cpp\n  -etl:<file> Load the specified .etl file on startup\n  -l:<level> Initial tracing level:\n     FATAL\n     ERROR\n     WARNING\n     INFORMATION\n     VERBOSE\n     RESERVED6\n     RESERVED7\n     RESERVED8\n     RESERVED9","ETViewer",MB_OK);
 			return FALSE;
 		}
 		else if(strncmp(sTemp,"-PDB:",strlen("-PDB:"))==0 || 

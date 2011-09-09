@@ -1,14 +1,16 @@
 ----------------------
 ----------------------
 			
-	VERSION HISTORY
+VERSION HISTORY
 			
 ----------------------
 ----------------------
 
-Version 0.8.5.1:
+Version 0.9:
 
 - 	Soporte de recarga de proveedores mediante menu contextual 
+-	Correccion de %p en PDBs de 64 bits
+-	Configuracion de politica de recarga de archivos (auto, ask, disabled)
 
 Version 0.8.5:
 
