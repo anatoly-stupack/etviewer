@@ -125,6 +125,9 @@ BOOL CETViewerApp::InitInstance()
 		}
 	}
 
+	// If this is not the first instance, send the command line files to
+	// to the first instance, this way, a user can double click an element
+	// on a folder to add it to ETViewer.
 	if(!bFirstInstance)
 	{
 		for(int x=0;x<__argc;x++)
@@ -134,7 +137,9 @@ BOOL CETViewerApp::InitInstance()
 				ATOM hAtom=GlobalAddAtom(__argv[x]);
 				if(hAtom)
 				{
-					::PostMessage(HWND_BROADCAST,g_dwRegisteredMessage,hAtom,0);
+					// PostMessage is not an option because the Atom can be deleted before the message is received
+					// SendMessage does not return in both Vista and Windows7 with UAC on
+					::SendMessageTimeout(HWND_BROADCAST,g_dwRegisteredMessage,hAtom,0,SMTO_BLOCK,1000,NULL);
 					GlobalDeleteAtom(hAtom);
 				}
 			}
