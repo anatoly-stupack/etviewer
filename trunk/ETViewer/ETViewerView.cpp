@@ -1229,7 +1229,7 @@ void CETViewerView::ProcessUnknownTrace(STraceEvenTracingNormalizedData *pTraceD
 	WCHAR CLSID[100]={0};
 	StringFromGUID2(pTraceData->sourceFileGUID,CLSID,sizeof(CLSID)/2);
 
-	sprintf(sText,"Unknown Trace, Missing provider? Source GUID %ws, Source Index %d",CLSID,pTraceData->sourceTraceIndex);
+	sprintf(sText,"Unknown Trace, Missing provider? Please load the correct PDB file. Source GUID %ws, Source Index %d",CLSID,pTraceData->sourceTraceIndex);
 
 	SETViewerTrace *pTrace=new SETViewerTrace;
 	pTrace->trace=*pTraceData;
