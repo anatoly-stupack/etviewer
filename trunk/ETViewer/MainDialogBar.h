@@ -27,36 +27,36 @@
 
 class CMainDialogBar : public CDialogBar
 {
-	DECLARE_DYNAMIC(CMainDialogBar)
+    DECLARE_DYNAMIC(CMainDialogBar)
 
 public:
-	CMainDialogBar();
-	virtual ~CMainDialogBar();
+    CMainDialogBar();
+    virtual ~CMainDialogBar();
 
-	//{{AFX_DATA(CMainDialogBar)
-	enum { IDD = IDD_MAIN_DIALOG_BAR };
-	//}}AFX_DATA
+    //{{AFX_DATA(CMainDialogBar)
+    enum { IDD = IDD_MAIN_DIALOG_BAR };
+    //}}AFX_DATA
 
-	CButton	m_BTStartStop;
-	CButton	m_BTOpenFile;
-	CButton	m_BTShowSourceContainer;
-	CButton	m_BTEnsureVisible;
-	CButton	m_BTSave;
-	CButton	m_BTHighlightFilters;
-	CButton	m_BTFind;
-	CButton	m_BTClear;
-	CButton	m_BTClearSelected;
-	CEdit	m_EDErrorLookup;
-	CButton	m_BTErrorLookup;
+    CButton	m_BTStartStop;
+    CButton	m_BTOpenFile;
+    CButton	m_BTShowSourceContainer;
+    CButton	m_BTEnsureVisible;
+    CButton	m_BTSave;
+    CButton	m_BTHighlightFilters;
+    CButton	m_BTFind;
+    CButton	m_BTClear;
+    CButton	m_BTClearSelected;
+    CEdit	m_EDErrorLookup;
+    CButton	m_BTErrorLookup;
 
-	void InitDialogBar();
-	void UpdateBitmaps();
-	void OnSessionTypeChanged();
+    void InitDialogBar();
+    void UpdateBitmaps();
+    void OnSessionTypeChanged();
 
 protected:
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnDestroy();
+    afx_msg void OnDestroy();
 };
 
 

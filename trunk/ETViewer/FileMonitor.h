@@ -27,31 +27,31 @@
 class IFileMonitorCallback
 {
 public:
-	virtual void OnFileChanged(string sFile)=0;
+    virtual void OnFileChanged(tstring sFile)=0;
 };
 class CFileMonitor
 {
-	IFileMonitorCallback *m_piCallback;
-	HANDLE				 m_hStop;
-	HANDLE				 m_hThread;
-	HANDLE				 m_hMutex;
+    IFileMonitorCallback *m_piCallback;
+    HANDLE				 m_hStop;
+    HANDLE				 m_hThread;
+    HANDLE				 m_hMutex;
 
-	map<string,time_t>   m_mMonitorizedFiles;
+    map<tstring,time_t>   m_mMonitorizedFiles;
 
-	static DWORD WINAPI FileMonitorThread_Stub(LPVOID lpThreadParameter);
-	void FileMonitorThread();
+    static DWORD WINAPI FileMonitorThread_Stub(LPVOID lpThreadParameter);
+    void FileMonitorThread();
 
-	time_t GetFileTimeStamp(const char *pFileName);
+    time_t GetFileTimeStamp(const TCHAR *pFileName);
 
 public:
 
-	void Start();
-	void Stop();
-	void AddFile(string sFile);
-	void RemoveFile(string sFile);
-	void GetFiles(set<string> *pdFilesToMonitor);
-	void SetFiles(set<string> *pdFilesToMonitor);
+    void Start();
+    void Stop();
+    void AddFile(tstring sFile);
+    void RemoveFile(tstring sFile);
+    void GetFiles(set<tstring> *pdFilesToMonitor);
+    void SetFiles(set<tstring> *pdFilesToMonitor);
 
-	CFileMonitor(IFileMonitorCallback *piCallback);
-	~CFileMonitor(void);
+    CFileMonitor(IFileMonitorCallback *piCallback);
+    ~CFileMonitor(void);
 };

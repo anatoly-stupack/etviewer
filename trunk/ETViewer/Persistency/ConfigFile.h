@@ -31,16 +31,16 @@ class CConfigFileNode: public IPersistencyNode
 {
     friend CConfigFile;
 
-    std::string					                m_sName;
-    std::map<std::string,std::string>	        m_mData;
-    std::multimap<std::string,CConfigFileNode*>	m_mNodes;
+    std::tstring					                m_sName;
+    std::map<std::tstring,std::tstring>	        m_mData;
+    std::multimap<std::tstring,CConfigFileNode*>	m_mNodes;
 
-    CConfigFileNode *GetAddNode_Internal(std::string sNodePath,bool bAdd);
+    CConfigFileNode *GetAddNode_Internal(std::tstring sNodePath,bool bAdd);
 
 public:
 
-    bool    			 HasValue(std::string sValue);
-    std::string			 GetValue(std::string sValue);
+    bool    			 HasValue(std::tstring sValue);
+    std::tstring			 GetValue(std::tstring sValue);
 
     // IPersistencyNode
     virtual void Clear();
@@ -48,9 +48,9 @@ public:
     virtual bool GetProperty(SPersistencyProperty *);
     virtual bool RemoveProperty(SPersistencyProperty);
 
-    virtual IPersistencyNode *AddNode(std::string id);
-    virtual IPersistencyNode *GetNode(std::string id);
-    virtual void DeleteNode(std::string id);
+    virtual IPersistencyNode *AddNode(std::tstring id);
+    virtual IPersistencyNode *GetNode(std::tstring id);
+    virtual void DeleteNode(std::tstring id);
 
     ~CConfigFileNode();
 };
@@ -59,23 +59,23 @@ class CConfigFile
 {
     DWORD			m_dwSaveTabCount;
     HANDLE  	    m_hFile;
-    char			*m_pBuffer;
+    TCHAR			*m_pBuffer;
 
     CConfigFileNode m_RootNode;
 
-    void SaveLine(std::string sValue);
-    void SaveValue(std::string sName,std::string sValue);
-    void SaveBeginSection(std::string sName);
+    void SaveLine(std::tstring sValue);
+    void SaveValue(std::tstring sName,std::tstring sValue);
+    void SaveBeginSection(std::tstring sName);
     void SaveEndSection();
     void SaveNode(CConfigFileNode *pNode);
 
 public:
 
-    bool Open(std::string sFileName);
-    bool Save(std::string sFileName);
+    bool Open(std::tstring sFileName);
+    bool Save(std::tstring sFileName);
 
-    IPersistencyNode	*AddNode(std::string  sNodePath);
-    IPersistencyNode	*GetNode(std::string  sNodePath);
+    IPersistencyNode	*AddNode(std::tstring  sNodePath);
+    IPersistencyNode	*GetNode(std::tstring  sNodePath);
     IPersistencyNode	*GetRoot();
 
     CConfigFile(void);
@@ -83,12 +83,12 @@ public:
 };
 
 #define DECLARE_CONFIG_FILE_MEDIA()\
-    bool SaveTo(CConfigFile *pFile,std::string sNode)\
+    bool SaveTo(CConfigFile *pFile,std::tstring sNode)\
     {\
         IPersistencyNode *piNode=pFile->AddNode(sNode);\
         if(piNode){return SUCCEEDED(PersistencySave(piNode));}else{return false;}\
     }\
-    bool LoadFrom(CConfigFile *pFile,std::string sNode)\
+    bool LoadFrom(CConfigFile *pFile,std::tstring sNode)\
     {\
         IPersistencyNode *piNode=pFile->GetNode(sNode);\
         if(piNode){return SUCCEEDED(PersistencyLoad(piNode));}else{return false;}\

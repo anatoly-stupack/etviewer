@@ -34,60 +34,60 @@ class CSourceFileContainer : public CDialog
 {
 // Construction
 public:
-	CSourceFileContainer(CWnd* pParent = NULL);   // standard constructor
+    CSourceFileContainer(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CSourceFileContainer)
-	enum { IDD = IDD_SOURCE_FILE_CONTAINER };
-	CButton	m_BTRecentFiles;
-	CButton	m_BTFind;
-	CButton	m_BTCopy;
-	CButton	m_BTOpenFile;
-	CTabCtrl	m_TCSourceFiles;
-	CButton		m_BTCloseFile;
-	//}}AFX_DATA
+    //{{AFX_DATA(CSourceFileContainer)
+    enum { IDD = IDD_SOURCE_FILE_CONTAINER };
+    CButton	m_BTRecentFiles;
+    CButton	m_BTFind;
+    CButton	m_BTCopy;
+    CButton	m_BTOpenFile;
+    CTabCtrl	m_TCSourceFiles;
+    CButton		m_BTCloseFile;
+    //}}AFX_DATA
 
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSourceFileContainer)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CSourceFileContainer)
+    protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    //}}AFX_VIRTUAL
 
-	CSourceFileViewer *GetViewerAt(int index);
+    CSourceFileViewer *GetViewerAt(int index);
 
-	public:
+    public:
 
-	void GetFiles(std::set<string> *psFiles);
-	void ReloadFile(const char *sFile);
+    void GetFiles(std::set<tstring> *psFiles);
+    void ReloadFile(const TCHAR *sFile);
 
-	bool ShowFile(const char *pFile,int line,bool bShowErrorIfFailed=true);
-	void BrowseForAndShowFile();
-	void ShowSelectedFile();
-	void SetMetrics();
+    bool ShowFile(const TCHAR *pFile,int line,bool bShowErrorIfFailed=true);
+    void BrowseForAndShowFile();
+    void ShowSelectedFile();
+    void SetMetrics();
 
-	void SelectNext();
-	void SelectPrevious();
+    void SelectNext();
+    void SelectPrevious();
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CSourceFileContainer)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
-	afx_msg void OnCloseFile();
-	afx_msg void OnSourceFileChanged(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnOpenFile();
-	afx_msg void OnCopy();
-	afx_msg void OnFind();
-	afx_msg void OnRecentFile();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(CSourceFileContainer)
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
+    afx_msg void OnCloseFile();
+    afx_msg void OnSourceFileChanged(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnOpenFile();
+    afx_msg void OnCopy();
+    afx_msg void OnFind();
+    afx_msg void OnRecentFile();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 public:
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -28,59 +28,59 @@
 
 class CSettingsDialog : public CDialog
 {
-	CFont  m_TraceFont;
-	string m_sTraceFont;
-	DWORD  m_dwTraceFontSize;
-	WNDPROC	m_OldListViewProc;
+    CFont  m_TraceFont;
+    tstring m_sTraceFont;
+    DWORD  m_dwTraceFontSize;
+    WNDPROC	m_OldListViewProc;
 
-	DECLARE_DYNAMIC(CSettingsDialog)
+    DECLARE_DYNAMIC(CSettingsDialog)
 
-	void UpdateFont();
+    void UpdateFont();
 
-	void SwapItems(int index1,int index2);
-	void AddSourcePath(int index);
-	void OnInsertSourcePath();
+    void SwapItems(int index1,int index2);
+    void AddSourcePath(int index);
+    void OnInsertSourcePath();
 
-	static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 public:
-	CSettingsDialog(CWnd* pParent = NULL);   // standard constructor
-	virtual ~CSettingsDialog();
+    CSettingsDialog(CWnd* pParent = NULL);   // standard constructor
+    virtual ~CSettingsDialog();
 
 // Dialog Data
-	enum { IDD = IDD_SETTINGS };
+    enum { IDD = IDD_SETTINGS };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
-	CListCtrl m_LWSourcePaths;
-	CButton m_BTAdd;
-	CButton m_BTRemove;
-	CButton m_BTUp;
-	CButton m_BTDown;
-	CButton m_CBAssociatePDB;
-	CButton m_CBAssociateETL;
-	CButton m_CBAssociateSources;
-	CStatic m_STFontSample;
-	CButton m_BTSelectFont;
-	CButton m_BTOk;
-	CButton m_BTCancel;
-	CButton m_RBPDBReloadAuto;
-	CButton m_RBPDBReloadAsk;
-	CButton m_RBPDBReloadDisabled;
-	CButton m_RBSourceReloadAuto;
-	CButton m_RBSourceReloadAsk;
-	CButton m_RBSourceReloadDisabled;
-	afx_msg void OnAddSourcePath();
-	afx_msg void OnRemoveSourcePath();
-	afx_msg void OnMoveSourceUp();
-	afx_msg void OnMoveSourceDown();
-	afx_msg void OnSelectFont();
-	afx_msg void OnPDBReloadChanged();
-	afx_msg void OnSourceReloadChanged();
-	afx_msg void OnOk();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
+    CListCtrl m_LWSourcePaths;
+    CButton m_BTAdd;
+    CButton m_BTRemove;
+    CButton m_BTUp;
+    CButton m_BTDown;
+    CButton m_CBAssociatePDB;
+    CButton m_CBAssociateETL;
+    CButton m_CBAssociateSources;
+    CStatic m_STFontSample;
+    CButton m_BTSelectFont;
+    CButton m_BTOk;
+    CButton m_BTCancel;
+    CButton m_RBPDBReloadAuto;
+    CButton m_RBPDBReloadAsk;
+    CButton m_RBPDBReloadDisabled;
+    CButton m_RBSourceReloadAuto;
+    CButton m_RBSourceReloadAsk;
+    CButton m_RBSourceReloadDisabled;
+    afx_msg void OnAddSourcePath();
+    afx_msg void OnRemoveSourcePath();
+    afx_msg void OnMoveSourceUp();
+    afx_msg void OnMoveSourceDown();
+    afx_msg void OnSelectFont();
+    afx_msg void OnPDBReloadChanged();
+    afx_msg void OnSourceReloadChanged();
+    afx_msg void OnOk();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
 };

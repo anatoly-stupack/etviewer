@@ -3,13 +3,13 @@
 
 [Setup]
 AppName=ETViewer
-AppVerName=ETViewer 0.9.0.0
-AppPublisher=Javier Martín García
-AppPublisherURL=http://code.msdn.microsoft.com/etviewer
-AppSupportURL=http://code.msdn.microsoft.com/etviewer
-AppUpdatesURL=http://code.msdn.microsoft.com/etviewer
-DefaultDirName={pf}\ETViewer
-DefaultGroupName=ETViewer
+AppVerName=ETViewer 1.0.0.0
+AppPublisher=Ellery Pierce - Originally by Javier Martín García
+AppPublisherURL=http://code.msdn.microsoft.com/etviewer2
+AppSupportURL=http://code.msdn.microsoft.com/etviewer2
+AppUpdatesURL=http://code.msdn.microsoft.com/etviewer2
+DefaultDirName={pf}\ETViewer2
+DefaultGroupName=ETViewer2
 AllowNoIcons=yes
 InfoAfterFile=..\ReadMe.txt
 OutputBaseFilename=setup
@@ -24,17 +24,17 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\Desarrollo\EventTracing\ETViewer\Release\ETViewer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Program Files\Debugging Tools for Windows\DBGHelp.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Work\GitRepos\ETViewer2\Release\ETViewer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Windows\SysWOW64\DBGHelp.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\ETViewer"; Filename: "{app}\ETViewer.exe"
-Name: "{group}\{cm:ProgramOnTheWeb,ETViewer}"; Filename: "http://etviewer.codeplex.com"
-Name: "{group}\{cm:UninstallProgram,ETViewer}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: quicklaunchicon
+Name: "{group}\ETViewer2"; Filename: "{app}\ETViewer.exe"
+Name: "{group}\{cm:ProgramOnTheWeb,ETViewer2}"; Filename: "http://etviewer2.codeplex.com"
+Name: "{group}\{cm:UninstallProgram,ETViewer2}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\ETViewer2"; Filename: "{app}\ETViewer.exe"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\ETViewer2"; Filename: "{app}\ETViewer.exe"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\ETViewer.exe"; Description: "{cm:LaunchProgram,ETViewer}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\ETViewer.exe"; Description: "{cm:LaunchProgram,ETViewer2}"; Flags: nowait postinstall skipifsilent
 

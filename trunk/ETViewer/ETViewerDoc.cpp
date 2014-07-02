@@ -44,7 +44,7 @@ END_MESSAGE_MAP()
 
 CETViewerDoc::CETViewerDoc()
 {
-	// TODO: agregar aquí el código de construcción único
+    // TODO: agregar aquí el código de construcción único
 
 }
 
@@ -54,13 +54,13 @@ CETViewerDoc::~CETViewerDoc()
 
 BOOL CETViewerDoc::OnNewDocument()
 {
-	if (!CDocument::OnNewDocument())
-		return FALSE;
+    if (!CDocument::OnNewDocument())
+        return FALSE;
 
-	// TODO: agregar aquí código de reinicio
-	// (los documentos SDI volverán a utilizar este documento)
+    // TODO: agregar aquí código de reinicio
+    // (los documentos SDI volverán a utilizar este documento)
 
-	return TRUE;
+    return TRUE;
 }
 
 
@@ -70,12 +70,12 @@ BOOL CETViewerDoc::OnNewDocument()
 #ifdef _DEBUG
 void CETViewerDoc::AssertValid() const
 {
-	CDocument::AssertValid();
+    CDocument::AssertValid();
 }
 
 void CETViewerDoc::Dump(CDumpContext& dc) const
 {
-	CDocument::Dump(dc);
+    CDocument::Dump(dc);
 }
 #endif //_DEBUG
 

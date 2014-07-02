@@ -27,56 +27,61 @@
 // pero cambiados rara vez
 
 #pragma once
-
 #ifndef VC_EXTRALEAN
-#define VC_EXTRALEAN		// Excluir material rara vez utilizado de encabezados de Windows
+#define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
 
-// Modificar las siguientes secciones define si su objetivo es una plataforma distinta a las especificadas a continuación.
-// Consulte la referencia MSDN para obtener la información más reciente sobre los valores correspondientes a diferentes plataformas.
-#ifndef WINVER				// Permitir el uso de características específicas de Windows 95 y Windows NT 4 o posterior.
-#define WINVER 0x0501		// Cambiar para establecer el valor apropiado para Windows 98 y Windows 2000 o posterior.
-#endif
+#include <SDKDDKVer.h>
 
-#ifndef _WIN32_WINNT		// Permitir el uso de características específicas de Windows NT 4 o posterior.
-#define _WIN32_WINNT 0x0500		// Cambiar para establecer el valor apropiado para Windows 98 y Windows 2000 o posterior.
-#endif						
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 
-#ifndef _WIN32_WINDOWS		// Permitir el uso de características específicas de Windows 98 o posterior.
-#define _WIN32_WINDOWS 0x0510 // Cambiar para establecer el valor apropiado para Windows Me o posterior.
-#endif
-
-#ifndef _WIN32_IE			// Permitir el uso de características específicas de Internet Explorer 4.0 o posterior.
-#define _WIN32_IE 0x0400	// Cambiar para establecer el valor apropiado para IE 5.0 o posterior.
-#endif
-
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// Algunos constructores CString serán explícitos
-
-// Desactiva la ocultación de MFC para algunos mensajes de advertencia comunes y, muchas veces, omitidos de forma consciente
+// turns off MFC's hiding of some common and often safely ignored warning messages
 #define _AFX_ALL_WARNINGS
 
-#include <afxwin.h>         // Componentes principales y estándar de MFC
-#include <afxext.h>         // Extensiones de MFC
-#include <afxcview.h>
+#include <afxwin.h>         // MFC core and standard components
+#include <afxext.h>         // MFC extensions
 
-#include <afxdtctl.h>		// Compatibilidad MFC para controles comunes de Internet Explorer 4
+
+#include <afxdisp.h>        // MFC Automation classes
+
+
+
+#ifndef _AFX_NO_OLE_SUPPORT
+#include <afxdtctl.h>           // MFC support for Internet Explorer 4 Common Controls
+#endif
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>			// Compatibilidad MFC para controles comunes de Windows
+#include <afxcmn.h>             // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+#include <afxcontrolbars.h>     // MFC support for ribbons and control bars
+
 #include <deque>
-#include <string>
+#include "tstring.h"
 #include <vector>
 #include <map>
 #include <set>
 #include <list>
 #include <afxdhtml.h>
+#include <afxcview.h>
 
 #include "persistency\persistency.h"
 #include "persistency\persistentTypes.h"
 #include "persistency\configfile.h"
 
+//This probably shouldn't be here  -Ellery
 using namespace std;
+
+
 
 SIZE  GetRectSize(RECT &rect);
 POINT GetRectPos(RECT &rect);
+
+#ifdef _UNICODE
+#if defined _M_IX86
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+#endif

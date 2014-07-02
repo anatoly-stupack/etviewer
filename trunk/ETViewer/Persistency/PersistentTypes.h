@@ -34,35 +34,35 @@ HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<int> *pro
 HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<float> *prop);
 HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<double> *prop);
 HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem);
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<std::string> *pItem);
+HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring> *pItem);
 
 HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem);
 HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<int> *pItem);
 HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<DWORD> *prop);
 HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<float> *prop);
 HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<double> *prop);
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<std::string> *pItem);
+HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring> *pItem);
 
 HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<DWORD> *prop);
 HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<int> *prop);
 HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<float> *prop);
 HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<double> *prop);
 HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem);
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<std::string> *pItem);
+HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring> *pItem);
 
 void PersistencyInitialize(CPersistentReferenceT<DWORD> *prop);
 void PersistencyInitialize(CPersistentReferenceT<int> *prop);
 void PersistencyInitialize(CPersistentReferenceT<float> *prop);
 void PersistencyInitialize(CPersistentReferenceT<double> *prop);
 void PersistencyInitialize(CPersistentReferenceT<bool> *pItem);
-void PersistencyInitialize(CPersistentReferenceT<std::string> *pItem);
+void PersistencyInitialize(CPersistentReferenceT<std::tstring> *pItem);
 
 void PersistencyFree(CPersistentReferenceT<DWORD> *prop);
 void PersistencyFree(CPersistentReferenceT<int> *prop);
 void PersistencyFree(CPersistentReferenceT<float> *prop);
 void PersistencyFree(CPersistentReferenceT<double> *prop);
 void PersistencyFree(CPersistentReferenceT<bool> *pItem);
-void PersistencyFree(CPersistentReferenceT<std::string> *pItem);
+void PersistencyFree(CPersistentReferenceT<std::tstring> *pItem);
 
 /////////////////////////////////////////////////////
 // Funciones para guardar contenedores no asociativos
@@ -75,15 +75,15 @@ HRESULT PersistLoadFromContainer(IPersistencyNode *piParent,CPersistentReference
     pItem->GetValueAddress()->clear();
 
     SPersistencyProperty countProp;
-    countProp.name="ItemCount";
+    countProp.name=_T("ItemCount");
     if(!piNode->GetProperty(&countProp)){return E_FAIL;}
-    DWORD itemCount=atoi(countProp.value.c_str());
+    DWORD itemCount=_ttoi(countProp.value.c_str());
 
     HRESULT hr=S_OK,finalhr=S_OK;
     for(DWORD x=0;x<itemCount;x++)
     {
-        char currentName[512];
-        sprintf(currentName,"Item%d",x);
+        TCHAR currentName[512];
+        _stprintf_s(currentName,512,_T("Item%d"),x);
 
         CONTAINED_TYPE var;
         CPersistentSimpleReferenceT<CONTAINED_TYPE> *pRef=PersistCreateReference(&var,currentName);
@@ -105,10 +105,10 @@ HRESULT PersistSaveToContainer(IPersistencyNode *piParent,CPersistentReferenceT<
     if(piNode==NULL){return E_FAIL;}
     piNode->Clear();
 
-    char countValue[512];
-    sprintf(countValue,"%d",pItem->GetValueAddress()->size());
+    TCHAR countValue[512];
+    _stprintf_s(countValue,512,_T("%d"),pItem->GetValueAddress()->size());
     SPersistencyProperty countProp;
-    countProp.name="ItemCount";
+    countProp.name=_T("ItemCount");
     countProp.value=countValue;
     piNode->AddProperty(countProp);
 
@@ -119,8 +119,8 @@ HRESULT PersistSaveToContainer(IPersistencyNode *piParent,CPersistentReferenceT<
         T1::iterator i;
         for(i=pItem->GetValueAddress()->begin();i!=pItem->GetValueAddress()->end();i++)
         {
-            char currentName[512];
-            sprintf(currentName,"Item%d",itemCount);
+            TCHAR currentName[512];
+            _stprintf_s(currentName,_T("Item%d"),itemCount);
             CPersistentSimpleReferenceT<CONTAINED_TYPE> *pRef=PersistCreateReference(&(*i),currentName);
             hr=PersistencySave(piNode,pRef);
             if(SUCCEEDED(hr)){itemCount++;}
@@ -150,10 +150,10 @@ HRESULT PersistLoadFromContainer(IPersistencyNode *piParent,CPersistentReference
     HRESULT hr=S_OK,finalhr=S_OK;
     for(DWORD x=0;x<itemCount;x++)
     {
-        char keyName[512];
-        char valueName[512];
-        sprintf(keyName,"ItemKey%d",x);
-        sprintf(valueName,"ItemValue%d",x);
+        TCHAR keyName[512];
+        TCHAR valueName[512];
+        _stprintf_s(keyName, _T("ItemKey%d"), x);
+        _stprintf_s(valueName,_T("ItemValue%d"),x);
 
         KEY_TYPE        key;
         CONTAINED_TYPE  value;
@@ -180,10 +180,10 @@ HRESULT PersistSaveToContainer(IPersistencyNode *piParent,CPersistentReferenceT<
     if(piNode==NULL){return E_FAIL;}
     piNode->Clear();
 
-    char countValue[512];
-    sprintf(countValue,"%d",pItem->GetValueAddress()->size());
+    TCHAR countValue[512];
+    _stprintf_s(countValue,_T("%d"),pItem->GetValueAddress()->size());
     SPersistencyProperty countProp;
-    countProp.name="ItemCount";
+    countProp.name=_T("ItemCount");
     countProp.value=countValue;
     piNode->AddProperty(countProp);
 
@@ -194,10 +194,10 @@ HRESULT PersistSaveToContainer(IPersistencyNode *piParent,CPersistentReferenceT<
         T1::iterator i;
         for(i=pItem->GetValueAddress()->begin();i!=pItem->GetValueAddress()->end();i++)
         {
-            char keyName[512];
-            char valueName[512];
-            sprintf(keyName,"ItemKey%d",itemCount);
-            sprintf(valueName,"ItemValue%d",itemCount);
+            TCHAR keyName[512];
+            TCHAR valueName[512];
+            _stprintf_s(keyName,"ItemKey%d",itemCount);
+            _stprintf_s(valueName,"ItemValue%d",itemCount);
             CPersistentSimpleReferenceT<KEY_TYPE>         *pKeyRef=PersistCreateReference(const_cast<KEY_TYPE *>(&(i->first)),keyName);
             CPersistentSimpleReferenceT<CONTAINED_TYPE>   *pValueRef=PersistCreateReference(&(i->second),valueName);
             hr=PersistencySave(piNode,pKeyRef);

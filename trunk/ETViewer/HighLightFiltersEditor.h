@@ -40,55 +40,55 @@ class CHighLightFiltersEditor : public CDialog
 {
 // Construction
 public:
-	CHighLightFiltersEditor(CWnd* pParent = NULL);   // standard constructor
+    CHighLightFiltersEditor(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
-	//{{AFX_DATA(CHighLightFiltersEditor)
-	enum { IDD = IDD_HIGHLIGHT_FILTERS_EDITOR };
-	CButton	m_BTCancel;
-	CButton	m_BTOk;
-	CButton	m_BTDown;
-	CButton	m_BTUp;
-	CListCtrl	m_LWFilters;
-	//}}AFX_DATA
+    //{{AFX_DATA(CHighLightFiltersEditor)
+    enum { IDD = IDD_HIGHLIGHT_FILTERS_EDITOR };
+    CButton	m_BTCancel;
+    CButton	m_BTOk;
+    CButton	m_BTDown;
+    CButton	m_BTUp;
+    CListCtrl	m_LWFilters;
+    //}}AFX_DATA
 
-	WNDPROC				m_OldListViewProc;
-	HIMAGELIST			m_hImageList;
+    WNDPROC				m_OldListViewProc;
+    HIMAGELIST			m_hImageList;
 
-	static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-	void SwapItems(int index1,int index2);
-	void GetItemColorRects(int index,RECT *pR1,RECT *pR2);
+    void SwapItems(int index1,int index2);
+    void GetItemColorRects(int index,RECT *pR1,RECT *pR2);
 
-	void LoadFilters();
-	void SaveFilters();
-	void SetMetrics();
+    void LoadFilters();
+    void SaveFilters();
+    void SetMetrics();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CHighLightFiltersEditor)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CHighLightFiltersEditor)
+    protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    //}}AFX_VIRTUAL
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CHighLightFiltersEditor)
-	virtual void OnCancel();
-	afx_msg void OnDown();
-	afx_msg void OnUp();
-	virtual void OnOK();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnDestroy();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(CHighLightFiltersEditor)
+    virtual void OnCancel();
+    afx_msg void OnDown();
+    afx_msg void OnUp();
+    virtual void OnOK();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnDestroy();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult);
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

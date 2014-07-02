@@ -26,44 +26,44 @@
 
 class CFilterDialogBar : public CDialogBar
 {
-	DECLARE_DYNAMIC(CFilterDialogBar)
+    DECLARE_DYNAMIC(CFilterDialogBar)
 
 
 public:
-	CFilterDialogBar();
-	virtual ~CFilterDialogBar();
-	
-	COLORREF	m_FilterChangedColor;
-	HBRUSH		m_hFilterChangedBrush;
+    CFilterDialogBar();
+    virtual ~CFilterDialogBar();
+    
+    COLORREF	m_FilterChangedColor;
+    HBRUSH		m_hFilterChangedBrush;
 
-	CComboBox m_CBIncludeFilter;
-	CComboBox m_CBExcludeFilter;
+    CComboBox m_CBIncludeFilter;
+    CComboBox m_CBExcludeFilter;
 
-	CEdit	m_EDIncludeEdit;
-	CEdit	m_EDExcludeEdit;
+    CEdit	m_EDIncludeEdit;
+    CEdit	m_EDExcludeEdit;
 
-	WNDPROC		m_OldIncludeEditProc;
-	WNDPROC		m_OldExcludeEditProc;
+    WNDPROC		m_OldIncludeEditProc;
+    WNDPROC		m_OldExcludeEditProc;
 
-	void OnChangedInstantFilters();
+    void OnChangedInstantFilters();
 
-	static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-	void InitDialogBar();
-	void OnOk();
-	void OnCancel();
-	void OnSessionTypeChanged();
+    void InitDialogBar();
+    void OnOk();
+    void OnCancel();
+    void OnSessionTypeChanged();
 
-	//{{AFX_DATA(CFilterDialogBar)
-	enum { IDD = IDD_FILTER_DIALOG_BAR };
-	//}}AFX_DATA
+    //{{AFX_DATA(CFilterDialogBar)
+    enum { IDD = IDD_FILTER_DIALOG_BAR };
+    //}}AFX_DATA
 protected:
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnDestroy();
-	afx_msg void OnCbnSelchangeCbIncludeFilter();
-	afx_msg void OnCbnSelchangeCbExcludeFilter();
-	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+    afx_msg void OnDestroy();
+    afx_msg void OnCbnSelchangeCbIncludeFilter();
+    afx_msg void OnCbnSelchangeCbExcludeFilter();
+    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 

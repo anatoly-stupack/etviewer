@@ -25,7 +25,7 @@
 #include <windows.h>
 #include ".\persistency.h"
 
-void _PersistencyDefaultValue(IPersistencyItem **ppiList,char *pPrefixName)
+void _PersistencyDefaultValue(IPersistencyItem **ppiList,TCHAR *pPrefixName)
 {
     int x=0;
     if(ppiList)
@@ -37,7 +37,7 @@ void _PersistencyDefaultValue(IPersistencyItem **ppiList,char *pPrefixName)
         }
     }
 }
-HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName)
+HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName)
 {
     HRESULT hr=S_OK,finalhr=S_OK;
     if(pPrefixName==NULL){piNode->Clear();}
@@ -57,7 +57,7 @@ HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,cha
     }
     return finalhr;
 } 
-HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName)
+HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName)
 {
     HRESULT hr=S_OK,finalhr=S_OK;
     int x=0;
@@ -76,7 +76,7 @@ HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,cha
     }
     return finalhr;
 }
-HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName)
+HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName)
 {
     HRESULT hr=S_OK,finalhr=S_OK;
     int x=0;
@@ -94,7 +94,7 @@ HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,c
     }
     return finalhr;
 }
-void _PersistencyInitialize(IPersistencyItem **ppiList,char *pPrefixName)
+void _PersistencyInitialize(IPersistencyItem **ppiList,TCHAR *pPrefixName)
 {
     int x=0;
     if(ppiList)
@@ -106,7 +106,7 @@ void _PersistencyInitialize(IPersistencyItem **ppiList,char *pPrefixName)
         }
     }
 }
-void _PersistencyFree(IPersistencyItem **ppiList,char *pPrefixName)
+void _PersistencyFree(IPersistencyItem **ppiList,TCHAR *pPrefixName)
 {
     int x=0;
     if(ppiList)

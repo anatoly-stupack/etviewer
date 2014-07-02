@@ -1,21 +1,27 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewer", "ETViewer.vcproj", "{62BB54A2-DFF8-49AC-830A-A49E8F44C308}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewer", "ETViewer.vcxproj", "{62BB54A2-DFF8-49AC-830A-A49E8F44C308}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_XP|Win32 = Debug_XP|Win32
+		Debug|Win32 = Debug|Win32
+		Release_XP|Win32 = Release_XP|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug.ActiveCfg = Debug|Win32
-		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug.Build.0 = Debug|Win32
-		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release.ActiveCfg = Release|Win32
-		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release.Build.0 = Release|Win32
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug_XP|Win32.ActiveCfg = Debug_XP|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug_XP|Win32.Build.0 = Debug_XP|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug|Win32.ActiveCfg = Debug|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Debug|Win32.Build.0 = Debug|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release_XP|Win32.ActiveCfg = Release_XP|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release_XP|Win32.Build.0 = Release_XP|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release|Win32.ActiveCfg = Release|Win32
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

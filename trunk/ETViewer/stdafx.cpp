@@ -26,16 +26,16 @@
 
 SIZE GetRectSize(RECT &rect)
 {
-	SIZE size;
-	size.cx=rect.right-rect.left;
-	size.cy=rect.bottom-rect.top;
-	return size;
+    SIZE size;
+    size.cx=rect.right-rect.left;
+    size.cy=rect.bottom-rect.top;
+    return size;
 }
 
 POINT GetRectPos(RECT &rect)
 {
-	POINT pos;
-	pos.x=rect.left;
-	pos.y=rect.top;
-	return pos;
+    POINT pos;
+    pos.x=rect.left;
+    pos.y=rect.top;
+    return pos;
 }

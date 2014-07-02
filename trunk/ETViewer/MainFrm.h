@@ -32,73 +32,73 @@ class CProviderTree;
 class CHighLightPane;
 class CMainFrame : public CFrameWnd
 {
-	
+    
 protected: // Crear sólo a partir de serialización
-	CMainFrame();
-	DECLARE_DYNCREATE(CMainFrame)
+    CMainFrame();
+    DECLARE_DYNCREATE(CMainFrame)
 
 // Atributos
 protected:
-	CSplitterWnd m_wndSplitter;
+    CSplitterWnd m_wndSplitter;
 public:
 
 // Operaciones
 public:
 // Reemplazos
 public:
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
 // Implementación
 public:
-	virtual ~CMainFrame();
-	CETViewerView* GetTracePane();
-	CProviderTree* GetProviderTree();
-	CHighLightPane* GetHighLightPane();
+    virtual ~CMainFrame();
+    CETViewerView* GetTracePane();
+    CProviderTree* GetProviderTree();
+    CHighLightPane* GetHighLightPane();
 #ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
+    virtual void AssertValid() const;
+    virtual void Dump(CDumpContext& dc) const;
 #endif
 
-	bool OpenFile(const char *pFile,bool *pbKnownFileType);
-	void LookupError(const char *pErrorString);
-	void OnSessionTypeChanged();
+    bool OpenFile(const TCHAR *pFile,bool *pbKnownFileType);
+    void LookupError(const TCHAR *pErrorString);
+    void OnSessionTypeChanged();
 protected:  // Miembros incrustados de la barra de control
 
-	CReBar      m_wndReBar;
-	CMainDialogBar      m_MainDialogBar;
-	CFilterDialogBar    m_FilterDialogBar;
+    CReBar      m_wndReBar;
+    CMainDialogBar      m_MainDialogBar;
+    CFilterDialogBar    m_FilterDialogBar;
 
-	bool IsAncestorOf(HWND hWnd,HWND hAncestor);
+    bool IsAncestorOf(HWND hWnd,HWND hAncestor);
 
 // Funciones de asignación de mensajes generadas
 protected:
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	DECLARE_MESSAGE_MAP()
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnDestroy();
-	afx_msg void OnStartStop();
-	afx_msg void OnOpenFile();
-	afx_msg void OnShowSourceContainer();
-	afx_msg void OnClear();
-	afx_msg void OnClearSelected();
-	afx_msg void OnHighlightFilters();
-	afx_msg void OnErrorLookup();
-	afx_msg void OnEnsureVisible();
-	afx_msg void OnSave();
-	afx_msg void OnFind();
-	afx_msg void OnOk();
-	afx_msg void OnCancel();
-	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnCloseLog();
-	afx_msg void OnUpdateFileCloselog(CCmdUI *pCmdUI);
-	afx_msg void OnFileLogtofile();
-	afx_msg void OnUpdateFileLogtofile(CCmdUI *pCmdUI);
-	afx_msg void OnFileStoploggintofile();
-	afx_msg void OnUpdateFileStoploggintofile(CCmdUI *pCmdUI);
-	afx_msg LRESULT OnIPCCommand(WPARAM wParam,LPARAM lParam);
-	afx_msg void OnEditSettings();
-	afx_msg void OnTimer( UINT nTimerId);
+    afx_msg void OnDestroy();
+    afx_msg void OnStartStop();
+    afx_msg void OnOpenFile();
+    afx_msg void OnShowSourceContainer();
+    afx_msg void OnClear();
+    afx_msg void OnClearSelected();
+    afx_msg void OnHighlightFilters();
+    afx_msg void OnErrorLookup();
+    afx_msg void OnEnsureVisible();
+    afx_msg void OnSave();
+    afx_msg void OnFind();
+    afx_msg void OnOk();
+    afx_msg void OnCancel();
+    afx_msg void OnDropFiles(HDROP hDropInfo);
+    afx_msg void OnCloseLog();
+    afx_msg void OnUpdateFileCloselog(CCmdUI *pCmdUI);
+    afx_msg void OnFileLogtofile();
+    afx_msg void OnUpdateFileLogtofile(CCmdUI *pCmdUI);
+    afx_msg void OnFileStoploggintofile();
+    afx_msg void OnUpdateFileStoploggintofile(CCmdUI *pCmdUI);
+    afx_msg LRESULT OnIPCCommand(WPARAM wParam,LPARAM lParam);
+    afx_msg void OnEditSettings();
+    afx_msg void OnTimer( UINT nTimerId);
 };
 
 

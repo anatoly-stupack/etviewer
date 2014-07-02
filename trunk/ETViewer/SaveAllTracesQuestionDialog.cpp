@@ -31,27 +31,27 @@
 
 
 CSaveAllTracesQuestionDialog::CSaveAllTracesQuestionDialog(CWnd* pParent /*=NULL*/)
-	: CDialog(CSaveAllTracesQuestionDialog::IDD, pParent)
+    : CDialog(CSaveAllTracesQuestionDialog::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(CSaveAllTracesQuestionDialog)
-		// NOTE: the ClassWizard will add member initialization here
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(CSaveAllTracesQuestionDialog)
+        // NOTE: the ClassWizard will add member initialization here
+    //}}AFX_DATA_INIT
 }
 
 
 void CSaveAllTracesQuestionDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CSaveAllTracesQuestionDialog)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
-	//}}AFX_DATA_MAP
+    CDialog::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(CSaveAllTracesQuestionDialog)
+        // NOTE: the ClassWizard will add DDX and DDV calls here
+    //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CSaveAllTracesQuestionDialog, CDialog)
-	//{{AFX_MSG_MAP(CSaveAllTracesQuestionDialog)
-	ON_BN_CLICKED(IDC_BT_SELECTED, OnSelectedTraces)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(CSaveAllTracesQuestionDialog)
+    ON_BN_CLICKED(IDC_BT_SELECTED, OnSelectedTraces)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -59,5 +59,5 @@ END_MESSAGE_MAP()
 
 void CSaveAllTracesQuestionDialog::OnSelectedTraces() 
 {
-	EndDialog(IDC_BT_SELECTED);
+    EndDialog(IDC_BT_SELECTED);
 }

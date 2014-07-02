@@ -34,67 +34,67 @@ class CSourceFileContainer;
 
 class CSourceFileViewer : public CDialog, public CFindDialogClient
 {
-	DWORD				m_OldEditProc;
-	HFONT				m_hFileFont;
-	char				*m_pFileBuffer;
-	char				*m_pFileBufferUpper;
-	DWORD				m_FileBufferLength;
+    DWORD				m_OldEditProc;
+    HFONT				m_hFileFont;
+    TCHAR				*m_pFileBuffer;
+    TCHAR				*m_pFileBufferUpper;
+    DWORD				m_FileBufferLength;
 
-	char m_SourceFile[MAX_PATH];
-	int  m_SourceLine;
-	CSourceFileContainer	*m_pContainer;
+    TCHAR m_SourceFile[MAX_PATH];
+    int  m_SourceLine;
+    CSourceFileContainer	*m_pContainer;
 
 // Construction
 public:
-	CSourceFileViewer(CSourceFileContainer* pParent = NULL);   // standard constructor
+    CSourceFileViewer(CSourceFileContainer* pParent = NULL);   // standard constructor
 
-	void ShowLine(int line);
-	std::string GetFile();
+    void ShowLine(int line);
+    std::tstring GetFile();
 
 // Dialog Data
-	//{{AFX_DATA(CSourceFileViewer)
-	enum { IDD = IDD_SOURCE_FILE_VIEWER };
-	CEdit	m_EDLine;
-	CEdit	m_EDFullPath;
-	CRichEditCtrl	m_EDFile;
-	//}}AFX_DATA
+    //{{AFX_DATA(CSourceFileViewer)
+    enum { IDD = IDD_SOURCE_FILE_VIEWER };
+    CEdit	m_EDLine;
+    CEdit	m_EDFullPath;
+    CRichEditCtrl	m_EDFile;
+    //}}AFX_DATA
 
-	DWORD OpenFile(const char *pFile,int line,bool bShowErrorIfFailed=true);
-	void Reload();
-	bool FindNext(const char *pText);
-	void Copy();
-	void ShowFindDialog();
+    DWORD OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfFailed=true);
+    void Reload();
+    bool FindNext(const TCHAR *pText);
+    void Copy();
+    void ShowFindDialog();
 
 // Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSourceFileViewer)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
+    // ClassWizard generated virtual function overrides
+    //{{AFX_VIRTUAL(CSourceFileViewer)
+    protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    //}}AFX_VIRTUAL
 
 
-	bool FindAndDeleteAll(const char *pText);
-	bool FindAndMarkAll(const char *pText);
-	void SetFocusOnOwnerWindow();
+    bool FindAndDeleteAll(const TCHAR *pText);
+    bool FindAndMarkAll(const TCHAR *pText);
+    void SetFocusOnOwnerWindow();
 
-	static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	void SetMetrics();
-	void UpdateLine();
-	void OnFind();
+    static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    void SetMetrics();
+    void UpdateLine();
+    void OnFind();
 
 // Implementation
 protected:
 
-	// Generated message map functions
-	//{{AFX_MSG(CSourceFileViewer)
-	virtual void OnOK();
-	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
-	afx_msg void OnDestroy();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnUpdateSelectedLine();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
+    // Generated message map functions
+    //{{AFX_MSG(CSourceFileViewer)
+    virtual void OnOK();
+    virtual void OnCancel();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnUpdateSelectedLine();
+    //}}AFX_MSG
+    DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

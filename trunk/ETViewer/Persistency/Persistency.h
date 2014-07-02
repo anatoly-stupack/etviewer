@@ -30,31 +30,32 @@
 #include <list>
 #include <set>
 #include <deque>
-#include <string>
+#include "..\tstring.h"
+#include <strsafe.h>
 #include <vector>
 
 #define PF_READ					0x0001
-#define PF_WRITE					0x0002
+#define PF_WRITE				0x0002
 #define PF_OPTIONAL				0x0004
-#define PF_NORMAL					PF_READ|PF_WRITE
+#define PF_NORMAL				PF_READ|PF_WRITE
 
 struct SPersistencyProperty
 {
-	std::string name;
-	std::string value;
+    std::tstring name;
+    std::tstring value;
 };
 
 class IPersistencyNode
 {
 public:
-	virtual void Clear()=0;
-	virtual bool AddProperty(SPersistencyProperty property)=0;
-	virtual bool GetProperty(SPersistencyProperty *pProperty)=0;
-	virtual bool RemoveProperty(SPersistencyProperty property)=0;
+    virtual void Clear()=0;
+    virtual bool AddProperty(SPersistencyProperty property)=0;
+    virtual bool GetProperty(SPersistencyProperty *pProperty)=0;
+    virtual bool RemoveProperty(SPersistencyProperty property)=0;
 
-	virtual IPersistencyNode *AddNode(std::string id)=0;
-	virtual IPersistencyNode *GetNode(std::string id)=0;
-	virtual void DeleteNode(std::string id)=0;
+    virtual IPersistencyNode *AddNode(std::tstring id)=0;
+    virtual IPersistencyNode *GetNode(std::tstring id)=0;
+    virtual void DeleteNode(std::tstring id)=0;
 };
 
 class IPersistencyItem
@@ -69,7 +70,7 @@ public:
     virtual HRESULT Save(IPersistencyNode *)=0;
     virtual HRESULT Remove(IPersistencyNode *)=0;
 
-    virtual char *GetName()=0;
+    virtual TCHAR *GetName()=0;
 };
 
 
@@ -81,19 +82,19 @@ protected:
     DWORD		m_dwFlags;
 
     T1			*m_pValue;
-    char		m_sName[200];
+    TCHAR		m_sName[200];
 
 public:
 
-    char *GetName(){return m_sName;}
+    TCHAR *GetName(){return m_sName;}
     T1	 *GetValueAddress(){return m_pValue;}
     void SetDefaultValue(){}
 
-    CPersistentReferenceT(T1 *pValue,char *pName,DWORD flags)
+    CPersistentReferenceT(T1 *pValue,TCHAR *pName,DWORD flags)
     {
         m_dwFlags=flags;
         m_pValue=pValue;
-        strcpy(m_sName,pName);
+        _tcscpy_s(m_sName,200,pName);
     }
     virtual ~CPersistentReferenceT(){}
 };
@@ -111,7 +112,7 @@ public:
     HRESULT Save(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencySave(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
     HRESULT Remove(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencyRemove(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
 
-    CPersistentSimpleReferenceT(T1 *pValue,char *pName,DWORD flags):CPersistentReferenceT<T1>(pValue,pName,flags){}
+    CPersistentSimpleReferenceT(T1 *pValue,TCHAR *pName,DWORD flags):CPersistentReferenceT<T1>(pValue,pName,flags){}
     virtual ~CPersistentSimpleReferenceT(){}
 };
 
@@ -129,7 +130,7 @@ public:
         return this;
     }
 
-    CPersistentValueReferenceT(T1 *pValue,char *pName,DWORD flags)
+    CPersistentValueReferenceT(T1 *pValue,TCHAR *pName,DWORD flags)
         :CPersistentReferenceT<T1>(pValue,pName,flags)
     {
     }
@@ -144,8 +145,8 @@ public:
     ~CPersistentValueReferenceT(){}
 };
 
-template<typename T1> CPersistentValueReferenceT<T1> *PersistCreateReferenceWithDefaultValue(T1 *pVar,char *name,DWORD flags=PF_NORMAL){return new CPersistentValueReferenceT<T1>(pVar,name,flags);}
-template<typename T1> CPersistentSimpleReferenceT<T1> *PersistCreateReference(T1 *pVar,char *name,DWORD flags=PF_NORMAL){return new CPersistentSimpleReferenceT<T1>(pVar,name,flags);}
+template<typename T1> CPersistentValueReferenceT<T1> *PersistCreateReferenceWithDefaultValue(T1 *pVar,TCHAR *name,DWORD flags=PF_NORMAL){return new CPersistentValueReferenceT<T1>(pVar,name,flags);}
+template<typename T1> CPersistentSimpleReferenceT<T1> *PersistCreateReference(T1 *pVar,TCHAR *name,DWORD flags=PF_NORMAL){return new CPersistentSimpleReferenceT<T1>(pVar,name,flags);}
 
 #define DECLARE_SERIALIZABLE(className)\
     static HRESULT PersistencyLoad(IPersistencyNode *piParent,CPersistentReferenceT<className>*pItem)\
@@ -163,30 +164,30 @@ template<typename T1> CPersistentSimpleReferenceT<T1> *PersistCreateReference(T1
     static void PersistencyFree(CPersistentReferenceT<className>*pItem){pItem->GetValueAddress()->PersistencyFree();}
 
 #define DECLARE_SERIALIZABLE_ENUMERATION(enumeration)\
-	static HRESULT PersistencyLoad(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){return PersistencyLoad(piParent,(CPersistentReferenceT<int>*)pItem);}\
-	static HRESULT PersistencySave(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){return PersistencySave(piParent,(CPersistentReferenceT<int>*)pItem);}\
-	static HRESULT PersistencyRemove(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){piParent->DeleteNode(pItem->GetName());return S_OK;}\
-	static void PersistencyInitialize(CPersistentReferenceT<enumeration>*pItem){return PersistencyInitialize((CPersistentReferenceT<int>*)pItem);}\
-	static void PersistencyFree(CPersistentReferenceT<enumeration>*pItem){}
+    static HRESULT PersistencyLoad(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){return PersistencyLoad(piParent,(CPersistentReferenceT<int>*)pItem);}\
+    static HRESULT PersistencySave(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){return PersistencySave(piParent,(CPersistentReferenceT<int>*)pItem);}\
+    static HRESULT PersistencyRemove(IPersistencyNode *piParent,CPersistentReferenceT<enumeration>*pItem){piParent->DeleteNode(pItem->GetName());return S_OK;}\
+    static void PersistencyInitialize(CPersistentReferenceT<enumeration>*pItem){return PersistencyInitialize((CPersistentReferenceT<int>*)pItem);}\
+    static void PersistencyFree(CPersistentReferenceT<enumeration>*pItem){}
 
 #define BEGIN_PERSIST_MAP(className)	\
-    IPersistencyItem **PersistGetPropertyMap(char *pMapName,char *persistNamePrefix)\
+    IPersistencyItem **PersistGetPropertyMap(TCHAR *pMapName,TCHAR *persistNamePrefix)\
     {												\
         bool bInSpecifiedSubMap=(pMapName==NULL);\
         className *pInstance=this;						\
         std::list<IPersistencyItem *> items;				\
-        char szPrefix[1024]={0};						\
-        char szvarName[1024]={0};						\
-        if(persistNamePrefix!=NULL){sprintf(szPrefix,"%s",persistNamePrefix);}
+        TCHAR szPrefix[1024]={0};						\
+        TCHAR szvarName[1024]={0};						\
+        if (persistNamePrefix != NULL){ _stprintf_s(szPrefix, 1024, _T("%s"), persistNamePrefix); }
 
-#define PERSIST(var,str) 							if(bInSpecifiedSubMap){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReference(&pInstance->var,szvarName));}
-#define PERSIST_FLAGS(var,str,flags) 				if(bInSpecifiedSubMap){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReference(&pInstance->var,szvarName,flags));}
-#define PERSIST_VALUE(var,str,value) 				if(bInSpecifiedSubMap){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(&pInstance->var,szvarName)->SetDefaultValueAndReturnThis(value));}
-#define PERSIST_VALUE_FLAGS(var,str,value,flags) 	if(bInSpecifiedSubMap){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(&pInstance->var,szvarName,flags)->SetDefaultValueAndReturnThis(value));}
-#define PERSIST_POINTER(var,str) 					        if(bInSpecifiedSubMap && var){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReference(pInstance->var,szvarName));}
-#define PERSIST_POINTER_FLAGS(var,str,flags) 				if(bInSpecifiedSubMap && var){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReference(pInstance->var,szvarName,flags));}
-#define PERSIST_POINTER_VALUE(var,str,value) 				if(bInSpecifiedSubMap && var){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(pInstance->var,szvarName)->SetDefaultValueAndReturnThis(value));}
-#define PERSIST_POINTER_VALUE_FLAGS(var,str,value,flags) 	if(bInSpecifiedSubMap && var){wsprintf(szvarName,"%s%s",szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(pInstance->var,szvarName,flags)->SetDefaultValueAndReturnThis(value));}
+#define PERSIST(var,str) 							if(bInSpecifiedSubMap){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReference(&pInstance->var,szvarName));}
+#define PERSIST_FLAGS(var,str,flags) 				if(bInSpecifiedSubMap){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReference(&pInstance->var,szvarName,flags));}
+#define PERSIST_VALUE(var,str,value) 				if(bInSpecifiedSubMap){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(&pInstance->var,szvarName)->SetDefaultValueAndReturnThis(value));}
+#define PERSIST_VALUE_FLAGS(var,str,value,flags) 	if(bInSpecifiedSubMap){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(&pInstance->var,szvarName,flags)->SetDefaultValueAndReturnThis(value));}
+#define PERSIST_POINTER(var,str) 					        if(bInSpecifiedSubMap && var){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReference(pInstance->var,szvarName));}
+#define PERSIST_POINTER_FLAGS(var,str,flags) 				if(bInSpecifiedSubMap && var){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReference(pInstance->var,szvarName,flags));}
+#define PERSIST_POINTER_VALUE(var,str,value) 				if(bInSpecifiedSubMap && var){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(pInstance->var,szvarName)->SetDefaultValueAndReturnThis(value));}
+#define PERSIST_POINTER_VALUE_FLAGS(var,str,value,flags) 	if(bInSpecifiedSubMap && var){StringCbPrintf(szvarName,1024,_T("%s%s"),szPrefix,str);items.push_back(PersistCreateReferenceWithDefaultValue(pInstance->var,szvarName,flags)->SetDefaultValueAndReturnThis(value));}
 
 #define BEGIN_PERSIST_SUBMAP(str) 	if(pMapName && strcmp(pMapName,str)==0){bInSpecifiedSubMap=true;
 #define END_PERSIST_SUBMAP(str) 	bInSpecifiedSubMap=false;}
@@ -208,8 +209,8 @@ if(bInSpecifiedSubMap){\
 
 #define PERSIST_CLASS_CHAIN_PREFIX(otherClass,chainPrefix)\
 if(bInSpecifiedSubMap){\
-    char szChainPrefix[STRING_SIZE]={0};\
-    sprintf(szChainPrefix,szPrefix);\
+    TCHAR szChainPrefix[STRING_SIZE]={0};\
+    _stprintf_s(szChainPrefix, szPrefix); \
     strcat(szChainPrefix,chainPrefix);\
     IPersistencyItem **ppOtherClassItems=otherClass::PersistGetPropertyMap(pMapName,szChainPrefix);\
     int x=0;\
@@ -217,12 +218,12 @@ if(bInSpecifiedSubMap){\
     delete [] ppOtherClassItems;\
 }
 
-void	_PersistencyDefaultValue(IPersistencyItem **ppiList,char *pPrefixName=NULL);
-HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName=NULL);
-HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName=NULL);
-HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,char *pPrefixName=NULL);
-void	_PersistencyInitialize(IPersistencyItem **ppiList,char *pPrefixName=NULL);
-void	_PersistencyFree(IPersistencyItem **ppiList,char *pPrefixName=NULL);
+void	_PersistencyDefaultValue(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
+HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
+HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
+HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
+void	_PersistencyInitialize(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
+void	_PersistencyFree(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
 void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
 
 #define END_PERSIST_MAP()\
@@ -233,13 +234,13 @@ void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
     pList[items.size()]=NULL;\
     return pList;\
 };     \
-    virtual void PersistencyDefaultValue(char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual void PersistencyDefaultValue(TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
     _PersistencyDefaultValue(ppiList, pPrefixName);\
     _FreePersistencyPropertyMap(&ppiList);\
 }\
-    virtual HRESULT PersistencySave(IPersistencyNode *piNode,char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual HRESULT PersistencySave(IPersistencyNode *piNode,TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     if(piNode==NULL){return E_FAIL;}\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
@@ -247,7 +248,7 @@ void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
     _FreePersistencyPropertyMap(&ppiList);\
     return finalhr;\
 } \
-    virtual HRESULT PersistencyLoad(IPersistencyNode *piNode,char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual HRESULT PersistencyLoad(IPersistencyNode *piNode,TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     if(piNode==NULL){return E_FAIL;}\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
@@ -255,7 +256,7 @@ void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
     _FreePersistencyPropertyMap(&ppiList);\
     return finalhr;\
 }\
-    virtual HRESULT PersistencyRemove(IPersistencyNode *piNode,char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual HRESULT PersistencyRemove(IPersistencyNode *piNode,TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     if(piNode==NULL){return E_FAIL;}\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
@@ -263,13 +264,13 @@ void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
     _FreePersistencyPropertyMap(&ppiList);\
     return finalhr;\
 }\
-    virtual void PersistencyInitialize(char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual void PersistencyInitialize(TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
     _PersistencyInitialize(ppiList,pPrefixName);\
     _FreePersistencyPropertyMap(&ppiList);\
 }\
-    virtual void PersistencyFree(char *pMapName=NULL,char *pPrefixName=NULL)\
+    virtual void PersistencyFree(TCHAR *pMapName=NULL,TCHAR *pPrefixName=NULL)\
 {\
     IPersistencyItem **ppiList=PersistGetPropertyMap(pMapName,pPrefixName);\
     _PersistencyFree(ppiList,pPrefixName);\
@@ -328,8 +329,8 @@ void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
     {													\
         bool bInSpecifiedSubMap=true;\
         std::list<IPersistencyItem *> items;			\
-        char szPrefix[1024]={0};						\
-        char szvarName[1024]={0};						
+        TCHAR szPrefix[1024]={0};						\
+        TCHAR szvarName[1024]={0};						
 
 #define END_STRUCT_PERSISTS()						\
         int x;\

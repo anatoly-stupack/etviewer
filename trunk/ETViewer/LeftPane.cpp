@@ -48,17 +48,17 @@ END_MESSAGE_MAP()
 
 BOOL CLeftPane::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
-	// TODO: Add your specialized code here and/or call the base class
+    // TODO: Add your specialized code here and/or call the base class
 
-	// Crear ventana divisora
-	if (!m_wndSplitter.CreateStatic(this, 2, 1))
-		return FALSE;
+    // Crear ventana divisora
+    if (!m_wndSplitter.CreateStatic(this, 2, 1))
+        return FALSE;
 
-	if (!m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CProviderTree), CSize(100, 300), NULL) ||
-		!m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CHighLightPane), CSize(250, 300), NULL))
-	{
-		m_wndSplitter.DestroyWindow();
-		return FALSE;
-	}
-	return TRUE;
+    if (!m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CProviderTree), CSize(100, 300), NULL) ||
+        !m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CHighLightPane), CSize(250, 300), NULL))
+    {
+        m_wndSplitter.DestroyWindow();
+        return FALSE;
+    }
+    return TRUE;
 }

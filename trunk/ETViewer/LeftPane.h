@@ -31,16 +31,16 @@ DECLARE_DYNCREATE(CLeftPane)
 
 public:
 
-	CSplitterWnd m_wndSplitter;
+    CSplitterWnd m_wndSplitter;
 
-	CLeftPane();
-	virtual ~CLeftPane();
+    CLeftPane();
+    virtual ~CLeftPane();
 
 protected:
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
 protected:
-	virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+    virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 };
 
 
