@@ -143,7 +143,7 @@ HRESULT PersistLoadFromContainer(IPersistencyNode *piParent,CPersistentReference
     pItem->GetValueAddress()->clear();
 
     SPersistencyProperty countProp;
-    countProp.name="ItemCount";
+    countProp.name=_T("ItemCount");
     if(!piNode->GetProperty(&countProp)){return E_FAIL;}
     DWORD itemCount=atoi(countProp.value.c_str());
 
@@ -196,8 +196,8 @@ HRESULT PersistSaveToContainer(IPersistencyNode *piParent,CPersistentReferenceT<
         {
             TCHAR keyName[512];
             TCHAR valueName[512];
-            _stprintf_s(keyName,"ItemKey%d",itemCount);
-            _stprintf_s(valueName,"ItemValue%d",itemCount);
+            _stprintf_s(keyName,_T("ItemKey%d"),itemCount);
+            _stprintf_s(valueName,_T("ItemValue%d"),itemCount);
             CPersistentSimpleReferenceT<KEY_TYPE>         *pKeyRef=PersistCreateReference(const_cast<KEY_TYPE *>(&(i->first)),keyName);
             CPersistentSimpleReferenceT<CONTAINED_TYPE>   *pValueRef=PersistCreateReference(&(i->second),valueName);
             hr=PersistencySave(piNode,pKeyRef);

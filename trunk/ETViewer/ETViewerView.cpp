@@ -326,7 +326,7 @@ void CETViewerView::OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult)
         {
             if(pActivate->iItem!=-1)
             {
-                tstring sFile;
+                std::tstring sFile;
                 DWORD line=0;
                 WaitForSingleObject(m_hTracesMutex,INFINITE);
                 SETViewerTrace *pTrace=m_lTraces[pActivate->iItem];
@@ -786,7 +786,7 @@ bool CETViewerView::FindNext(const TCHAR *pText)
         CWnd *pParent=GetActiveWindow();
         if(!pParent){pParent=this;}
 
-        tstring str=pText;
+        std::tstring str = pText;
         str+=_T(" was not found");
         pParent->MessageBox(str.c_str(),_T("ETViewer"),MB_OK);
         return false;
@@ -852,7 +852,7 @@ bool CETViewerView::FindAndDeleteAll(const TCHAR *pTextToFind)
 {
     WaitForSingleObject(m_hTracesMutex,INFINITE);
 
-    deque<SETViewerTrace *> newList;
+    std::deque<SETViewerTrace *> newList;
 
     bool res=false;
     int currentIndex=0,oldIndex=-1;
@@ -1002,7 +1002,7 @@ void CETViewerView::ClearSelected()
 
     WaitForSingleObject(m_hTracesMutex,INFINITE);
 
-    deque<SETViewerTrace *> newList;
+    std::deque<SETViewerTrace *> newList;
     c=GetListCtrl().GetItemCount();
     for(x=c-1;x>=0;x--)
     {
@@ -1149,8 +1149,8 @@ void CETViewerView::GetTransferBuffer(int *pSize,TCHAR **buffer,bool bAllTraces)
     {
         int x;
         TCHAR temp[2048],columnText[2048];
-        list<DWORD>			  selectedIndexes;
-        list<DWORD>::iterator i;
+        std::list<DWORD>            selectedIndexes;
+        std::list<DWORD>::iterator  i;
         for(x=0;x<GetListCtrl().GetItemCount();x++)
         {
             if(GetListCtrl().GetItemState(x,LVIS_SELECTED)&LVIS_SELECTED)
@@ -1709,14 +1709,14 @@ void CETViewerView::OnSessionTypeChanged()
     }
 }
 
-void CETViewerView::SetTraceFont(tstring sTraceFont,DWORD dwFontSize)
+void CETViewerView::SetTraceFont(std::tstring sTraceFont, DWORD dwFontSize)
 {
     m_sTraceFont=sTraceFont;
     m_dwTraceFontSize=dwFontSize;
     UpdateFont();
 }
 
-void CETViewerView::GetTraceFont(tstring *psTraceFont,DWORD *pdwFontSize)
+void CETViewerView::GetTraceFont(std::tstring *psTraceFont, DWORD *pdwFontSize)
 {
     *psTraceFont=m_sTraceFont;
     *pdwFontSize=m_dwTraceFontSize;

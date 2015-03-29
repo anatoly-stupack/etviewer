@@ -156,19 +156,19 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
                 for(x=0;x<bytesRead;x++)
                 {
 
-                    if(pReadedBuffer[x]=='\t')
+                    if(pReadedBuffer[x]==_T('\t'))
                     {
                         int tabsToAdd=TAB_SIZE-((m_FileBufferLength-lastLineIndex)%4);
 
                         memset(m_pFileBuffer+m_FileBufferLength,' ',tabsToAdd);
                         m_FileBufferLength+=tabsToAdd;
                     }
-                    else if(pReadedBuffer[x]!='\r')
+                    else if(pReadedBuffer[x]!=_T('\r'))
                     {
                         m_pFileBuffer[m_FileBufferLength]=pReadedBuffer[x];m_FileBufferLength++;
                     }
 
-                    if(pReadedBuffer[x]=='\n')
+                    if(pReadedBuffer[x]==_T('\n'))
                     {
                         lastLineIndex=m_FileBufferLength;
                     }
@@ -266,7 +266,7 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
     PostMessage(WM_USER+1);
     ShowLine(m_SourceLine);
 
-    tstring sTemp;
+    std::tstring sTemp;
     sTemp=m_SourceFile;
     if(m_SourceLine)
     {
@@ -467,10 +467,10 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
             DWORD command=::TrackPopupMenu(hMenu,TPM_LEFTALIGN|TPM_RETURNCMD,p.x,p.y,0,pThis->m_hWnd,NULL);
             if(command==ID_OPEN_AS_SOURCE_FILE)
             {
-                deque<tstring> dirs;
+                std::deque<std::tstring> dirs;
 
                 // include the same directory as the file showed by this viewer
-                tstring temp1;
+                std::tstring temp1;
                 TCHAR drive[MAX_PATH]={0},path[MAX_PATH]={0};
                 _tsplitpath_s(pThis->m_SourceFile, drive, MAX_PATH, path, MAX_PATH, NULL, 0, NULL, 0);
                 temp1=drive;
@@ -615,7 +615,7 @@ bool CSourceFileViewer::FindNext(const TCHAR *pTextToFind)
     if(!pParent){pParent=this;}
     if(pText==NULL)
     {
-        tstring sTemp;
+        std::tstring sTemp;
         sTemp=m_LastTextToFind;
         sTemp+=_T(" was not found");
         pParent->MessageBox(sTemp.c_str(),_T(""),MB_OK);

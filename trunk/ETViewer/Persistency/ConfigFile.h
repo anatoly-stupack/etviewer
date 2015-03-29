@@ -31,16 +31,16 @@ class CConfigFileNode: public IPersistencyNode
 {
     friend CConfigFile;
 
-    std::tstring					                m_sName;
-    std::map<std::tstring,std::tstring>	        m_mData;
-    std::multimap<std::tstring,CConfigFileNode*>	m_mNodes;
+    std::tstring                                    m_sName;
+    std::map<std::tstring,std::tstring>             m_mData;
+    std::multimap<std::tstring,CConfigFileNode*>    m_mNodes;
 
     CConfigFileNode *GetAddNode_Internal(std::tstring sNodePath,bool bAdd);
 
 public:
 
-    bool    			 HasValue(std::tstring sValue);
-    std::tstring			 GetValue(std::tstring sValue);
+    bool                HasValue(std::tstring sValue);
+    std::tstring        GetValue(std::tstring sValue);
 
     // IPersistencyNode
     virtual void Clear();

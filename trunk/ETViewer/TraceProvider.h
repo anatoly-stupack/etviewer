@@ -150,7 +150,7 @@ class CTraceProvider
     GUID						    m_ProviderGUID;
     std::map<std::tstring,DWORD>	m_TraceFlags;
     std::tstring					m_sComponentName;
-    std::tstring					m_sFileName;
+    std::set<std::tstring>          m_sFileList;
     DWORD						    m_dwAllSupportedFlagsMask;
 
     std::vector<STraceFormatEntry *>				m_FormatEntries;
@@ -169,15 +169,15 @@ public:
     DWORD	GetSupportedFlagValue(std::tstring sName);
 
     std::tstring	GetComponentName();
-    std::tstring	GetFileName();
+    std::set<std::tstring>	GetFileList();
 
+    void                AddFileName(std::tstring sFileName);
     void				AddSourceFile(CTraceSourceFile *pSourceFile);
     void 				GetSourceFiles(std::vector<CTraceSourceFile*> *pvSources);
     CTraceSourceFile*	GetSourceFile(GUID sourceGUID);
 
     void				AddFormatEntry(STraceFormatEntry *pFormatEntry);
     void 				GetFormatEntries(std::vector<STraceFormatEntry*> *pvFormatEntries);
-
 
     CTraceProvider(std::tstring sComponentName,std::tstring sFileName);
     ~CTraceProvider(void);
@@ -218,11 +218,4 @@ public:
      eTraceReaderError LoadFromPDB(LPCTSTR pPDB,std::vector<CTraceProvider *> *pvProviders);
      static BOOL CALLBACK TypeEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
      static BOOL CALLBACK SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
-};
-
-class CTraceTMFReader : protected CTraceReader
-{
-public:
-
-    eTraceReaderError LoadFromTMF(LPCTSTR pTMF, std::vector<CTraceProvider *> *pvProviders);
 };

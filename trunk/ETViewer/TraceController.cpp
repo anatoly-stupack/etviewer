@@ -72,18 +72,17 @@ CTraceController::~CTraceController(void)
 
 bool CTraceController::AddProvider(CTraceProvider *pProvider,DWORD dwFlags,DWORD dwLevel)
 {
-    bool bOk=false;
+    bool bNewProvider=false;
 
     WaitForSingleObject(m_hMutex,INFINITE);
     map<GUID,STraceProviderData,CGUIDComparer>::iterator i;
     i=m_Providers.find(pProvider->GetGUID());
 
+    AddProviderFormatEntries(pProvider);
+
     if(i==m_Providers.end())
     {
-        bOk=true;
-
-        AddProviderFormatEntries(pProvider);
-
+        bNewProvider = true;
         STraceProviderData data;
         data.pProvider=pProvider;
         data.dwLevel=dwLevel;
@@ -97,9 +96,16 @@ bool CTraceController::AddProvider(CTraceProvider *pProvider,DWORD dwFlags,DWORD
             EnableTrace(TRUE,data.dwFlags,data.dwLevel,&providerGUID,m_hSession);
         }
     }
+    else
+    {
+        for(const auto curFile : pProvider->GetFileList())
+        {
+            m_Providers[pProvider->GetGUID()].pProvider->AddFileName(curFile);
+        }
+    }
 
     ReleaseMutex(m_hMutex);
-    return bOk;
+    return bNewProvider;
 }
 
 void CTraceController::RemoveProvider(CTraceProvider *pProvider)
@@ -321,8 +327,11 @@ VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
         eventData.sourceFileGUID=pData->sourceFileGUID;
         eventData.sourceTraceIndex=LOWORD(pEvent->Header.Version);
         memcpy(&traceTimeStamp,&pData->timeStamp,sizeof(LARGE_INTEGER));
-        eventData.nParamBuffer=pEvent->MofLength;
-        eventData.pParamBuffer=pData->params;
+        eventData.nParamBuffer = pEvent->MofLength;// -sizeof(S_NEW_FORMAT_MOF_DATA);
+        if(eventData.nParamBuffer)
+        {
+            eventData.pParamBuffer=(BYTE*)&pData->params;
+        }
     }
     else// old WDK format.
     {
@@ -333,8 +342,11 @@ VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
         eventData.sourceFileGUID=pEvent->Header.Guid;
         memcpy(&traceTimeStamp,&pEvent->Header.TimeStamp,sizeof(LARGE_INTEGER));
         eventData.sourceTraceIndex=pData->traceIndex;
-        eventData.nParamBuffer=pEvent->MofLength;
-        eventData.pParamBuffer=pData->params;
+        eventData.nParamBuffer = pEvent->MofLength;//-sizeof(S_OLD_FORMAT_MOF_DATA);
+        if(eventData.nParamBuffer)
+        {
+            eventData.pParamBuffer=(BYTE*)&pData->params;
+        }
     }
 
     FILETIME	tempFileTime,localFileTime;

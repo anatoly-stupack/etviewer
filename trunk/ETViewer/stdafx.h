@@ -68,11 +68,6 @@
 #include "persistency\persistentTypes.h"
 #include "persistency\configfile.h"
 
-//This probably shouldn't be here  -Ellery
-using namespace std;
-
-
-
 SIZE  GetRectSize(RECT &rect);
 POINT GetRectPos(RECT &rect);
 

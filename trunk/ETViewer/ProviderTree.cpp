@@ -57,6 +57,7 @@ CProviderTree::CProviderTree()
     m_hPlayBlockedIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_PLAY_BLOCKED),IMAGE_ICON,16,16,0);
     m_hRecordIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_RECORD),IMAGE_ICON,16,16,0);
     m_hPauseIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_PAUSE),IMAGE_ICON,16,16,0);
+    m_hModuleIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_MODULE),IMAGE_ICON,16,16,0);
     m_hLevelIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_LEVEL),IMAGE_ICON,16,16,0);
     m_hFlagsIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_FLAGS),IMAGE_ICON,16,16,0);
     m_hCheckedIcon=(HICON)LoadImage(AfxGetResourceHandle(),MAKEINTRESOURCE(IDI_CHECKED),IMAGE_ICON,16,16,0);
@@ -66,6 +67,7 @@ CProviderTree::CProviderTree()
     m_iPlayBlockedIcon=ImageList_AddIcon(m_hImageList,m_hPlayBlockedIcon);
     m_iRecordIcon=ImageList_AddIcon(m_hImageList,m_hRecordIcon);
     m_iPauseIcon=ImageList_AddIcon(m_hImageList,m_hPauseIcon);
+    m_iModuleIcon = ImageList_AddIcon(m_hImageList,m_hModuleIcon);
     m_iLevelIcon=ImageList_AddIcon(m_hImageList,m_hLevelIcon);
     m_iFlagsIcon=ImageList_AddIcon(m_hImageList,m_hFlagsIcon);
     m_iCheckedIcon=ImageList_AddIcon(m_hImageList,m_hCheckedIcon);
@@ -124,12 +126,9 @@ CETViewerDoc* CProviderTree::GetDocument() // La versión de no depuración es en 
 
 void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
 {
-    map<tstring,DWORD> traceLevels;
-    map<tstring,DWORD>::iterator i;
-
-    HTREEITEM hTempItem=NULL,hChild=NULL;
-    CTreeCtrl &treeCtrl=GetTreeCtrl();
-    CTraceProvider *pProvider=(CTraceProvider *)treeCtrl.GetItemData(hProviderItem);
+    HTREEITEM hTempItem = NULL, hChild = NULL;
+    CTreeCtrl &treeCtrl = GetTreeCtrl();
+    CTraceProvider *pProvider = (CTraceProvider *)treeCtrl.GetItemData(hProviderItem);
 
     do
     {
@@ -138,10 +137,29 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
     }
     while(hChild);
 
+    
     if(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_ReadLog)
     {
         return;
     }
+
+    HTREEITEM hModuleItems = treeCtrl.InsertItem(_T("Modules"), m_iModuleIcon, m_iModuleIcon, hProviderItem, TVI_LAST);
+    for(const auto file : pProvider->GetFileList())
+    {
+        if(_tcslen(file.c_str()))
+        {
+            TCHAR filename[MAX_PATH] = { 0 };
+            TCHAR extension[MAX_PATH] = { 0 };
+            _tsplitpath_s(file.c_str(), NULL, 0, NULL, 0, filename, MAX_PATH, extension, MAX_PATH);
+            std::tstring sfilename = filename;
+            sfilename += _T(".");
+            sfilename += extension;
+            hTempItem = treeCtrl.InsertItem(sfilename.c_str(), 0, 0, hModuleItems, TVI_SORT);
+        }
+    }
+
+    std::map<std::tstring, DWORD> traceLevels;
+    std::map<std::tstring, DWORD>::iterator i;
 
     pProvider->GetSupportedFlags(&traceLevels);
 
@@ -149,7 +167,10 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
 
     for(i=traceLevels.begin();i!=traceLevels.end();i++)
     {
-        hTempItem=treeCtrl.InsertItem(i->first.c_str(),0,0,hTraceFlagItems,TVI_SORT);
+        if(_tcslen(i->first.c_str()))
+        {
+            hTempItem = treeCtrl.InsertItem(i->first.c_str(), 0, 0, hTraceFlagItems, TVI_SORT);
+        }
         treeCtrl.SetItemData(hTempItem,i->second);
     }
 
@@ -241,17 +262,10 @@ void CProviderTree::UpdateProviderIcons(HTREEITEM hItem)
 void CProviderTree::OnAddProvider(CTraceProvider *pProvider)
 {
     CTreeCtrl &treeCtrl=GetTreeCtrl();
-    TCHAR A[1024]={0},B[1024]={0},file[MAX_PATH]={0},ext[MAX_PATH]={0};
-    _tcscpy_s(A,pProvider->GetFileName().c_str());
-    _tsplitpath_s(pProvider->GetFileName().c_str(), NULL, 0, NULL, 0, file, MAX_PATH, ext, MAX_PATH);
-    _tcscat_s(B,pProvider->GetComponentName().c_str());
-    _tcscat_s(B,_T(" - "));
-    _tcscat_s(B,file);
-    _tcscat_s(B,ext);
 
-    HTREEITEM hProviderItem=treeCtrl.InsertItem(B,m_iPlayIcon,m_iPlayIcon,TVI_ROOT,TVI_SORT);
+    HTREEITEM hProviderItem=treeCtrl.InsertItem(pProvider->GetComponentName().c_str(),m_iPlayIcon,m_iPlayIcon,TVI_ROOT,TVI_SORT);
     treeCtrl.SetItemData(hProviderItem,(DWORD_PTR)pProvider);
-
+    
     UpdateProviderSubTree(hProviderItem);
     UpdateProviderIcons(hProviderItem);
 }
@@ -294,6 +308,7 @@ void CProviderTree::OnReplaceProvider(CTraceProvider *pOldProvider,CTraceProvide
 
 void CProviderTree::OnProvidersModified()
 {
+    OnSessionTypeChanged();
 }
 
 void CProviderTree::OnSessionTypeChanged()

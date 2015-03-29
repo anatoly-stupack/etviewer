@@ -34,7 +34,7 @@ struct CColumnInfo
 {
     int					width;
     bool				visible;
-    tstring				name;
+    std::tstring        name;
     DWORD				format;
     int					id;
     int					iSubItem;
@@ -96,11 +96,11 @@ public:
 
 protected:
 
-    tstring				m_LastTextToFind;
+    std::tstring		m_LastTextToFind;
     bool				m_bFindDirectionUp;
 
-    deque<CColumnInfo>		m_ColumnInfo;
-    map<int,CColumnInfo*>	m_mVisibleColumns;
+    std::deque<CColumnInfo>		m_ColumnInfo;
+    std::map<int, CColumnInfo*>	m_mVisibleColumns;
 
     WNDPROC		m_OldListEditProc;
     WNDPROC		m_OldListViewProc;
@@ -109,9 +109,9 @@ protected:
     HICON		m_hHollowIcon;
     HICON		m_hMarkerIcon;
 
-    deque<SETViewerTrace *>	m_lTraces;
-    HANDLE					m_hTracesMutex;
-    bool					m_bShowLastTrace;
+    std::deque<SETViewerTrace *>	m_lTraces;
+    HANDLE					        m_hTracesMutex;
+    bool					        m_bShowLastTrace;
     
     int m_iHollowImage;
     int m_iMarkerImage;
@@ -123,7 +123,7 @@ protected:
 
     CFont *m_pTraceFont;
     DWORD m_dwTraceFontSize;
-    tstring m_sTraceFont;
+    std::tstring m_sTraceFont;
 
     COLORREF m_cNormalTextColor;
     COLORREF m_cNormalBkColor;
@@ -160,10 +160,10 @@ protected:
     TCHAR *GetTraceText(SETViewerTrace *pTrace,CColumnInfo *pColumn,TCHAR *pAuxBuffer,unsigned nAuxLen);
 
     BEGIN_PERSIST_MAP(CETViewerView)
-        PERSIST(m_ColumnInfo,"Columns")
-        PERSIST(m_dwTraceFontSize,"FontSize");
-        PERSIST(m_sTraceFont,"FontFamily");
-        PERSIST(m_bShowLastTrace,"ShowLastTrace");
+        PERSIST(m_ColumnInfo,_T("Columns"))
+        PERSIST(m_dwTraceFontSize,_T("FontSize"));
+        PERSIST(m_sTraceFont,_T("FontFamily"));
+        PERSIST(m_bShowLastTrace,_T("ShowLastTrace"));
     END_PERSIST_MAP();
 
     DECLARE_CONFIG_FILE_MEDIA();
@@ -203,8 +203,8 @@ public:
     void OnProvidersModified();
     void OnSessionTypeChanged();
 
-    void SetTraceFont(tstring sTraceFont,DWORD dwFontSize);
-    void GetTraceFont(tstring *psTraceFont,DWORD *pdwFontSize);
+    void SetTraceFont(std::tstring sTraceFont, DWORD dwFontSize);
+    void GetTraceFont(std::tstring *psTraceFont, DWORD *pdwFontSize);
 
     void SortItems(CColumnInfo *pColumn);
 

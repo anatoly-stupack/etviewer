@@ -21,7 +21,6 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
 #include ".\traceprovider.h"
 
 #include "cvconst.h"
@@ -264,7 +263,7 @@ void CTraceSourceFile::SetProvider(CTraceProvider *pProvider)
 CTraceProvider::CTraceProvider(tstring sComponentName,tstring sFileName)
 {
     m_sComponentName=sComponentName;
-    m_sFileName=sFileName;
+    m_sFileList.insert(sFileName);
     m_dwAllSupportedFlagsMask=0;
     m_ProviderGUID=GUID_NULL;
 }
@@ -309,9 +308,14 @@ tstring CTraceProvider::GetComponentName()
     return m_sComponentName;
 }
 
-tstring CTraceProvider::GetFileName()
+std::set<std::tstring>	CTraceProvider::GetFileList()
 {
-    return m_sFileName;
+    return m_sFileList;
+}
+
+void CTraceProvider::AddFileName(std::tstring sFileName)
+{
+    m_sFileList.insert(sFileName);
 }
 
 void CTraceProvider::AddSourceFile(CTraceSourceFile *pSourceFile)
@@ -763,7 +767,12 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, 
                         _tcsncpy_s(pFormatString, pSymInfo->NameLen, pFullString + startIndex, endIndex - startIndex);
                         //memcpy(pFormatString,pFullString+startIndex,(endIndex-startIndex)*sizeof(TCHAR));
                         //pFormatString[endIndex-startIndex]=0;
-                        wmemset(pFullString+startIndex-2,_T(' '),((endIndex-startIndex)+2));
+
+                        #if defined(_UNICODE)
+                            wmemset(pFullString+startIndex-2,_T(' '),((endIndex-startIndex)+2));
+                        #else
+                            memset(pFullString+startIndex-2,_T(' '),((endIndex-startIndex)+2));
+                        #endif
                     }
 
                     bool bFlagFound=false;
@@ -847,7 +856,5 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, 
             delete [] pFunctionSymbol;
         }
     }
-
-
     return TRUE;
 }	

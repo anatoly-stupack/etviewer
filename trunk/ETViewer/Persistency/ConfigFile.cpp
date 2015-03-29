@@ -21,7 +21,6 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
 #include <io.h>
 #include ".\Persistency.h"
 #include ".\configfile.h"
@@ -304,7 +303,11 @@ void CConfigFile::SaveLine(std::tstring sValue)
 {
     DWORD dwWritten=0;
     TCHAR sTemp[512]={0};
-    memset(sTemp,_T('\t'),m_dwSaveTabCount);
+#if defined(_UNICODE)
+    wmemset(sTemp, _T('\t'), m_dwSaveTabCount);
+#else
+    memset(sTemp, _T('\t'), m_dwSaveTabCount);
+#endif
     _tcscat_s(sTemp, _countof(sTemp), sValue.c_str());
     _tcscat_s(sTemp, _countof(sTemp), _T("\r\n"));
     WriteFile(m_hFile, sTemp, (DWORD)_tcslen(sTemp)*sizeof(TCHAR), &dwWritten, NULL);

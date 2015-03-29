@@ -69,7 +69,7 @@ enum
 
 class CHightLightFilter
 {
-    tstring				m_Text;
+    std::tstring        m_Text;
     DWORD				m_dwTextLen;
     DWORD				m_TextColor;
     DWORD				m_BkColor;
@@ -90,9 +90,9 @@ public:
     void		SetEnabled(bool bEnable){m_bEnabled=bEnable;}
     bool		GetEnabled(){return m_bEnabled;}
 
-    void		SetText(tstring sText){m_Text=sText;m_dwTextLen=(DWORD)_tcslen(m_Text.c_str());}
-    tstring		&GetText(){return m_Text;}
-    DWORD		GetTextLen(){return m_dwTextLen;}
+    void		    SetText(std::tstring sText){m_Text=sText;m_dwTextLen=(DWORD)_tcslen(m_Text.c_str());}
+    std::tstring	&GetText(){return m_Text;}
+    DWORD		    GetTextLen(){return m_dwTextLen;}
 
     CHightLightFilter(const CHightLightFilter &otherFilter)
     {
@@ -165,9 +165,9 @@ class CFilter
 {
 public:
 
-    tstring		m_Text;
-    DWORD		m_dwTextLen;
-    bool		m_bInclusionFilter;
+    std::tstring		m_Text;
+    DWORD       		m_dwTextLen;
+    bool		        m_bInclusionFilter;
 
     CFilter()
     {
@@ -189,7 +189,7 @@ enum eFileMonitoringMode
 
 struct SPendingFileChangeOperation
 {
-    tstring sFileName;
+    std::tstring sFileName;
     DWORD  dwChangeTime; // Tick count
 };
 
@@ -201,13 +201,13 @@ public:
     CETViewerApp();
     ~CETViewerApp();
 
-    set<CTraceProvider *> m_sProviders;
+    std::set<CTraceProvider *> m_sProviders;
     CTracePDBReader		  m_PDBReader;
 
     HANDLE m_hInstantTraceMutex;
     HANDLE m_hSingleInstanceMutex;
 
-    list<SPendingFileChangeOperation> m_lPendingFileChanges;
+    std::list<SPendingFileChangeOperation> m_lPendingFileChanges;
     HANDLE							  m_hPendingFileChangesMutex;
     bool							  m_bCheckingFileChangeOperations;
 
@@ -216,8 +216,8 @@ public:
 // Reemplazos
 public:
 
-    void AddFileChangeOperation(tstring sFileName);
-    void RemoveFileChangeOperation(tstring sFileName);
+    void AddFileChangeOperation(std::tstring sFileName);
+    void RemoveFileChangeOperation(std::tstring sFileName);
     void RemoveExpiredFileChangeOperations();
     void CheckFileChangeOperations();
 
@@ -225,22 +225,22 @@ public:
 
     virtual BOOL InitInstance();
 
-    tstring					 m_sConfigFile;
+    std::tstring		     m_sConfigFile;
     CConfigFile				 m_ConfigFile;
 
-    deque<CHightLightFilter> m_HighLightFilters;
-    deque<CHightLightFilter> m_SplittedHighLightFilters;
-    deque<std::tstring>		 m_RecentSourceFiles;
-    deque<std::tstring>		 m_RecentPDBFiles;
-    deque<std::tstring>		 m_RecentLogFiles;
-    deque<std::tstring>		 m_SourceDirectories;
+    std::deque<CHightLightFilter> m_HighLightFilters;
+    std::deque<CHightLightFilter> m_SplittedHighLightFilters;
+    std::deque<std::tstring>		 m_RecentSourceFiles;
+    std::deque<std::tstring>		 m_RecentPDBFiles;
+    std::deque<std::tstring>		 m_RecentLogFiles;
+    std::deque<std::tstring>		 m_SourceDirectories;
 
-    deque<CFilter>			m_dSplittedInstantFilters;
+    std::deque<CFilter>			m_dSplittedInstantFilters;
 
-    tstring 					m_InstantIncludeFilter;
-    tstring 					m_InstantExcludeFilter;
-    deque<std::tstring>		m_InstantIncludeFilterList;
-    deque<std::tstring>		m_InstantExcludeFilterList;
+    std::tstring 					m_InstantIncludeFilter;
+    std::tstring 					m_InstantExcludeFilter;
+    std::deque<std::tstring>		m_InstantIncludeFilterList;
+    std::deque<std::tstring>		m_InstantExcludeFilterList;
     bool					m_bAssociateETL;
     bool					m_bAssociatePDB;
     bool					m_bAssociateSources;
@@ -260,7 +260,7 @@ public:
 
     bool AddProvider(CTraceProvider *pProvider);
     void ReloadProvider(CTraceProvider *pProvider);
-    bool ReloadPDBProviders(tstring sFileName);
+    bool ReloadPDBProviders(std::tstring sFileName);
     void ReloadAllProviders();
     void RemoveProvider(CTraceProvider *pProvider);
     void RemoveAllProviders();
@@ -283,23 +283,23 @@ public:
     bool FilterTrace(const TCHAR *pText);
 
     // IFileMonitorCallback
-    void OnFileChanged(tstring sFile);
+    void OnFileChanged(std::tstring sFile);
 
     BEGIN_PERSIST_MAP(CETViewerApp)
         PERSIST(m_InstantIncludeFilter, _T("IncludeFilter"))
-        PERSIST(m_InstantExcludeFilter,"ExcludeFilter")
-        PERSIST(m_InstantIncludeFilterList,"IncludeFilterList")
-        PERSIST(m_InstantExcludeFilterList,"ExcludeFilterList")
-        PERSIST(m_HighLightFilters,"HighLightFilters")
-        PERSIST(m_RecentSourceFiles,"RecentSourceFiles")
-        PERSIST(m_RecentPDBFiles,"RecentPDBFiles")
-        PERSIST_FLAGS(m_RecentLogFiles,"m_RecentLogFiles",PF_NORMAL|PF_OPTIONAL)
-        PERSIST_FLAGS(m_SourceDirectories,"SourceDirectories",PF_NORMAL|PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociateETL,"AssociateETL",false,PF_NORMAL|PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociatePDB,"AssociatePDB",false,PF_NORMAL|PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociateSources,"AssociateSources",false,PF_NORMAL|PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_ePDBMonitoringMode,"PDBMonitoringMode",eFileMonitoringMode_AutoReload,PF_NORMAL|PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_eSourceMonitoringMode,"SourceMonitoringMode",eFileMonitoringMode_AutoReload,PF_NORMAL|PF_OPTIONAL)
+        PERSIST(m_InstantExcludeFilter,_T("ExcludeFilter"))
+        PERSIST(m_InstantIncludeFilterList,_T("IncludeFilterList"))
+        PERSIST(m_InstantExcludeFilterList,_T("ExcludeFilterList"))
+        PERSIST(m_HighLightFilters,_T("HighLightFilters"))
+        PERSIST(m_RecentSourceFiles,_T("RecentSourceFiles"))
+        PERSIST(m_RecentPDBFiles,_T("RecentPDBFiles"))
+        PERSIST_FLAGS(m_RecentLogFiles,_T("m_RecentLogFiles"),PF_NORMAL|PF_OPTIONAL)
+        PERSIST_FLAGS(m_SourceDirectories,_T("SourceDirectories"),PF_NORMAL|PF_OPTIONAL)
+        PERSIST_VALUE_FLAGS(m_bAssociateETL,_T("AssociateETL"),false,PF_NORMAL|PF_OPTIONAL)
+        PERSIST_VALUE_FLAGS(m_bAssociatePDB,_T("AssociatePDB"),false,PF_NORMAL|PF_OPTIONAL)
+        PERSIST_VALUE_FLAGS(m_bAssociateSources,_T("AssociateSources"),false,PF_NORMAL|PF_OPTIONAL)
+        PERSIST_VALUE_FLAGS(m_ePDBMonitoringMode,_T("PDBMonitoringMode"),eFileMonitoringMode_AutoReload,PF_NORMAL|PF_OPTIONAL)
+        PERSIST_VALUE_FLAGS(m_eSourceMonitoringMode,_T("SourceMonitoringMode"),eFileMonitoringMode_AutoReload,PF_NORMAL|PF_OPTIONAL)
     END_PERSIST_MAP();
 
     DECLARE_CONFIG_FILE_MEDIA();

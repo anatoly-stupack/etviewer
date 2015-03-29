@@ -1,8 +1,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewer", "ETViewer.vcxproj", "{62BB54A2-DFF8-49AC-830A-A49E8F44C308}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewer_gtest", "UnitTests\ETViewer_gtest\ETViewer_gtest.vcxproj", "{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoogleTestLib", "UnitTests\GoogleTest\GoogleTestLib.vcxproj", "{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +24,22 @@ Global
 		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release_XP|Win32.Build.0 = Release_XP|Win32
 		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release|Win32.ActiveCfg = Release|Win32
 		{62BB54A2-DFF8-49AC-830A-A49E8F44C308}.Release|Win32.Build.0 = Release|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Debug_XP|Win32.ActiveCfg = Debug_XP|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Debug_XP|Win32.Build.0 = Debug_XP|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Debug|Win32.Build.0 = Debug|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Release_XP|Win32.ActiveCfg = Release_XP|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Release_XP|Win32.Build.0 = Release_XP|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Release|Win32.ActiveCfg = Release|Win32
+		{82ABA2DA-BE9C-4399-AE5B-1B466B0A84A4}.Release|Win32.Build.0 = Release|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Debug_XP|Win32.ActiveCfg = Debug_XP|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Debug_XP|Win32.Build.0 = Debug_XP|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Debug|Win32.Build.0 = Debug|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Release_XP|Win32.ActiveCfg = Release_XP|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Release_XP|Win32.Build.0 = Release_XP|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Release|Win32.ActiveCfg = Release|Win32
+		{AE1601CB-B6A6-4349-B416-DFC7E3C99B0A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

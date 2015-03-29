@@ -37,6 +37,7 @@ protected: // Crear sólo a partir de serialización
     HICON		m_hPlayBlockedIcon;
     HICON		m_hRecordIcon;
     HICON		m_hPauseIcon;
+    HICON       m_hModuleIcon;
     HICON		m_hLevelIcon;
     HICON		m_hFlagsIcon;
     HICON		m_hCheckedIcon;
@@ -47,6 +48,7 @@ protected: // Crear sólo a partir de serialización
     int		m_iPlayBlockedIcon;
     int		m_iRecordIcon;
     int		m_iPauseIcon;
+    int     m_iModuleIcon;
     int		m_iLevelIcon;
     int		m_iFlagsIcon;
     int		m_iCheckedIcon;
