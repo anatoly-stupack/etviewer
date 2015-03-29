@@ -423,7 +423,7 @@ LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
 IDR_MAINFRAME           ICON                    "res\\ETViewer.ico"
 IDI_ETL_ICON            ICON                    "res\\idr_main.ico"
 IDR_ETViewerTYPE        ICON                    "res\\ETViewerDoc.ico"
-IDI_CLEAR_SELECTED_EVENTS ICON                  "res\\icon6.ico"
+IDI_CLEAR_SELECTED_EVENTS ICON                    "res\\icon6.ico"
 IDI_CLEAR_EVENTS        ICON                    "res\\icon5.ico"
 IDI_CAPTURE_STOP        ICON                    "res\\icon4.ico"
 IDI_CAPTURE_START       ICON                    "res\\icon3.ico"
@@ -445,9 +445,9 @@ IDI_MODULE              ICON                    "res\\modules.ico"
 IDI_LEVEL               ICON                    "res\\level.ico"
 IDI_SELECTED            ICON                    "res\\selected.ico"
 IDI_SAVE                ICON                    "res\\icon7.ico"
-IDI_SHOW_HIGHLIGHT_PANEL ICON                   "res\\ShowHighLightPanel.ico"
-IDI_SHOW_HIGHLIGHT_PANEL1 ICON                  "res\\show_hig.ico"
-IDI_SHOW_HIGHLIGHT_PANEL2 ICON                  "res\\ico00005.ico"
+IDI_SHOW_HIGHLIGHT_PANEL ICON                    "res\\ShowHighLightPanel.ico"
+IDI_SHOW_HIGHLIGHT_PANEL1 ICON                    "res\\show_hig.ico"
+IDI_SHOW_HIGHLIGHT_PANEL2 ICON                    "res\\ico00005.ico"
 IDI_PLAY_BLOCKED        ICON                    "res\\playblocked.ico"
 IDI_RECORD              ICON                    "res\\record.ico"
 
@@ -692,8 +692,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,0,0
- PRODUCTVERSION 0,9,0,0
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -710,12 +710,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Javier Martín García"
             VALUE "FileDescription", "Event Tracing Viewer"
-            VALUE "FileVersion", "0, 9, 0, 0"
+            VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "ETViewer"
             VALUE "LegalCopyright", "Javier Martín García.  "
             VALUE "OriginalFilename", "ETViewer.exe"
             VALUE "ProductName", "ETViewer"
-            VALUE "ProductVersion", "0, 9, 0, 0"
+            VALUE "ProductVersion", "1.0.0.0"
         END
     END
     BLOCK "VarFileInfo"

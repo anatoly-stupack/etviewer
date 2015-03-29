@@ -283,6 +283,9 @@
     <Image Include="res\unchecked.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\modules.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ETViewer.rc">
