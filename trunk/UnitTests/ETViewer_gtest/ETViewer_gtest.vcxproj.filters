@@ -31,5 +31,14 @@
     <ClCompile Include="Persistency_gtest.cpp">
       <Filter>Unit Tests</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ETViewer\Persistency\ConfigFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ETViewer\Persistency\Persistency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ETViewer\Persistency\PersistentTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

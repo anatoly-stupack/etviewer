@@ -36,8 +36,9 @@ class CSourceFileViewer : public CDialog, public CFindDialogClient
 {
     DWORD				m_OldEditProc;
     HFONT				m_hFileFont;
-    TCHAR				*m_pFileBuffer;
-    TCHAR				*m_pFileBufferUpper;
+    CHAR				*m_pFileBuffer;
+    CHAR				*m_pFileBufferUpper;
+    TCHAR               *m_pFileBufferWide;
     DWORD				m_FileBufferLength;
 
     TCHAR m_SourceFile[MAX_PATH];

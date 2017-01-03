@@ -383,8 +383,8 @@ void CETViewerView::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 
         TCHAR text[1024];
         GetListCtrl().GetItemText(pActivate->iItem,0,text,1024);
-        unsigned lenght=(unsigned)_tcslen(text);
-        if(index>=lenght){index=(lenght-1);}
+        unsigned length=(unsigned)_tcslen(text);
+        if(index>=length){index=(length-1);}
 
         m_iEditSubItem=pActivate->iSubItem;
         GetListCtrl().EditLabel(pActivate->iItem);
@@ -567,7 +567,7 @@ TCHAR *CETViewerView::GetTraceText(SETViewerTrace *pTrace,CColumnInfo *pColumn,T
         _stprintf_s(pAuxBuffer, nAuxLen, _T("%f"), ((double)pTrace->trace.timeStamp.QuadPart) / 10000000.0);
         break;	
     case eETViewerColumn_Source:
-        _stprintf_s(pAuxBuffer, nAuxLen, _T("%s(%d)"), pTrace->trace.sSource.c_str(), pTrace->trace.dwLine);
+        _stprintf_s(pAuxBuffer, nAuxLen, _T("%s(%d)"), pTrace->trace.sSourceFile.c_str(), pTrace->trace.dwLine);
         break;
     case eETViewerColumn_Index:
         _stprintf_s(pAuxBuffer, nAuxLen, _T("%d "), pTrace->trace.dwSequenceIndex);
@@ -1232,7 +1232,7 @@ void CETViewerView::ProcessUnknownTrace(STraceEvenTracingNormalizedData *pTraceD
     WCHAR CLSID[100]={0};
     StringFromGUID2(pTraceData->sourceFileGUID,CLSID,sizeof(CLSID)/2);
 
-    _stprintf_s(sText,_T("Unknown Trace, Missing provider? Please load the correct PDB file. Source GUID %ws, Source Index %d"),CLSID,pTraceData->sourceTraceIndex);
+    _stprintf_s(sText,_T("Unknown Trace, Source GUID %ws, Source Index %d"),CLSID,pTraceData->sourceTraceIndex);
 
     SETViewerTrace *pTrace=new SETViewerTrace;
     pTrace->trace=*pTraceData;
@@ -1325,14 +1325,14 @@ void CETViewerView::OnBeginEdit(NMHDR *pNMHDR, LRESULT *pResult)
     GetListCtrl().GetSubItemRect(iItem,iSubItem,LVIR_LABEL,labelRect);
     GetListCtrl().GetClientRect(&clientRect);
     GetListCtrl().GetItemText(iItem,iSubItem,text,1024);
-    int lenght=(int)_tcslen(text);
+    int length=(int)_tcslen(text);
 
     RECT singleCharRect={0,0,1,1};
     RECT textRect={0,0,1,1};
     HDC dc=::GetDC(m_hWnd);
     ::SelectObject(dc,m_pTraceFont->m_hObject);
     ::DrawText(dc,_T("A"),1,&singleCharRect,DT_SINGLELINE|DT_CALCRECT);
-    ::DrawText(dc,text,lenght,&textRect,DT_SINGLELINE|DT_CALCRECT);
+    ::DrawText(dc,text,length,&textRect,DT_SINGLELINE|DT_CALCRECT);
     ::ReleaseDC(m_hWnd,dc);
 
     int textSize=(textRect.right-textRect.left)+6;
@@ -1358,7 +1358,7 @@ void CETViewerView::OnBeginEdit(NMHDR *pNMHDR, LRESULT *pResult)
 
     int offset=labelRect.left<0?-labelRect.left:0;
     int index=(offset)/(singleCharRect.right-singleCharRect.left);
-    if(index>=lenght){index=(lenght-1);}
+    if(index>=length){index=(length-1);}
 
     m_pEdit->PostMessage(EM_SETSEL,0,0);
     m_pEdit->PostMessage(EM_SETSEL,index,index);

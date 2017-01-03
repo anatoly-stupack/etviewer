@@ -126,6 +126,21 @@ BOOL CETViewerApp::InitInstance()
         }
     }
 
+    //If UAC is enabled we need to open up some messages so drag and drop will work if we are admin and explorer isn't
+
+    typedef BOOL(WINAPI *PFN_CHANGEWINDOWMESSAGEFILTER) (UINT, DWORD);
+    HMODULE hUser32 = GetModuleHandle(_T("user32.dll"));
+    if (0 != hUser32)
+    {
+        PFN_CHANGEWINDOWMESSAGEFILTER pfnChangeWindowMessageFilter = (PFN_CHANGEWINDOWMESSAGEFILTER) ::GetProcAddress(hUser32, "ChangeWindowMessageFilter");
+        if (pfnChangeWindowMessageFilter)
+        {
+            (*pfnChangeWindowMessageFilter)(WM_DROPFILES, MSGFLT_ADD);
+            (*pfnChangeWindowMessageFilter)(WM_COPYDATA, MSGFLT_ADD);
+            (*pfnChangeWindowMessageFilter)(0x0049, MSGFLT_ADD);
+        }
+    }
+
     // If this is not the first instance, send the command line files to
     // to the first instance, this way, a user can double click an element
     // on a folder to add it to ETViewer.
@@ -277,7 +292,7 @@ BOOL CETViewerApp::ProcessCommandLine(int argc,TCHAR **argw)
         else if (_tcscmp(sTemp, _T("-H")) == 0 ||
                  _tcscmp(sTemp, _T("/H")) == 0)
         {
-            MessageBox(NULL,_T("ETViewer v0.9\n\n") 
+            MessageBox(NULL,_T("ETViewer v1.1\n\n") 
                             _T("Command line options:\n\n")
                             _T("  -v   Show version\n")
                             _T("  -h   Show this help\n")

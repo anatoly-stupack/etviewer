@@ -116,7 +116,7 @@ public:
 
     CHightLightFilter()
     {
-        m_Text[0]=0;
+        m_Text.clear();
         m_bEnabled=true;
         m_dwTextLen=0;
         m_hPen=NULL;
@@ -151,7 +151,7 @@ public:
 
     BEGIN_PERSIST_MAP(CHightLightFilter)
         PERSIST(m_Text,      _T("Text"))
-        PERSIST(m_dwTextLen, _T("TextLenght"))
+        PERSIST(m_dwTextLen, _T("TextLength"))
         PERSIST(m_TextColor, _T("TextColor"))
         PERSIST(m_BkColor,   _T("BkColor"))
         PERSIST(m_bEnabled,  _T("Enabled"))

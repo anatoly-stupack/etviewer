@@ -50,7 +50,8 @@ struct STraceEvenTracingNormalizedData
     // Only available when formatted.
 
     std::tstring    sText;
-    std::tstring	sSource;
+    std::tstring    sSource;
+    std::tstring    sSourceFile;
     std::tstring    sFunction;
     std::tstring    sComponent;
     std::tstring    sLevel;

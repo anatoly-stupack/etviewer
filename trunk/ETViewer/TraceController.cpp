@@ -267,7 +267,11 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData *pData)
             pCurrentParam+=sizeof(LARGE_INTEGER);
             currentLen += _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, qValue);
             break;
-
+        case eTraceFormatElementType_Unknown:
+            qValue=*(LARGE_INTEGER*)pCurrentParam;
+            pCurrentParam+=sizeof(LARGE_INTEGER);
+            currentLen += _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, qValue);
+            break;
         case eTraceFormatElementType_AnsiString:
             {
                 DWORD dwBytes = _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, pCurrentParam);
@@ -295,7 +299,8 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData *pData)
     pData->bFormatted=true;
     pData->dwLine=pFormatEntry->m_dwLine;
     pData->sText=sTraceText;
-    pData->sSource=pSourceFile->GetFileName();
+    pData->sSource=pSourceFile->GetFileNameWithPath();
+    pData->sSourceFile=pSourceFile->GetFileName();
     pData->sComponent=pSourceFile->GetProvider()->GetComponentName();
     pData->sFunction=pFormatEntry->m_sFunction;
     pData->sLevel=pFormatEntry->m_sLevel;

@@ -3,9 +3,9 @@
 
 #include "stdafx.h"
 #include <gtest/gtest.h>
+#include "Persistency.h"
 
-// Tests that private members can be accessed from a TEST declared as
-// a friend of the class.
+//Need to implement tests for persistency framework
 TEST(Persistency, Save) {
     int i = 1;
     EXPECT_EQ(1, i);

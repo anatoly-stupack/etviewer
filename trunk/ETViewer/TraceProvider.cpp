@@ -76,6 +76,16 @@ eTraceFormatElementType GetElementTypeFromString(TCHAR *pString,bool b64BitPDB)
     if(_tcscmp(pString,_T("ItemULongLongXX"))==0){return eTraceFormatElementType_Quad;}
     if(_tcscmp(pString,_T("ItemPtr"))==0){return b64BitPDB?eTraceFormatElementType_QuadPointer:eTraceFormatElementType_Pointer;}
     return eTraceFormatElementType_Unknown;
+
+    /*
+    Types that could use handlers
+    ItemIPAddr
+    ItemPort
+    ItemNTSTATUS
+    ItemWINERROR
+    ItemHRESULT
+    ItemNDIS_STATUS
+    */
 }
 
 STraceFormatEntry::STraceFormatEntry()
@@ -177,6 +187,16 @@ void STraceFormatEntry::InitializeFromBuffer(TCHAR *pBuffer)
                             delete [] pOld;
                         }
                     }
+                    if(element.eType==eTraceFormatElementType_Unknown) 
+                    {
+                        if(element.pFormatString[tempLen-1]==_T('s'))
+                        {
+                            TCHAR *pOld=element.pFormatString;
+                            element.pFormatString=new TCHAR [8+1];
+                            _tcscpy_s(element.pFormatString,9,_T("(0x%08x)"));
+                            delete [] pOld;
+                        }
+                    }
                 }
 
                 m_vElements.push_back(element);
@@ -223,7 +243,8 @@ CTraceSourceFile::CTraceSourceFile(GUID sourceFileGUID, const TCHAR *pSourceFile
 {
     m_pProvider=NULL;
     m_SourceFileGUID=sourceFileGUID;
-    _tcscpy_s(m_SourceFileName,pSourceFile);
+    _tcscpy_s(m_SourceFileNameWithPath, pSourceFile);
+    m_SourceFileName = _tcsrchr(m_SourceFileNameWithPath, _T('\\'))+1;
 }
 
 CTraceSourceFile::~CTraceSourceFile(void)
@@ -238,6 +259,11 @@ GUID CTraceSourceFile::GetGUID()
 tstring CTraceSourceFile::GetFileName()
 {
     return m_SourceFileName;
+}
+
+tstring CTraceSourceFile::GetFileNameWithPath()
+{
+    return m_SourceFileNameWithPath;
 }
 
 CTraceProvider* CTraceSourceFile::GetProvider()
@@ -594,7 +620,7 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB,vector<CTraceProvide
                 continue;
             }
 
-            pSourceFile=new CTraceSourceFile(pSourceFileTemplate->GetGUID(),pSourceFileTemplate->GetFileName().c_str());
+            pSourceFile=new CTraceSourceFile(pSourceFileTemplate->GetGUID(),pSourceFileTemplate->GetFileNameWithPath().c_str());
             pFormatEntry->m_pProvider->AddSourceFile(pSourceFile);
             pSourceFile->SetProvider(pFormatEntry->m_pProvider);
         }

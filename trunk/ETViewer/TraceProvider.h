@@ -129,7 +129,8 @@ class CTraceProvider;
 class CTraceSourceFile
 {
     GUID	m_SourceFileGUID;
-    TCHAR	m_SourceFileName[MAX_PATH];
+    LPCTSTR	m_SourceFileName;
+    TCHAR	m_SourceFileNameWithPath[MAX_PATH];
 
     CTraceProvider *m_pProvider;
 
@@ -137,6 +138,8 @@ public:
 
     GUID			GetGUID();
     std::tstring	GetFileName();
+    std::tstring    GetFileNameWithPath();
+
     CTraceProvider *GetProvider();
     void			SetProvider(CTraceProvider *pProvider);
 

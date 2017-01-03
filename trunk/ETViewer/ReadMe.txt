@@ -5,6 +5,14 @@ VERSION HISTORY
 			
 ----------------------
 ----------------------
+Version 1.1:
+- Converted project to VS2015 with v140_XP and v140 toolsets
+- Fixed bug with loading source files for viewing
+- Made it so you can still drop .pdb files when running as admin when UAC is enabled
+- Shortened the source file name field so you can see the filename
+- Made it so special formatters (like !HRESULT!) will show their value
+- Added trace example application that generates trace messages
+- Moved around some of the folders and made it so everything builds to a bin folder that starts at the solution root
 
 Version 1.0:
 - Converted project to VS2013 with v120_XP and v120 toolsets

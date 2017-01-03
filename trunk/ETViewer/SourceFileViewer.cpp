@@ -23,23 +23,24 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <string.h>
 #include "ETViewer.h"
 #include "SourceFileViewer.h"
 #include "SourceFileContainer.h"
 
 #define TAB_SIZE 4
 
-TCHAR *g_pKeywords[]={
-                        /*C++ Keywords*/			_T("asm1"),_T("auto"),_T("bad_cast"),_T("bad_typeid"),_T("bool"),_T("break"),_T("case"),_T("catch"),_T("TCHAR"),_T("class"),_T("const"),_T("const_cast"),_T("continue"),_T("default"),_T("delete"),_T("do"),_T("double"),_T("dynamic_cast"),_T("else"),_T("enum"),_T("except"),_T("explicit"),_T("extern"),_T("false"),_T("finally"),_T("float"),_T("for"),_T("friend"),_T("goto"),_T("if"),_T("inline"),_T("int"),_T("long"),_T("mutable"),_T("namespace"),_T("new"),_T("operator"),_T("private"),_T("protected"),_T("public"),_T("register"),_T("reinterpret_cast"),_T("return"),_T("short"),_T("signed"),_T("sizeof"),_T("static"),_T("static_cast"),_T("struct"),_T("switch"),_T("template"),_T("this"),_T("throw"),_T("true"),_T("try"),_T("type_info"),_T("typedef"),_T("typeid"),_T("typename"),_T("union"),_T("unsigned"),_T("using"),_T("virtual"),_T("void"),_T("volatile"),_T("while"),
-                        /*Preprocessor Directives*/	_T("#define"),_T("#error"),_T("#import"),_T("#undef"),_T("#elif"),_T("#if"),_T("#include"),_T("#else"),_T("#ifdef"),_T("#line"),_T("#endif"),_T("#ifndef"),_T("#pragma"),
-                                                    _T("BOOL"),_T("HANDLE"),_T("DWORD"),_T("FALSE"),_T("TRUE"),_T("boolean"),_T("LRESULT"),_T("hyper"),_T("BYTE"),_T("LONG"),_T("ULONG"),_T("UINT"),_T("UIN16"),_T("set"),_T("map"),_T("list"),_T("deque"),_T("vector"),_T("BEGIN_DBTABLE"),_T("DBTABLE_COMP"),_T("END_DBTABLE"),_T("BEGIN_COM_MAP"),_T("COM_INTERFACE_ENTRY"),_T("COM_INTERFACE_ENTRY_CHAIN"),_T("END_COM_MAP"),_T("DECLARE_GUIOBJECT"),_T("DECLARE_PPAGE"),_T("DECLARE_COMPOSITE"),_T("BEGIN_MSG_MAP"),_T("CHAIN_MSG_MAP"),_T("MESSAGE_HANDLER"),_T("COMMAND_HANDLER"),
-                                                    _T("COMMAND_ID_HANDLER"),_T("COMMAND_CODE_HANDLER"),_T("COMMAND_RANGE_HANDLER"),_T("NOTIFY_HANDLER"),_T("NOTIFY_ID_HANDLER"),_T("NOTIFY_CODE_HANDLER"),_T("NOTIFY_RANGE_HANDLER"),_T("END_MSG_MAP"),_T("VAA2W"),_T("VAW2A"),_T("_CSA2W"),_T("_GRS"),_T("LS"),_T("NULL"),_T("CLSID_NULL"),_T("GUID_NULL"),_T("IID_NULL"),_T("SUCCEEDED"),_T("FAILED"),_T("VA_SLAVE_DB"),_T("VA_MASTER_DB"),
+CHAR *g_pKeywords[]={
+                        /*C++ Keywords*/			"asm1","auto","bad_cast","bad_typeid","bool","break","case","catch","TCHAR","class","const","const_cast","continue","default","delete","do","double","dynamic_cast","else","enum","except","explicit","extern","false","finally","float","for","friend","goto","if","inline","int","long","mutable","namespace","new","operator","private","protected","public","register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this","throw","true","try","type_info","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","while",
+                        /*Preprocessor Directives*/	"#define","#error","#import","#undef","#elif","#if","#include","#else","#ifdef","#line","#endif","#ifndef","#pragma",
+                                                    "BOOL","HANDLE","DWORD","FALSE","TRUE","boolean","LRESULT","hyper","BYTE","LONG","ULONG","UINT","UIN16","set","map","list","deque","vector","BEGIN_DBTABLE","DBTABLE_COMP","END_DBTABLE","BEGIN_COM_MAP","COM_INTERFACE_ENTRY","COM_INTERFACE_ENTRY_CHAIN","END_COM_MAP","DECLARE_GUIOBJECT","DECLARE_PPAGE","DECLARE_COMPOSITE","BEGIN_MSG_MAP","CHAIN_MSG_MAP","MESSAGE_HANDLER","COMMAND_HANDLER",
+                                                    "COMMAND_ID_HANDLER","COMMAND_CODE_HANDLER","COMMAND_RANGE_HANDLER","NOTIFY_HANDLER","NOTIFY_ID_HANDLER","NOTIFY_CODE_HANDLER","NOTIFY_RANGE_HANDLER","END_MSG_MAP","VAA2W","VAW2A","_CSA2W","_GRS","LS","NULL","CLSID_NULL","GUID_NULL","IID_NULL","SUCCEEDED","FAILED","VA_SLAVE_DB","VA_MASTER_DB",
                         NULL};
 
 
 
 
-TCHAR *g_Separators={_T(" ,.:;'\\\"+-*/%=!?¿<>[](){}\t\n\r&|~^")};
+CHAR *g_Separators={" ,.:;'\\\"+-*/%=!?¿<>[](){}\t\n\r&|~^"};
 
 /////////////////////////////////////////////////////////////////////////////
 // CSourceFileViewer dialog
@@ -140,14 +141,16 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
         DWORD bytesRead=0;
         m_FileBufferLength=GetFileSize(hFile,NULL);
 
-        TCHAR  *pReadedBuffer=new TCHAR[m_FileBufferLength+1000];
-        DWORD *pKeywordLenght=new DWORD [1000];
-        m_pFileBuffer=new TCHAR [m_FileBufferLength*TAB_SIZE+100];
-        m_pFileBufferUpper=new TCHAR [m_FileBufferLength*TAB_SIZE+100];
+        CHAR  *pReadedBuffer=new CHAR[m_FileBufferLength+1000];
+        DWORD *pKeywordLength=new DWORD [1000];
+        m_pFileBuffer=new CHAR [m_FileBufferLength*TAB_SIZE+100];
+        m_pFileBufferUpper=new CHAR [m_FileBufferLength*TAB_SIZE+100];
+        m_pFileBufferWide=new TCHAR [m_FileBufferLength*TAB_SIZE+100];
+        ZeroMemory(m_pFileBufferWide, (m_FileBufferLength*TAB_SIZE+100)*sizeof(TCHAR));
         if(m_pFileBuffer && m_pFileBufferUpper)
         { 
             unsigned x=0,y=0;
-            while(g_pKeywords[x]!=NULL){pKeywordLenght[x]=(int)_tcslen(g_pKeywords[x]);x++;}
+            while(g_pKeywords[x]!=NULL){pKeywordLength[x]=(int)strlen(g_pKeywords[x]);x++;}
 
             if(ReadFile(hFile,pReadedBuffer,m_FileBufferLength,&bytesRead,NULL))
             {
@@ -156,45 +159,44 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
                 for(x=0;x<bytesRead;x++)
                 {
 
-                    if(pReadedBuffer[x]==_T('\t'))
+                    if(pReadedBuffer[x]=='\t')
                     {
                         int tabsToAdd=TAB_SIZE-((m_FileBufferLength-lastLineIndex)%4);
 
                         memset(m_pFileBuffer+m_FileBufferLength,' ',tabsToAdd);
                         m_FileBufferLength+=tabsToAdd;
                     }
-                    else if(pReadedBuffer[x]!=_T('\r'))
+                    else if(pReadedBuffer[x]!='\r')
                     {
                         m_pFileBuffer[m_FileBufferLength]=pReadedBuffer[x];m_FileBufferLength++;
                     }
 
-                    if(pReadedBuffer[x]==_T('\n'))
+                    if(pReadedBuffer[x]=='\n')
                     {
                         lastLineIndex=m_FileBufferLength;
                     }
                 }
                 m_pFileBuffer[m_FileBufferLength]=0;
-                _tcscpy_s(m_pFileBufferUpper,m_FileBufferLength*TAB_SIZE+100, m_pFileBuffer);
-                _tcsupr_s(m_pFileBufferUpper, m_FileBufferLength*TAB_SIZE+100);
-
-                m_EDFile.SetWindowText(m_pFileBuffer);
+                strcpy_s(m_pFileBufferUpper,m_FileBufferLength*TAB_SIZE+100, m_pFileBuffer);
+                _strupr_s(m_pFileBufferUpper, m_FileBufferLength*TAB_SIZE+100);
+                MultiByteToWideChar(CP_ACP, 0, m_pFileBuffer, m_FileBufferLength, m_pFileBufferWide, m_FileBufferLength);
+                m_EDFile.SetWindowText(m_pFileBufferWide);
                 SetRichEditTextColor(&m_EDFile,0,-1,RGB(0,0,0));
-
 
                 for(x=0;x<m_FileBufferLength;x++)
                 {
-                    TCHAR *pToken=m_pFileBuffer+x;
-                    if(_tcschr(g_Separators,m_pFileBuffer[x])==NULL && (x==0 || _tcschr(g_Separators,m_pFileBuffer[x-1])!=NULL))
+                    CHAR *pToken=m_pFileBuffer+x;
+                    if(strchr(g_Separators,m_pFileBuffer[x])==NULL && (x==0 || strchr(g_Separators,m_pFileBuffer[x-1])!=NULL))
                     {
                         DWORD offset=(DWORD)(pToken-m_pFileBuffer);
                         for(y=0;g_pKeywords[y]!=NULL;y++)
                         {
                             if(m_pFileBuffer[x]==g_pKeywords[y][0])
                             {
-                                DWORD keyLen=pKeywordLenght[y];
+                                DWORD keyLen=pKeywordLength[y];
                                 if((offset+keyLen)<=m_FileBufferLength)
                                 {
-                                    if(_tcsncmp(pToken,g_pKeywords[y],keyLen)==0 && ((offset+keyLen)==(m_FileBufferLength) ||_tcschr(g_Separators,pToken[keyLen])!=NULL))
+                                    if(strncmp(pToken,g_pKeywords[y],keyLen)==0 && ((offset+keyLen)==(m_FileBufferLength) ||strchr(g_Separators,pToken[keyLen])!=NULL))
                                     {
                                         int pos=pToken-m_pFileBuffer;
                                         SetRichEditTextColor(&m_EDFile,pos,pos+keyLen,RGB(0,0,255));
@@ -204,13 +206,13 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
                             }
                         }
                     }
-                    else if(m_pFileBuffer[x]==_T('"'))
+                    else if(m_pFileBuffer[x]=='"')
                     {
-                        TCHAR *pBase=m_pFileBuffer+x;
+                        CHAR *pBase=m_pFileBuffer+x;
                         x++;
                         while(x<m_FileBufferLength)
                         {
-                            if(m_pFileBuffer[x]==_T('"') && (x==0 || m_pFileBuffer[x-1]!=_T('\\')))
+                            if(m_pFileBuffer[x]=='"' && (x==0 || m_pFileBuffer[x-1]!='\\'))
                             {
                                 x++;
                                 break;
@@ -220,13 +222,13 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
                     }
                     else
                     {
-                        TCHAR *pBase=m_pFileBuffer+x;
-                        if(m_pFileBuffer[x]==_T('/') && m_pFileBuffer[x+1]==_T('*'))
+                        CHAR *pBase=m_pFileBuffer+x;
+                        if(m_pFileBuffer[x]=='/' && m_pFileBuffer[x+1]=='*')
                         {
                             x+=2;
                             while(x<m_FileBufferLength)
                             {
-                                if(m_pFileBuffer[x]==_T('*') && m_pFileBuffer[x+1]==_T('/'))
+                                if(m_pFileBuffer[x]=='*' && m_pFileBuffer[x+1]=='/')
                                 {
                                     x+=2;
                                     break;
@@ -236,12 +238,12 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
                             int pos=pBase-m_pFileBuffer;
                             SetRichEditTextColor(&m_EDFile,pos,x,RGB(0,128,0));
                         }
-                        if(m_pFileBuffer[x]==_T('/') && m_pFileBuffer[x+1]==_T('/'))
+                        if(m_pFileBuffer[x]=='/' && m_pFileBuffer[x+1]=='/')
                         {
                             x+=2;
                             while(x<m_FileBufferLength)
                             {
-                                if(m_pFileBuffer[x]==_T('\n'))
+                                if(m_pFileBuffer[x]=='\n')
                                 {
                                     break;
                                 }
@@ -257,7 +259,7 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfF
             }
         }
         delete [] pReadedBuffer;
-        delete [] pKeywordLenght;
+        delete [] pKeywordLength;
         if(hFile){CloseHandle(hFile);hFile=NULL;}
     }
 
@@ -313,6 +315,7 @@ void CSourceFileViewer::OnDestroy()
 
 
     delete [] m_pFileBufferUpper;
+    delete [] m_pFileBufferWide;
     delete [] m_pFileBuffer;
     
     if(m_hFileFont){DeleteObject((HGDIOBJ)m_hFileFont);}
@@ -568,12 +571,12 @@ bool CSourceFileViewer::FindAndMarkAll(const TCHAR *pText)
     return false;
 }
 
-TCHAR *strrstr(TCHAR *pBuffer,DWORD offset,TCHAR *pTextToFind)
+CHAR *strrstr(CHAR *pBuffer,DWORD offset,CHAR *pTextToFind)
 {
-    unsigned textToFindLenght=(unsigned)_tcslen(pTextToFind);
-    for(int x=(offset-textToFindLenght);x>=0;x--)
+    unsigned textToFindLength=(unsigned)strlen(pTextToFind);
+    for(int x=(offset-textToFindLength);x>=0;x--)
     {
-        if(memcmp(pBuffer+x,(TCHAR*)pTextToFind,textToFindLenght)==0)
+        if(memcmp(pBuffer+x,(TCHAR*)pTextToFind,textToFindLength)==0)
         {
             return pBuffer+x;
         }
@@ -591,11 +594,11 @@ bool CSourceFileViewer::FindNext(const TCHAR *pTextToFind)
     m_EDFile.GetSel(begin,end);
     if(begin<0){begin=0;}
 
-    TCHAR  textToFind[1024]={0};
-    TCHAR *pText=NULL,*pBufferToSearchIn=m_bMatchCaseInFind?m_pFileBuffer:m_pFileBufferUpper;
-    _tcscpy_s(textToFind,m_LastTextToFind.c_str());
-    if(!m_bMatchCaseInFind){_tcsupr_s(textToFind, 1024);}
-    unsigned textToFindLenght=(unsigned)_tcslen(textToFind);
+    CHAR  textToFind[1024]={0};
+    CHAR *pText=NULL,*pBufferToSearchIn=m_bMatchCaseInFind?m_pFileBuffer:m_pFileBufferUpper;
+    WideCharToMultiByte(CP_ACP, 0, m_LastTextToFind.c_str(), m_LastTextToFind.length(), textToFind, _countof(textToFind), 0, 0);
+    if(!m_bMatchCaseInFind){_strupr_s(textToFind, 1024);}
+    unsigned textToFindLength=(unsigned)strlen(textToFind);
 
     TCHAR *pTextFound=NULL;
     if(m_bFindDirectionUp)
@@ -606,8 +609,8 @@ bool CSourceFileViewer::FindNext(const TCHAR *pTextToFind)
     }
     else
     {
-         pText=_tcsstr(pBufferToSearchIn+end,(TCHAR*)textToFind);
-         if(pText==NULL){pText=_tcsstr(pBufferToSearchIn,(TCHAR*)textToFind);}
+         pText=strstr(pBufferToSearchIn+end,textToFind);
+         if(pText==NULL){pText=strstr(pBufferToSearchIn,textToFind);}
          begin=pText-pBufferToSearchIn;
     }
 
@@ -620,7 +623,7 @@ bool CSourceFileViewer::FindNext(const TCHAR *pTextToFind)
         sTemp+=_T(" was not found");
         pParent->MessageBox(sTemp.c_str(),_T(""),MB_OK);
     }
-    if(pText){m_EDFile.SetSel(begin,begin+textToFindLenght);}
+    if(pText){m_EDFile.SetSel(begin,begin+textToFindLength);}
     return pText!=NULL;
 }
 
