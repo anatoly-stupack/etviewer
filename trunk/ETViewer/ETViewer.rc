@@ -503,19 +503,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 298, 79
+IDD_ABOUTBOX DIALOGEX 0, 0, 305, 71
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About ETViewer"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,12,12,20,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,12,12,21,20
     LTEXT           "ETViewer Version 1.2",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Javier Martín García.  ",IDC_STATIC,40,25,69,8
-    DEFPUSHBUTTON   "Ok",IDOK,241,7,50,16,WS_GROUP
-    RTEXT           "Feature requests or bug reports :",IDC_STATIC,22,58,110,8,SS_NOPREFIX
-    RTEXT           "Contact:",IDC_STATIC,22,47,110,8,SS_NOPREFIX
-    LTEXT           "etviewer@gmail.com",IDC_STATIC,141,47,134,8,SS_NOPREFIX
-    LTEXT           "http://etviewer.codeplex.com/",IDC_STATIC,141,58,134,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "Ok",IDOK,248,7,50,16,WS_GROUP
+    RTEXT           "Feature requests or bug reports :",IDC_STATIC,22,49,110,8,SS_NOPREFIX
+    LTEXT           "https://github.com/anatoly-stupack/etviewer",IDC_STATIC,141,49,147,8,SS_NOPREFIX
 END
 
 IDD_MAIN_DIALOG_BAR DIALOGEX 0, 0, 301, 16
@@ -591,9 +589,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 291
+        RIGHTMARGIN, 298
         TOPMARGIN, 7
-        BOTTOMMARGIN, 72
+        BOTTOMMARGIN, 64
     END
 
     IDD_MAIN_DIALOG_BAR, DIALOG
