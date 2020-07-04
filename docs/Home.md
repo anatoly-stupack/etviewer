@@ -4,9 +4,16 @@ After dealing for some time with TraceView, the only avaible tool for ETW / WPP 
 
 ETViewer is that tool, it is still under development but is fully funcional. In some way is a TraceView/DebugView combination. 
 
-ETViewer latest version is 1.1. 
+ETViewer latest version is 1.2. 
+
 ## System Requirements
-Windows XP: Whenever possible, the lastest dbghelp.dll available from "Debugging Tools for Windows" package.
+Windows 7 and later
+
+## New in Version 1.2
+* Converted project to VS2019 with v142 toolsets
+* Fix version information in About dialog and resources
+* Fix contact information in About dialog
+* Fix test tool build
 
 ## New in Version 1.1
 * Converted project to VS2015 with v140_XP and v140 toolsets
@@ -64,13 +71,9 @@ Other features
 * Export to text file.
 * File association support (optional).
 
-Tested platforms
+Supported platforms
 
-* Windows XP 32 Bits
-* Windows 2003 32 Bits
-* Windows Vista 32 Bits
-* Windows 7 64 Bits
-* W2K not yet supported.
+* Windows 7 and above
 
 ![](Home_SourceSample.jpg)
 

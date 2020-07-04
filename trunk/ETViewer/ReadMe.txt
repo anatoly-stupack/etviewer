@@ -1,10 +1,21 @@
 ----------------------
 ----------------------
-			
+
 VERSION HISTORY
+
+----------------------
+----------------------
+
+Version 1.2:
+- Converted project to VS2019 with v142 toolset
+- Fix version information in About dialog and Resources
+- Fix contact information in About dialog
+- Fix test tool build
+
+-----------------------------------------
+Forked from ETViewer v1.1 7/4/2020
+-----------------------------------------
 			
-----------------------
-----------------------
 Version 1.1:
 - Converted project to VS2015 with v140_XP and v140 toolsets
 - Fixed bug with loading source files for viewing
