@@ -15,6 +15,6 @@ xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <Target Name="TraceWpp" BeforeTargets="ClCompile" Inputs="@(TraceWppSources)" Outputs="@(TraceWppSources -> '%(Filename).tmh')">
         <Message Text="Generating .tmh file" />
         <Exec Command="cd $(ProjectDir)" />
-        <Exec Command="&quot;$(FrameworkSDKDir)bin\x86\tracewpp.exe&quot; -cfgdir:$(SolutionDir)WppDDKFiles\rev1 -odir:. @(TraceWppSources, ' ')" />
+        <Exec Command="$(SolutionDir)WppDDKFiles\tracewpp.exe -cfgdir:$(SolutionDir)WppDDKFiles\rev1 -odir:. @(TraceWppSources, ' ')" />
     </Target>
 </Project>
