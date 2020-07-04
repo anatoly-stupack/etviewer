@@ -38,7 +38,7 @@ Windows 7 and later
 * Configurable source file search paths.
 * Settings dialog.
  
-![](Home_HighlightSample.jpg)
+![](docs/HighlightSample.jpg)
 Trace highlight snapshot
 
 ## Features
@@ -75,6 +75,6 @@ Supported platforms
 
 * Windows 7 and above
 
-![](Home_SourceSample.jpg)
+![](docs/SourceSample.jpg)
 
 Source file viewer snapshot
