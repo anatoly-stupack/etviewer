@@ -21,6 +21,8 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
+
+#include "stdafx.h"
 #include <io.h>
 #include ".\Persistency.h"
 #include ".\configfile.h"
