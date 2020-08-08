@@ -704,7 +704,7 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "0c0a04e4"
+        BLOCK "040904E4"
         BEGIN
             VALUE "CompanyName", "Javier Martín García"
             VALUE "FileDescription", "Event Tracing Viewer"
@@ -718,7 +718,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0xc0a, 1252
+        VALUE "Translation", 0x409, 1252
     END
 END
 
