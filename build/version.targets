@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Version Condition="$(Version) == '1.0.0.0'">1.2.2008.1000</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <CoreCppClean Include="@(CoreCppClean);$(ProjectDir)">
+            <FilePatternsToDelete>version.h</FilePatternsToDelete>
+        </CoreCppClean>
+    </ItemGroup>
+    <ItemGroup>
+        <VersioningSources Include="@(ResourceCompile)"/>
+    </ItemGroup>
+    <Target Name="Versioning" BeforeTargets="ResourceCompile" Inputs="@(VersioningSources)" Outputs="version.h">
+        <Message Text="Generating version.h file for version $(Version)" />
+        <Exec Command="cd $(ProjectDir)" />
+        <Exec Command="echo #define VERSION $([System.String]::Copy('$(Version)').Replace('.', ',')) >> version.h" />
+        <Exec Command="echo #define VERSION_STR &quot;$(Version)&quot; >> version.h" />
+    </Target>
+</Project>

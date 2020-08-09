@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -509,7 +510,8 @@ CAPTION "About ETViewer"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,12,12,21,20
-    LTEXT           "ETViewer Version 1.2",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "ETViewer Version:",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+	LTEXT           VERSION_STR,IDC_STATIC,100,10,119,8,SS_NOPREFIX
     LTEXT           "Javier Martín García.  ",IDC_STATIC,40,25,69,8
     DEFPUSHBUTTON   "Ok",IDOK,248,7,50,16,WS_GROUP
     RTEXT           "Feature requests or bug reports :",IDC_STATIC,22,49,110,8,SS_NOPREFIX
@@ -690,8 +692,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,0,0
- PRODUCTVERSION 1,2,0,0
+ FILEVERSION VERSION
+ PRODUCTVERSION VERSION
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -708,12 +710,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Javier Martín García"
             VALUE "FileDescription", "Event Tracing Viewer"
-            VALUE "FileVersion", "1.2.0.0"
+            VALUE "FileVersion", VERSION_STR
             VALUE "InternalName", "ETViewer"
             VALUE "LegalCopyright", "Javier Martín García.  "
             VALUE "OriginalFilename", "ETViewer.exe"
             VALUE "ProductName", "ETViewer"
-            VALUE "ProductVersion", "1.2.0.0"
+            VALUE "ProductVersion", VERSION_STR
         END
     END
     BLOCK "VarFileInfo"

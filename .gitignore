@@ -354,3 +354,6 @@ MigrationBackup/
 
 #Trace Message Header files
 *.tmh
+
+# Generated version
+version.h

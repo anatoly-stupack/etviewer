@@ -233,6 +233,7 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+	<Import Project="$(SolutionDir)..\build\version.targets" />
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
