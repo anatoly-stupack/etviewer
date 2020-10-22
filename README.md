@@ -1,5 +1,7 @@
 ## Description
 
+[![Build Status](https://dev.azure.com/anatoly-stupack/ETViewer/_apis/build/status/anatoly-stupack.etviewer?branchName=master)](https://dev.azure.com/anatoly-stupack/ETViewer/_build/latest?definitionId=1&branchName=master)
+
 After dealing for some time with TraceView, the only avaible tool for ETW / WPP tracing, I decided to create a really easy to use tool to view my kernel mode and user mode traces. 
 
 ETViewer is that tool, it is still under development but is fully funcional. In some way is a TraceView/DebugView combination. 
