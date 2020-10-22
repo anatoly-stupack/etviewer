@@ -9,6 +9,21 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'x86'
+  buildConfiguration: 'Release'
+
 steps:
-- script: build\build.cmd
-  displayName: 'Run build script'
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    platform: 'x86'
+    solution: '$(solution)'
+    configuration: '$(buildConfiguration)'
+
