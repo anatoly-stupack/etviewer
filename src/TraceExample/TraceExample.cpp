@@ -26,6 +26,7 @@ int _tmain()
 
 	DoTraceMessage(TRACE_DEBUG, L"Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, L"Test narrow string message %s", "string");
+	DoTraceMessage(TRACE_DEBUG, L"Test 2 narrow strings %s %s", "string 1", "string 2");
 
 	DoTraceMessage(TRACE_DEBUG, L"Test special type PORT %!PORT!", 1);
 	DoTraceMessage(TRACE_DEBUG, L"Test special type STATUS %!STATUS!", 1);
@@ -46,6 +47,7 @@ int _tmain()
 
 	DoTraceMessage(TRACE_DEBUG, "Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, "Test narrow string message %s", "string");
+	DoTraceMessage(TRACE_DEBUG, "Test 2 narrow strings %s %s", "string 1", "string 2");
 
 	DoTraceMessage(TRACE_DEBUG, "Test special type PORT %!PORT!", 1);
 	DoTraceMessage(TRACE_DEBUG, "Test special type STATUS %!STATUS!", 1);

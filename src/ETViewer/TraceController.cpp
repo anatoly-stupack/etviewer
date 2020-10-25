@@ -275,9 +275,10 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData *pData)
             break;
         case eTraceFormatElementType_AnsiString:
             {
-                DWORD dwBytes = _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, pCurrentParam);
+                _stprintf_s(pTempBuffer, _countof(sTraceText), _T("%S"), pCurrentParam);
+                DWORD dwBytes = _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, pTempBuffer);
                 currentLen+=dwBytes;
-                pCurrentParam+=_tcslen((TCHAR*)pCurrentParam)+1;
+                pCurrentParam+=strlen((CHAR*)pCurrentParam)+1;
             }
             break;
         case eTraceFormatElementType_WideString:
