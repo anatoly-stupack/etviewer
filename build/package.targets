@@ -18,14 +18,16 @@
     <ZipDirectory
        SourceDirectory="$(IntDir)package\bin"
        DestinationFile="$(OutDir)$(BinPackageName)"
+       Overwrite="true"
     />
     <Copy
-      SourceFiles="@(PackageFiles)"
+      SourceFiles="@(SymbolFiles)"
       DestinationFolder="$(IntDir)package\pdb"
     />
     <ZipDirectory
        SourceDirectory="$(IntDir)package\pdb"
        DestinationFile="$(OutDir)$(PdbPackageName)"
+       Overwrite="true"
     />
   </Target>
 </Project>
