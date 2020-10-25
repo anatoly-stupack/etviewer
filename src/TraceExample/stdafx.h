@@ -10,4 +10,7 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include <windows.h>
+#include <winternl.h>
+
 // TODO: reference additional headers your program requires here

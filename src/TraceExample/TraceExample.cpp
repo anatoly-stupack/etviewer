@@ -4,27 +4,51 @@
 
 int _tmain()
 {
-    WPP_INIT_TRACING( L"TraceExample" );
+	WPP_INIT_TRACING(L"TraceExample");
 
-    DoTraceMessage(TRACE_DEBUG, L"=============================================");
-    DoTraceMessage(TRACE_DEBUG, L" Welcome to Etviewer Test application");
-    DoTraceMessage(TRACE_DEBUG, L"=============================================");
+	wchar_t* string = L"test string";
+	UNICODE_STRING unicodeString = { 0 };
+	RtlInitUnicodeString(&unicodeString, string);
 
-    DoTraceMessage(TRACE_DEBUG, L"Test int %d", 12345);
-    DoTraceMessage(TRACE_DEBUG, L"Test hex 0x%x", 0xABCD123);
+	DoTraceMessage(TRACE_DEBUG, "=============================================");
+	DoTraceMessage(TRACE_DEBUG, " Welcome to Etviewer Test application");
+	DoTraceMessage(TRACE_DEBUG, "=============================================");
 
-    DoTraceMessage(TRACE_DEBUG, L"Test wide string message %ws", L"string");
-    DoTraceMessage(TRACE_DEBUG, L"Test narrow string message %s", "string");
+	DoTraceMessage(TRACE_DEBUG, "------- Wide string formatting tests --------");
+	DoTraceMessage(TRACE_DEBUG, L"Test int %d", 12345);
+	DoTraceMessage(TRACE_DEBUG, L"Test hex 0x%x", 0xABCD123);
+	DoTraceMessage(TRACE_DEBUG, L"Test qword %I64d", 12345);
+	DoTraceMessage(TRACE_DEBUG, L"Test qword 0x%I64X", 0xABCD123);
 
-    DoTraceMessage(TRACE_DEBUG, L"This is a number %d", 1);
+	DoTraceMessage(TRACE_DEBUG, L"Test UNICODE_STRING %wZ", &unicodeString);
 
-    DoTraceMessage(TRACE_DEBUG, L"Test special type PORT %!PORT!", 1);
-    DoTraceMessage(TRACE_DEBUG, L"Test special type STATUS %!STATUS!", 1);
-    DoTraceMessage(TRACE_DEBUG, L"Test special type WINERROR %!WINERROR!", 1);
-    DoTraceMessage(TRACE_DEBUG, L"Test special type HRESULT %!HRESULT!", (HRESULT)1);
-    DoTraceMessage(TRACE_DEBUG, L"Test special type NDIS_STATUS %!NDIS_STATUS!", 1);
+	DoTraceMessage(TRACE_DEBUG, L"Test wide string message %ws", L"string");
+	DoTraceMessage(TRACE_DEBUG, L"Test narrow string message %s", "string");
 
-    WPP_CLEANUP();
-    return 0;
+	DoTraceMessage(TRACE_DEBUG, L"Test special type PORT %!PORT!", 1);
+	DoTraceMessage(TRACE_DEBUG, L"Test special type STATUS %!STATUS!", 1);
+	DoTraceMessage(TRACE_DEBUG, L"Test special type WINERROR %!WINERROR!", 1);
+	DoTraceMessage(TRACE_DEBUG, L"Test special type HRESULT %!HRESULT!", (HRESULT)1);
+	DoTraceMessage(TRACE_DEBUG, L"Test special type NDIS_STATUS %!NDIS_STATUS!", 1);
+
+	DoTraceMessage(TRACE_DEBUG, "------- Narrow string formatting tests --------");
+
+	DoTraceMessage(TRACE_DEBUG, "Test int %d", 12345);
+	DoTraceMessage(TRACE_DEBUG, "Test hex 0x%x", 0xABCD123);
+	DoTraceMessage(TRACE_DEBUG, "Test dec qword %I64d", 12345);
+	DoTraceMessage(TRACE_DEBUG, "Test hex qword 0x%I64X", 0xABCD123);
+
+	DoTraceMessage(TRACE_DEBUG, "Test UNICODE_STRING %wZ", &unicodeString);
+
+	DoTraceMessage(TRACE_DEBUG, "Test wide string message %ws", L"string");
+	DoTraceMessage(TRACE_DEBUG, "Test narrow string message %s", "string");
+
+	DoTraceMessage(TRACE_DEBUG, "Test special type PORT %!PORT!", 1);
+	DoTraceMessage(TRACE_DEBUG, "Test special type STATUS %!STATUS!", 1);
+	DoTraceMessage(TRACE_DEBUG, "Test special type WINERROR %!WINERROR!", 1);
+	DoTraceMessage(TRACE_DEBUG, "Test special type HRESULT %!HRESULT!", (HRESULT)1);
+	DoTraceMessage(TRACE_DEBUG, "Test special type NDIS_STATUS %!NDIS_STATUS!", 1);
+
+	WPP_CLEANUP();
+	return 0;
 }
-
