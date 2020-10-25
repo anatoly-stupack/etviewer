@@ -169,9 +169,6 @@
     <ClCompile Include="TraceExample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="wpp.targets" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="TraceExample.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

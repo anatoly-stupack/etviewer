@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Buildsystem", "Buildsystem"
 	ProjectSection(SolutionItems) = preProject
 		..\build\package.targets = ..\build\package.targets
 		..\build\version.targets = ..\build\version.targets
+		..\build\wpp.targets = ..\build\wpp.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BBF85D8-25DB-4ADA-B78A-2FEF79713336}"
