@@ -1,0 +1,47 @@
+// Microsoft Visual C++ generated resource script.
+//
+
+#include "version.h"
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE 25, 1
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION VERSION
+ PRODUCTVERSION VERSION
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "ETViewer Team"
+            VALUE "FileDescription", "Event Tracing Viewer Test"
+            VALUE "FileVersion", VERSION_STR
+            VALUE "InternalName", "ETViewer"
+            VALUE "LegalCopyright", "ETViewer Team"
+            VALUE "OriginalFilename", "TraceExample.exe"
+            VALUE "ProductName", "ETViewer"
+            VALUE "ProductVersion", VERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+#endif
