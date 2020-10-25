@@ -66,10 +66,9 @@ enum eTraceFormatElementType
     eTraceFormatElementType_Pointer,
     eTraceFormatElementType_QuadPointer,
     eTraceFormatElementType_AnsiString,
-    eTraceFormatElementType_UnicodeString
+    eTraceFormatElementType_WideString,
+    eTraceFormatElementType_CountedWideString
 };
-
-
 
 struct STraceFormatElement
 {

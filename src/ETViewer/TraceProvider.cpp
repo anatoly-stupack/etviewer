@@ -65,7 +65,8 @@ typedef BOOL (WINAPI *pfSymEnumTypes)(HANDLE hProcess,ULONG64 BaseOfDll,PSYM_ENU
 eTraceFormatElementType GetElementTypeFromString(TCHAR *pString,bool b64BitPDB)
 {
     if(_tcscmp(pString,_T("ItemString"))==0){return eTraceFormatElementType_AnsiString;}
-    if(_tcscmp(pString,_T("ItemWString"))==0){return eTraceFormatElementType_UnicodeString;}
+    if(_tcscmp(pString,_T("ItemWString"))==0){return eTraceFormatElementType_WideString;}
+    if(_tcscmp(pString,_T("ItemPWString"))==0){return eTraceFormatElementType_CountedWideString;}
     if(_tcscmp(pString,_T("ItemLong"))==0){return eTraceFormatElementType_DWord;}
     if(_tcscmp(pString,_T("ItemChar"))==0){return eTraceFormatElementType_Byte;}
     if(_tcscmp(pString,_T("ItemDouble"))==0){return eTraceFormatElementType_Double;}

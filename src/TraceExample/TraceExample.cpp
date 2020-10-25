@@ -16,11 +16,13 @@ int _tmain()
 
 	DoTraceMessage(TRACE_DEBUG, "------- Wide string formatting tests --------");
 	DoTraceMessage(TRACE_DEBUG, L"Test int %d", 12345);
+	DoTraceMessage(TRACE_DEBUG, L"Test 2 ints %d %d", 12345, 12345);
 	DoTraceMessage(TRACE_DEBUG, L"Test hex 0x%x", 0xABCD123);
 	DoTraceMessage(TRACE_DEBUG, L"Test qword %I64d", 12345);
 	DoTraceMessage(TRACE_DEBUG, L"Test qword 0x%I64X", 0xABCD123);
 
 	DoTraceMessage(TRACE_DEBUG, L"Test UNICODE_STRING %wZ", &unicodeString);
+	DoTraceMessage(TRACE_DEBUG, L"Test 2 UNICODE_STRINGs %wZ %wZ", &unicodeString, &unicodeString);
 
 	DoTraceMessage(TRACE_DEBUG, L"Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, L"Test narrow string message %s", "string");
@@ -34,11 +36,13 @@ int _tmain()
 	DoTraceMessage(TRACE_DEBUG, "------- Narrow string formatting tests --------");
 
 	DoTraceMessage(TRACE_DEBUG, "Test int %d", 12345);
+	DoTraceMessage(TRACE_DEBUG, "Test 2 ints %d %d", 12345, 12345);
 	DoTraceMessage(TRACE_DEBUG, "Test hex 0x%x", 0xABCD123);
 	DoTraceMessage(TRACE_DEBUG, "Test dec qword %I64d", 12345);
 	DoTraceMessage(TRACE_DEBUG, "Test hex qword 0x%I64X", 0xABCD123);
 
 	DoTraceMessage(TRACE_DEBUG, "Test UNICODE_STRING %wZ", &unicodeString);
+	DoTraceMessage(TRACE_DEBUG, "Test 2 UNICODE_STRINGs %wZ %wZ", &unicodeString, &unicodeString);
 
 	DoTraceMessage(TRACE_DEBUG, "Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, "Test narrow string message %s", "string");
