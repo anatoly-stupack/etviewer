@@ -4,11 +4,21 @@ VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewer", "ETViewer\ETViewer.vcxproj", "{62BB54A2-DFF8-49AC-830A-A49E8F44C308}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{22A714A8-EF0E-40A8-A7C9-381855D39BEB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit Tests", "Unit Tests", "{22A714A8-EF0E-40A8-A7C9-381855D39BEB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TraceExample", "TraceExample\TraceExample.vcxproj", "{800932CA-CC84-4005-A370-7A1FA3A4E843}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewerTest", "UnitTests\ETViewerTest\ETViewerTest.vcxproj", "{4A5895F9-E851-4755-BB5C-FAAE5305D13B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Buildsystem", "Buildsystem", "{D5685A59-DBAC-443F-8D81-B479F942C883}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\package.targets = ..\build\package.targets
+		..\build\version.targets = ..\build\version.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BBF85D8-25DB-4ADA-B78A-2FEF79713336}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{3ED3A77D-2F02-42AA-9965-F7C4F2707AC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +55,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{800932CA-CC84-4005-A370-7A1FA3A4E843} = {1BBF85D8-25DB-4ADA-B78A-2FEF79713336}
 		{4A5895F9-E851-4755-BB5C-FAAE5305D13B} = {22A714A8-EF0E-40A8-A7C9-381855D39BEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
