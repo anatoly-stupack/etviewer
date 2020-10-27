@@ -552,11 +552,15 @@ TCHAR *CETViewerView::GetTraceText(SETViewerTrace *pTrace,CColumnInfo *pColumn,T
 {
     pAuxBuffer[0]=0;
 
-    switch(pColumn->id)
+    switch (pColumn->id)
     {
     case eETViewerColumn_Text:
-        _tcscpy_s(pAuxBuffer,nAuxLen,pTrace->trace.sText.c_str());
-        break;
+        {
+            // Cut trace text to fit in buffer, reserve space for trailing null
+            auto size = min(nAuxLen - 1, pTrace->trace.sText.size());
+            _tcscpy_s(pAuxBuffer, nAuxLen, pTrace->trace.sText.substr(0, size).c_str());
+            break;
+        }
     case eETViewerColumn_PIDTID:
         _stprintf_s (pAuxBuffer,nAuxLen,_T("[%4d]-[0x%04x]"),pTrace->trace.dwProcessId,pTrace->trace.dwThreadId);
         break;

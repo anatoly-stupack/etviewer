@@ -1,10 +1,18 @@
 #include "stdafx.h"
 #include "WPPGuid.h"
 #include "TraceExample.tmh"
+#include <string>
 
 int _tmain()
 {
 	WPP_INIT_TRACING(L"TraceExample");
+
+	std::string extraLongString;
+
+	for (int i = 0; i < 100; i++)
+	{
+		extraLongString += "1234567890";
+	}
 
 	wchar_t* string = L"test string";
 	UNICODE_STRING unicodeString = { 0 };
@@ -20,9 +28,12 @@ int _tmain()
 	DoTraceMessage(TRACE_DEBUG, L"Test hex 0x%x", 0xABCD123);
 	DoTraceMessage(TRACE_DEBUG, L"Test qword %I64d", 12345);
 	DoTraceMessage(TRACE_DEBUG, L"Test qword 0x%I64X", 0xABCD123);
+	DoTraceMessage(TRACE_DEBUG, L"Test pointer 0x%p", (void*)0xABCD123);
 
 	DoTraceMessage(TRACE_DEBUG, L"Test UNICODE_STRING %wZ", &unicodeString);
 	DoTraceMessage(TRACE_DEBUG, L"Test 2 UNICODE_STRINGs %wZ %wZ", &unicodeString, &unicodeString);
+
+	DoTraceMessage(TRACE_DEBUG, L"Test extra long string %s", extraLongString.c_str());
 
 	DoTraceMessage(TRACE_DEBUG, L"Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, L"Test narrow string message %s", "string");
@@ -41,9 +52,12 @@ int _tmain()
 	DoTraceMessage(TRACE_DEBUG, "Test hex 0x%x", 0xABCD123);
 	DoTraceMessage(TRACE_DEBUG, "Test dec qword %I64d", 12345);
 	DoTraceMessage(TRACE_DEBUG, "Test hex qword 0x%I64X", 0xABCD123);
+	DoTraceMessage(TRACE_DEBUG, "Test pointer 0x%p", (void*)0xABCD123);
 
 	DoTraceMessage(TRACE_DEBUG, "Test UNICODE_STRING %wZ", &unicodeString);
 	DoTraceMessage(TRACE_DEBUG, "Test 2 UNICODE_STRINGs %wZ %wZ", &unicodeString, &unicodeString);
+
+	DoTraceMessage(TRACE_DEBUG, "Test extra long string %s", extraLongString.c_str());
 
 	DoTraceMessage(TRACE_DEBUG, "Test wide string message %ws", L"string");
 	DoTraceMessage(TRACE_DEBUG, "Test narrow string message %s", "string");
