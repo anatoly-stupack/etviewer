@@ -574,14 +574,19 @@ ULONG CTraceController::StartRealTime(TCHAR *pSessionName,ITraceEvents *piEvents
     return errorCode;
 }
 
-void CTraceController::InitializeCreateLog(const TCHAR *pSessionName,const TCHAR *pFileName)
+void CTraceController::InitializeCreateLog(const TCHAR* pSessionName, const TCHAR* pFileName)
 {
-    ULONG dwBufferLen=sizeof(EVENT_TRACE_PROPERTIES)+((ULONG)(_tcslen(pSessionName)+1)*sizeof(TCHAR))+1024;
-    m_pSessionProperties=(EVENT_TRACE_PROPERTIES *)new char [dwBufferLen];
-    memset(m_pSessionProperties,0,sizeof(EVENT_TRACE_PROPERTIES));
+    ULONG dwBufferLen = sizeof(EVENT_TRACE_PROPERTIES) +
+        (_tcslen(pSessionName) + 1) * sizeof(TCHAR) +
+        (_tcslen(pFileName) + 1) * sizeof(TCHAR);
+
+    m_pSessionProperties = (EVENT_TRACE_PROPERTIES*)new char[dwBufferLen];
+
+    memset(m_pSessionProperties, 0, dwBufferLen);
+
     m_pSessionProperties->Wnode.BufferSize = dwBufferLen;
     CoCreateGuid(&m_pSessionProperties->Wnode.Guid);
-    if(IsWindowsVistaOrGreater())
+    if (IsWindowsVistaOrGreater())
     {
         m_bQPCTimeStamp = true;
         m_pSessionProperties->Wnode.ClientContext = 1; // If OS >= Vista use Performance Counter
@@ -591,25 +596,29 @@ void CTraceController::InitializeCreateLog(const TCHAR *pSessionName,const TCHAR
         m_bQPCTimeStamp = false;
         m_pSessionProperties->Wnode.ClientContext = 2; // If OS < Vista use FileTime
     }
-    m_pSessionProperties->Wnode.Flags=WNODE_FLAG_TRACED_GUID;
-    m_pSessionProperties->FlushTimer=1;
-    m_pSessionProperties->LogFileMode=EVENT_TRACE_FILE_MODE_CIRCULAR|EVENT_TRACE_USE_LOCAL_SEQUENCE|EVENT_TRACE_REAL_TIME_MODE;
-    m_pSessionProperties->LoggerNameOffset=sizeof(EVENT_TRACE_PROPERTIES);
-    m_pSessionProperties->LogFileNameOffset =sizeof(EVENT_TRACE_PROPERTIES)+(ULONG)_tcslen(pSessionName)+1;
+
+    m_pSessionProperties->Wnode.Flags = WNODE_FLAG_TRACED_GUID;
+    m_pSessionProperties->FlushTimer = 1;
+    m_pSessionProperties->LogFileMode = EVENT_TRACE_FILE_MODE_CIRCULAR | EVENT_TRACE_USE_LOCAL_SEQUENCE | EVENT_TRACE_REAL_TIME_MODE;
+    m_pSessionProperties->LoggerNameOffset = sizeof(EVENT_TRACE_PROPERTIES);
+    m_pSessionProperties->LogFileNameOffset = sizeof(EVENT_TRACE_PROPERTIES) + (_tcslen(pSessionName) + 1) * sizeof(TCHAR);
     m_pSessionProperties->MaximumFileSize = 100;
 
-    _tcscpy_s(((TCHAR*)m_pSessionProperties)+m_pSessionProperties->LogFileNameOffset,dwBufferLen-m_pSessionProperties->LogFileNameOffset,pFileName);
+    _tcscpy_s(
+        (TCHAR*)((BYTE*)m_pSessionProperties + m_pSessionProperties->LogFileNameOffset),
+        (dwBufferLen - m_pSessionProperties->LogFileNameOffset) / sizeof(TCHAR),
+        pFileName);
 
-    m_ConsumerProperties.LoggerName=const_cast<TCHAR *>(m_sSessionName.c_str());
-    m_ConsumerProperties.LogFileMode=EVENT_TRACE_REAL_TIME_MODE;
+    m_ConsumerProperties.LoggerName = const_cast<TCHAR*>(m_sSessionName.c_str());
+    m_ConsumerProperties.LogFileMode = EVENT_TRACE_REAL_TIME_MODE;
     m_ConsumerProperties.EventCallback = EventCallback;
 
     SYSTEMTIME systemTime;
     GetSystemTime(&systemTime);
-    SystemTimeToFileTime(&systemTime,&m_liReferenceFileTime);
+    SystemTimeToFileTime(&systemTime, &m_liReferenceFileTime);
     QueryPerformanceFrequency(&m_liPerformanceFrequency);
     QueryPerformanceCounter(&m_liReferenceCounter);
-    m_liReferenceCounter.QuadPart=(m_liReferenceCounter.QuadPart*10000000)/m_liPerformanceFrequency.QuadPart;
+    m_liReferenceCounter.QuadPart = (m_liReferenceCounter.QuadPart * 10000000) / m_liPerformanceFrequency.QuadPart;
 }
 
 ULONG CTraceController::CreateLog(const TCHAR *pFileName,ITraceEvents *piEvents)
