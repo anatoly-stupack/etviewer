@@ -34,10 +34,10 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/*.exe'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/etviewer.exe'
     artifactName: etviewer.exe
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/*.pdb'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/etviewer.pdb'
     artifactName: etviewer.pdb
