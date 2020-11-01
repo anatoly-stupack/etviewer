@@ -12,7 +12,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ETViewerTest", "UnitTests\E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Buildsystem", "Buildsystem", "{D5685A59-DBAC-443F-8D81-B479F942C883}"
 	ProjectSection(SolutionItems) = preProject
-		..\build\package.targets = ..\build\package.targets
 		..\build\version.targets = ..\build\version.targets
 		..\build\wpp.targets = ..\build\wpp.targets
 	EndProjectSection

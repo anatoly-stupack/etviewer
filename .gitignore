@@ -357,3 +357,6 @@ MigrationBackup/
 
 # Generated version
 version.h
+
+# Dowloaded build tools
+build/nuget.exe
