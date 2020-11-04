@@ -27,15 +27,15 @@
 class CConfigFile;
 class CConfigFileNode;
 
-class CConfigFileNode: public IPersistencyNode
+class CConfigFileNode : public IPersistencyNode
 {
     friend CConfigFile;
 
     std::tstring                                    m_sName;
-    std::map<std::tstring,std::tstring>             m_mData;
-    std::multimap<std::tstring,CConfigFileNode*>    m_mNodes;
+    std::map<std::tstring, std::tstring>             m_mData;
+    std::multimap<std::tstring, CConfigFileNode*>    m_mNodes;
 
-    CConfigFileNode *GetAddNode_Internal(std::tstring sNodePath,bool bAdd);
+    CConfigFileNode* GetAddNode_Internal(std::tstring sNodePath, bool bAdd);
 
 public:
 
@@ -44,12 +44,12 @@ public:
 
     // IPersistencyNode
     virtual void Clear();
-    virtual bool AddProperty(SPersistencyProperty );
-    virtual bool GetProperty(SPersistencyProperty *);
+    virtual bool AddProperty(SPersistencyProperty);
+    virtual bool GetProperty(SPersistencyProperty*);
     virtual bool RemoveProperty(SPersistencyProperty);
 
-    virtual IPersistencyNode *AddNode(std::tstring id);
-    virtual IPersistencyNode *GetNode(std::tstring id);
+    virtual IPersistencyNode* AddNode(std::tstring id);
+    virtual IPersistencyNode* GetNode(std::tstring id);
     virtual void DeleteNode(std::tstring id);
 
     ~CConfigFileNode();
@@ -59,24 +59,24 @@ class CConfigFile
 {
     DWORD			m_dwSaveTabCount;
     HANDLE  	    m_hFile;
-    TCHAR			*m_pBuffer;
+    TCHAR* m_pBuffer;
 
     CConfigFileNode m_RootNode;
 
     void SaveLine(std::tstring sValue);
-    void SaveValue(std::tstring sName,std::tstring sValue);
+    void SaveValue(std::tstring sName, std::tstring sValue);
     void SaveBeginSection(std::tstring sName);
     void SaveEndSection();
-    void SaveNode(CConfigFileNode *pNode);
+    void SaveNode(CConfigFileNode* pNode);
 
 public:
 
     bool Open(std::tstring sFileName);
     bool Save(std::tstring sFileName);
 
-    IPersistencyNode	*AddNode(std::tstring  sNodePath);
-    IPersistencyNode	*GetNode(std::tstring  sNodePath);
-    IPersistencyNode	*GetRoot();
+    IPersistencyNode* AddNode(std::tstring  sNodePath);
+    IPersistencyNode* GetNode(std::tstring  sNodePath);
+    IPersistencyNode* GetRoot();
 
     CConfigFile(void);
     ~CConfigFile(void);
@@ -93,4 +93,3 @@ public:
         IPersistencyNode *piNode=pFile->GetNode(sNode);\
         if(piNode){return SUCCEEDED(PersistencyLoad(piNode));}else{return false;}\
     }
-

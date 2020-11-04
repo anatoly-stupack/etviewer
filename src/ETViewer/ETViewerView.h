@@ -41,16 +41,16 @@ struct CColumnInfo
     int					iOrder;
 
     BEGIN_PERSIST_MAP(CColumnInfo)
-        PERSIST(width,_T("Width"))
-        PERSIST(visible,_T("Visible"))
-        PERSIST(name,_T("Name"))
-        PERSIST(format,_T("Format"))
-        PERSIST(id,_T("Id"))
-        PERSIST(iOrder,_T("Order"))
+        PERSIST(width, _T("Width"))
+        PERSIST(visible, _T("Visible"))
+        PERSIST(name, _T("Name"))
+        PERSIST(format, _T("Format"))
+        PERSIST(id, _T("Id"))
+        PERSIST(iOrder, _T("Order"))
     END_PERSIST_MAP();
 
-    CColumnInfo(){width=100;visible=false;}
-    CColumnInfo(int _id,TCHAR* n,int fmt,int w,bool v,int o){id=_id;format=fmt;width=w;visible=v;name=n;iSubItem=-1;iOrder=o;}
+    CColumnInfo() { width = 100; visible = false; }
+    CColumnInfo(int _id, TCHAR* n, int fmt, int w, bool v, int o) { id = _id; format = fmt; width = w; visible = v; name = n; iSubItem = -1; iOrder = o; }
 };
 
 DECLARE_SERIALIZABLE(CColumnInfo);
@@ -63,7 +63,7 @@ struct SETViewerTrace
 
     SETViewerTrace()
     {
-        iImage=0;
+        iImage = 0;
     }
 };
 
@@ -73,16 +73,16 @@ protected: // Crear sólo a partir de serialización
     CETViewerView();
     DECLARE_DYNCREATE(CETViewerView)
 
-// Atributos
+    // Atributos
 public:
     CETViewerDoc* GetDocument() const;
 
-// Operaciones
+    // Operaciones
 public:
 
-// Reemplazos
-    public:
-virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    // Reemplazos
+public:
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
     virtual void OnInitialUpdate(); // Se llama la primera vez después de la construcción
 
@@ -109,19 +109,19 @@ protected:
     HICON		m_hHollowIcon;
     HICON		m_hMarkerIcon;
 
-    std::deque<SETViewerTrace *>	m_lTraces;
+    std::deque<SETViewerTrace*>	m_lTraces;
     HANDLE					        m_hTracesMutex;
     bool					        m_bShowLastTrace;
-    
+
     int m_iHollowImage;
     int m_iMarkerImage;
 
     int m_iEditSubItem;
     CSize m_ListEditSize;
     CPoint m_ListEditPos;
-    CEdit *m_pEdit;
+    CEdit* m_pEdit;
 
-    CFont *m_pTraceFont;
+    CFont* m_pTraceFont;
     DWORD m_dwTraceFontSize;
     std::tstring m_sTraceFont;
 
@@ -148,31 +148,31 @@ protected:
     void AddColumn(int id);
     void RemoveColumn(int id);
 
-    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-    static LRESULT CALLBACK ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     void ProcessSpecialKeyStroke(WORD key);
 
-    int FindText(const TCHAR* pTextToFind,int baseIndex,bool up,bool stopAtEnd=false);
+    int FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bool stopAtEnd = false);
 
     void SetFocusOnOwnerWindow();
 
-    TCHAR *GetTraceText(SETViewerTrace *pTrace,CColumnInfo *pColumn,TCHAR *pAuxBuffer,unsigned nAuxLen);
+    TCHAR* GetTraceText(SETViewerTrace* pTrace, CColumnInfo* pColumn, TCHAR* pAuxBuffer, unsigned nAuxLen);
 
     BEGIN_PERSIST_MAP(CETViewerView)
-        PERSIST(m_ColumnInfo,_T("Columns"))
-        PERSIST(m_dwTraceFontSize,_T("FontSize"));
-        PERSIST(m_sTraceFont,_T("FontFamily"));
-        PERSIST(m_bShowLastTrace,_T("ShowLastTrace"));
+        PERSIST(m_ColumnInfo, _T("Columns"))
+        PERSIST(m_dwTraceFontSize, _T("FontSize"));
+    PERSIST(m_sTraceFont, _T("FontFamily"));
+    PERSIST(m_bShowLastTrace, _T("ShowLastTrace"));
     END_PERSIST_MAP();
 
     DECLARE_CONFIG_FILE_MEDIA();
 
-    
+
 public:
 
-    bool Load(CConfigFile *pFile);
-    bool Save(CConfigFile *pFile);
+    bool Load(CConfigFile* pFile);
+    bool Save(CConfigFile* pFile);
 
     void OnFontBigger();
     void OnFontSmaller();
@@ -182,58 +182,60 @@ public:
     void ResetShowLastTrace();
 
     bool FindNext();
-    bool FindNext(const TCHAR *pText);
-    bool FindAndMarkAll(const TCHAR *pText);
-    bool FindAndDeleteAll(const TCHAR *pText);
+    bool FindNext(const TCHAR* pText);
+    bool FindAndMarkAll(const TCHAR* pText);
+    bool FindAndDeleteAll(const TCHAR* pText);
 
     void Copy(bool bAllTraces);
     void Clear();
     void ClearSelected();
 
-    void GetTransferBuffer(int *pSize,TCHAR **buffer,bool bAllTraces);
-    void GetTraceColors(SETViewerTrace *pTrace,COLORREF *pTextColor,COLORREF *pBkColor,HPEN *phPen,HBRUSH *phBrush);
+    void GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTraces);
+    void GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush);
 
     // ITraceEvents
-    void ProcessTrace(STraceEvenTracingNormalizedData *pTraceData);
-    void ProcessUnknownTrace(STraceEvenTracingNormalizedData *pTraceData);
+    void ProcessTrace(STraceEvenTracingNormalizedData* pTraceData);
+    void ProcessUnknownTrace(STraceEvenTracingNormalizedData* pTraceData);
 
-    void OnAddProvider(CTraceProvider *pProvider);
-    void OnRemoveProvider(CTraceProvider *pProvider);
-    void OnReplaceProvider(CTraceProvider *pOldProvider,CTraceProvider *pNewProvider);
+    void OnAddProvider(CTraceProvider* pProvider);
+    void OnRemoveProvider(CTraceProvider* pProvider);
+    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
     void OnProvidersModified();
     void OnSessionTypeChanged();
 
     void SetTraceFont(std::tstring sTraceFont, DWORD dwFontSize);
-    void GetTraceFont(std::tstring *psTraceFont, DWORD *pdwFontSize);
+    void GetTraceFont(std::tstring* psTraceFont, DWORD* pdwFontSize);
 
-    void SortItems(CColumnInfo *pColumn);
+    void SortItems(CColumnInfo* pColumn);
 
-// Funciones de asignación de mensajes generadas
+    // Funciones de asignación de mensajes generadas
 protected:
     afx_msg void OnStyleChanged(int nStyleType, LPSTYLESTRUCT lpStyleStruct);
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg void OnDestroy();
-    afx_msg void OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnEditFind();
     afx_msg void OnFind();
     afx_msg void OnHighLightFilters();
     afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnTimer(UINT nIDEvent);
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnClear();
     afx_msg void OnCut();
     afx_msg void OnCopy();
     afx_msg void OnSave();
-    afx_msg void OnBeginEdit(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnEndEdit(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnGetItemInfo(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnLvnColumnclick(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnBeginEdit(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnEndEdit(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnGetItemInfo(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
 };
 
 #ifndef _DEBUG  // Versión de depuración en ETViewerView.cpp
 inline CETViewerDoc* CETViewerView::GetDocument() const
-   { return reinterpret_cast<CETViewerDoc*>(m_pDocument); }
+{
+    return reinterpret_cast<CETViewerDoc*>(m_pDocument);
+}
 #endif
 

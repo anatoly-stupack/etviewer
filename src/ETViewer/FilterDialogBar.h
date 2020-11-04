@@ -32,7 +32,7 @@ class CFilterDialogBar : public CDialogBar
 public:
     CFilterDialogBar();
     virtual ~CFilterDialogBar();
-    
+
     COLORREF	m_FilterChangedColor;
     HBRUSH		m_hFilterChangedBrush;
 
@@ -47,7 +47,7 @@ public:
 
     void OnChangedInstantFilters();
 
-    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     void InitDialogBar();
     void OnOk();
@@ -65,5 +65,3 @@ public:
     afx_msg void OnCbnSelchangeCbExcludeFilter();
     afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
-
-

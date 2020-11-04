@@ -38,7 +38,7 @@
 
 class CHighLightFiltersEditor : public CDialog
 {
-// Construction
+    // Construction
 public:
     CHighLightFiltersEditor(CWnd* pParent = NULL);   // standard constructor
 
@@ -55,19 +55,19 @@ public:
     WNDPROC				m_OldListViewProc;
     HIMAGELIST			m_hImageList;
 
-    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void SwapItems(int index1,int index2);
-    void GetItemColorRects(int index,RECT *pR1,RECT *pR2);
+    void SwapItems(int index1, int index2);
+    void GetItemColorRects(int index, RECT* pR1, RECT* pR2);
 
     void LoadFilters();
     void SaveFilters();
     void SetMetrics();
 
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CHighLightFiltersEditor)
-    protected:
+    // Overrides
+        // ClassWizard generated virtual function overrides
+        //{{AFX_VIRTUAL(CHighLightFiltersEditor)
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     //}}AFX_VIRTUAL
 

@@ -37,7 +37,7 @@
 #define new DEBUG_NEW
 #endif
 
-DWORD g_dwRegisteredMessage=RegisterWindowMessage(_T("ETVIEWER-IPC"));
+DWORD g_dwRegisteredMessage = RegisterWindowMessage(_T("ETVIEWER-IPC"));
 // CMainFrame
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_FILE_LOGTOFILE, OnUpdateFileLogtofile)
     ON_COMMAND(ID_FILE_STOPLOGGINTOFILE, OnFileStoploggintofile)
     ON_UPDATE_COMMAND_UI(ID_FILE_STOPLOGGINTOFILE, OnUpdateFileStoploggintofile)
-    ON_REGISTERED_MESSAGE(g_dwRegisteredMessage,OnIPCCommand)
+    ON_REGISTERED_MESSAGE(g_dwRegisteredMessage, OnIPCCommand)
     ON_COMMAND(ID_EDIT_SETTINGS, OnEditSettings)
     ON_WM_TIMER()
 END_MESSAGE_MAP()
@@ -96,21 +96,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    if (!m_MainDialogBar.Create(this, IDD_MAIN_DIALOG_BAR, 
+    if (!m_MainDialogBar.Create(this, IDD_MAIN_DIALOG_BAR,
         CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
     {
         TRACE0("No se pudo crear el control dialogbar\n");
         return -1;		// No se pudo crear
     }
 
-    if (!m_FilterDialogBar.Create(this, IDD_FILTER_DIALOG_BAR, 
+    if (!m_FilterDialogBar.Create(this, IDD_FILTER_DIALOG_BAR,
         CBRS_ALIGN_TOP, AFX_IDW_DIALOGBAR))
     {
         TRACE0("No se pudo crear el control dialogbar\n");
         return -1;		// No se pudo crear
     }
 
-    if (!m_wndReBar.Create(this,RBS_BANDBORDERS) ||
+    if (!m_wndReBar.Create(this, RBS_BANDBORDERS) ||
         !m_wndReBar.AddBar(&m_MainDialogBar) ||
         !m_wndReBar.AddBar(&m_FilterDialogBar))
     {
@@ -119,15 +119,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     }
 
     // TODO: quitarlo si no desea información sobre herramientas
-    m_FilterDialogBar.SetBarStyle(m_FilterDialogBar.GetBarStyle() |	CBRS_TOOLTIPS | CBRS_FLYBY );
-    m_MainDialogBar.SetBarStyle(m_MainDialogBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY );
+    m_FilterDialogBar.SetBarStyle(m_FilterDialogBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+    m_MainDialogBar.SetBarStyle(m_MainDialogBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
     m_MainDialogBar.InitDialogBar();
     m_FilterDialogBar.InitDialogBar();
-    m_wndReBar.SendMessage(RB_MAXIMIZEBAND,1);
+    m_wndReBar.SendMessage(RB_MAXIMIZEBAND, 1);
 
-    SetTimer(FILE_CHANGE_TIMER_ID,FILE_CHANGE_TIMER_PERIOD,NULL);
+    SetTimer(FILE_CHANGE_TIMER_ID, FILE_CHANGE_TIMER_PERIOD, NULL);
 
-    ::DragAcceptFiles(m_hWnd,TRUE);
+    ::DragAcceptFiles(m_hWnd, TRUE);
     return 0;
 }
 
@@ -145,7 +145,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
         return FALSE;
     }
 
-    if(S_OK != theApp.m_Controller.StartRealTime(_T("ETVIEWER_SESSION"), GetTracePane()))
+    if (S_OK != theApp.m_Controller.StartRealTime(_T("ETVIEWER_SESSION"), GetTracePane()))
     {
         MessageBox(_T("Could not initialize RealTime Trace Session"), _T("ETVIEWER"));
     }
@@ -155,11 +155,11 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-    if( !CFrameWnd::PreCreateWindow(cs) )
+    if (!CFrameWnd::PreCreateWindow(cs))
         return FALSE;
 
-    cs.style&=~FWS_ADDTOTITLE;
-    cs.style&=~FWS_PREFIXTITLE ;
+    cs.style &= ~FWS_ADDTOTITLE;
+    cs.style &= ~FWS_PREFIXTITLE;
     return TRUE;
 }
 
@@ -184,7 +184,7 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 CETViewerView* CMainFrame::GetTracePane()
 {
-    if(m_wndSplitter.m_hWnd==NULL){return NULL;}
+    if (m_wndSplitter.m_hWnd == NULL) { return NULL; }
     CWnd* pWnd = m_wndSplitter.GetPane(0, 1);
     CETViewerView* pView = DYNAMIC_DOWNCAST(CETViewerView, pWnd);
     return pView;
@@ -192,19 +192,19 @@ CETViewerView* CMainFrame::GetTracePane()
 
 CProviderTree* CMainFrame::GetProviderTree()
 {
-    if(m_wndSplitter.m_hWnd==NULL){return NULL;}
+    if (m_wndSplitter.m_hWnd == NULL) { return NULL; }
     CWnd* pWnd = m_wndSplitter.GetPane(0, 0);
     CLeftPane* pLeftPane = DYNAMIC_DOWNCAST(CLeftPane, pWnd);
-    CProviderTree* pProviderTree=DYNAMIC_DOWNCAST(CProviderTree,pLeftPane->m_wndSplitter.GetPane(0, 0));
+    CProviderTree* pProviderTree = DYNAMIC_DOWNCAST(CProviderTree, pLeftPane->m_wndSplitter.GetPane(0, 0));
     return pProviderTree;
 }
 
 CHighLightPane* CMainFrame::GetHighLightPane()
 {
-    if(m_wndSplitter.m_hWnd==NULL){return NULL;}
+    if (m_wndSplitter.m_hWnd == NULL) { return NULL; }
     CWnd* pWnd = m_wndSplitter.GetPane(0, 0);
     CLeftPane* pLeftPane = DYNAMIC_DOWNCAST(CLeftPane, pWnd);
-    CHighLightPane* pHighLightPane=DYNAMIC_DOWNCAST(CHighLightPane,pLeftPane->m_wndSplitter.GetPane(1, 0));
+    CHighLightPane* pHighLightPane = DYNAMIC_DOWNCAST(CHighLightPane, pLeftPane->m_wndSplitter.GetPane(1, 0));
     return pHighLightPane;
 }
 
@@ -214,22 +214,22 @@ void CMainFrame::OnDestroy()
     CFrameWnd::OnDestroy();
 }
 
-bool CMainFrame::IsAncestorOf(HWND hWnd,HWND hAncestor)
+bool CMainFrame::IsAncestorOf(HWND hWnd, HWND hAncestor)
 {
-    HWND hParent=hWnd;
+    HWND hParent = hWnd;
     do
     {
-        hParent=::GetParent(hParent);
-        if(hParent==hAncestor){return true;}
-    } 
-    while(hParent);
+        hParent = ::GetParent(hParent);
+        if (hParent == hAncestor) { return true; }
+    }
+    while (hParent);
     return false;
 }
 
 void CMainFrame::OnOk()
 {
-    HWND hWnd=::GetFocus();
-    if(IsAncestorOf(hWnd,m_FilterDialogBar.m_hWnd))
+    HWND hWnd = ::GetFocus();
+    if (IsAncestorOf(hWnd, m_FilterDialogBar.m_hWnd))
     {
         m_FilterDialogBar.OnOk();
     }
@@ -237,8 +237,8 @@ void CMainFrame::OnOk()
 
 void CMainFrame::OnCancel()
 {
-    HWND hWnd=::GetFocus();
-    if(IsAncestorOf(hWnd,m_FilterDialogBar.m_hWnd))
+    HWND hWnd = ::GetFocus();
+    if (IsAncestorOf(hWnd, m_FilterDialogBar.m_hWnd))
     {
         m_FilterDialogBar.OnCancel();
     }
@@ -259,50 +259,50 @@ void CMainFrame::OnHighlightFilters()
     GetTracePane()->OnHighLightFilters();
 }
 
-void CMainFrame::LookupError(const TCHAR *pErrorString)
+void CMainFrame::LookupError(const TCHAR* pErrorString)
 {
-    TCHAR finalMessage[2000]={0},message[2000]={0},errorStr[2000]={0};
-    TCHAR *pValidChars=_T("0x1234567890abcdefABCDEFX");
-    unsigned  len=(unsigned )_tcslen(pErrorString),added=0;
-    for(unsigned x=0;x<len;x++)
+    TCHAR finalMessage[2000] = { 0 }, message[2000] = { 0 }, errorStr[2000] = { 0 };
+    TCHAR* pValidChars = _T("0x1234567890abcdefABCDEFX");
+    unsigned  len = (unsigned)_tcslen(pErrorString), added = 0;
+    for (unsigned x = 0; x < len; x++)
     {
-        if(_tcschr(pValidChars,pErrorString[x])!=0)
+        if (_tcschr(pValidChars, pErrorString[x]) != 0)
         {
-            errorStr[added]=pErrorString[x];
+            errorStr[added] = pErrorString[x];
             added++;
         }
         else
         {
             // a invalid TCHAR after valid TCHARs marks the end.
-            if(added){break;}
+            if (added) { break; }
         }
     }
-    if(_tcscmp(pErrorString,errorStr)!=0){m_MainDialogBar.m_EDErrorLookup.SetWindowText(errorStr);}
+    if (_tcscmp(pErrorString, errorStr) != 0) { m_MainDialogBar.m_EDErrorLookup.SetWindowText(errorStr); }
 
 
-    DWORD errorCode=0;
+    DWORD errorCode = 0;
     bool ok = (errorCode = _ttoi(errorStr)) != 0;
-    if (!ok){ ok = (_stscanf_s(errorStr, _T("%x"), &errorCode) != 0); }
-    if (!ok){ ok = (_stscanf_s(errorStr, _T("x%x"), &errorCode) != 0); }
-    if (!ok){ ok = (_stscanf_s(errorStr, _T("0x%x"), &errorCode) != 0); }
-    if(errorCode==0){return;}
+    if (!ok) { ok = (_stscanf_s(errorStr, _T("%x"), &errorCode) != 0); }
+    if (!ok) { ok = (_stscanf_s(errorStr, _T("x%x"), &errorCode) != 0); }
+    if (!ok) { ok = (_stscanf_s(errorStr, _T("0x%x"), &errorCode) != 0); }
+    if (errorCode == 0) { return; }
 
-    if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,NULL,errorCode,MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &message,_countof(message), NULL)!=0)
+    if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&message, _countof(message), NULL) != 0)
     {
         _stprintf_s(finalMessage, _T("%s=%s"), errorStr, message);
-        MessageBox(finalMessage,_T("ETViewer"),MB_OK|MB_ICONINFORMATION);
+        MessageBox(finalMessage, _T("ETViewer"), MB_OK | MB_ICONINFORMATION);
     }
     else
     {
-        _stprintf_s(finalMessage,_T("Cannot find the error %s"),errorStr);
-        MessageBox(finalMessage,_T("ETViewer"),MB_OK|MB_ICONSTOP);
+        _stprintf_s(finalMessage, _T("Cannot find the error %s"), errorStr);
+        MessageBox(finalMessage, _T("ETViewer"), MB_OK | MB_ICONSTOP);
     }
 }
 
 void CMainFrame::OnErrorLookup()
 {
-    TCHAR temp[1024]={0};
-    int count=m_MainDialogBar.m_EDErrorLookup.GetWindowText(temp,_countof(temp));
+    TCHAR temp[1024] = { 0 };
+    int count = m_MainDialogBar.m_EDErrorLookup.GetWindowText(temp, _countof(temp));
     LookupError(temp);
     m_MainDialogBar.m_EDErrorLookup.SetFocus();
 }
@@ -324,30 +324,30 @@ void CMainFrame::OnFind()
 }
 
 
-bool CMainFrame::OpenFile(const TCHAR *pFile,bool *pbKnownFileType)
+bool CMainFrame::OpenFile(const TCHAR* pFile, bool* pbKnownFileType)
 {
-    TCHAR sExtension[MAX_PATH]={0};
+    TCHAR sExtension[MAX_PATH] = { 0 };
     _tsplitpath_s(pFile, NULL, 0, NULL, 0, NULL, 0, sExtension, MAX_PATH);
     _tcsupr_s(sExtension);
-    if(_tcscmp(sExtension,_T(".PDB"))==0)
+    if (_tcscmp(sExtension, _T(".PDB")) == 0)
     {
-        if(pbKnownFileType){*pbKnownFileType=true;}
-        return theApp.OpenPDB(pFile,true);
+        if (pbKnownFileType) { *pbKnownFileType = true; }
+        return theApp.OpenPDB(pFile, true);
     }
-    else if(_tcscmp(sExtension,_T(".C"))==0 || _tcscmp(sExtension,_T(".H"))==0 || 
-        _tcscmp(sExtension,_T(".CPP"))==0 || _tcscmp(sExtension,_T(".INL"))==0)
+    else if (_tcscmp(sExtension, _T(".C")) == 0 || _tcscmp(sExtension, _T(".H")) == 0 ||
+        _tcscmp(sExtension, _T(".CPP")) == 0 || _tcscmp(sExtension, _T(".INL")) == 0)
     {
-        if(pbKnownFileType){*pbKnownFileType=true;}
-        return theApp.OpenCodeAddress(pFile,0,true);
+        if (pbKnownFileType) { *pbKnownFileType = true; }
+        return theApp.OpenCodeAddress(pFile, 0, true);
     }
-    else if(_tcscmp(sExtension,_T(".ETL"))==0)
+    else if (_tcscmp(sExtension, _T(".ETL")) == 0)
     {
-        if(pbKnownFileType){*pbKnownFileType=true;}
+        if (pbKnownFileType) { *pbKnownFileType = true; }
         return theApp.OpenETL(pFile);
     }
     else
     {
-        if(pbKnownFileType){*pbKnownFileType=false;}
+        if (pbKnownFileType) { *pbKnownFileType = false; }
     }
     return false;
 }
@@ -355,19 +355,19 @@ bool CMainFrame::OpenFile(const TCHAR *pFile,bool *pbKnownFileType)
 void CMainFrame::OnDropFiles(HDROP hDropInfo)
 {
     // TODO: Add your message handler code here and/or call default
-    bool bFilesOfUnknownFormat=false;
-    UINT nFiles=DragQueryFile(hDropInfo,0xFFFFFFFF,NULL,0);
-    for(unsigned x=0;x<nFiles;x++)
+    bool bFilesOfUnknownFormat = false;
+    UINT nFiles = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+    for (unsigned x = 0; x < nFiles; x++)
     {
-        bool bKnownType=false;
-        TCHAR sFullFilePath[MAX_PATH]={0};
-        DragQueryFile(hDropInfo,x,sFullFilePath,MAX_PATH);
-        OpenFile(sFullFilePath,&bKnownType);
-        if(!bKnownType){bFilesOfUnknownFormat=true;}
+        bool bKnownType = false;
+        TCHAR sFullFilePath[MAX_PATH] = { 0 };
+        DragQueryFile(hDropInfo, x, sFullFilePath, MAX_PATH);
+        OpenFile(sFullFilePath, &bKnownType);
+        if (!bKnownType) { bFilesOfUnknownFormat = true; }
     }
-    if(bFilesOfUnknownFormat)
+    if (bFilesOfUnknownFormat)
     {
-        MessageBox(_T("Unknown files dropped"),_T("ETViewer"),MB_ICONSTOP|MB_OK);
+        MessageBox(_T("Unknown files dropped"), _T("ETViewer"), MB_ICONSTOP | MB_OK);
     }
     CFrameWnd::OnDropFiles(hDropInfo);
 }
@@ -380,31 +380,31 @@ void CMainFrame::OnStartStop()
 
 void CMainFrame::OnOpenFile()
 {
-    TCHAR sTempBuffer[1024*10]={0};
-    CFileDialog dialog(TRUE,_T("pdb"),NULL,OFN_ALLOWMULTISELECT|OFN_FILEMUSTEXIST,_T("All Supported Files|*.pdb;*.etl;*.c;*.cpp;*.h;*.inl|PDB Files(*.pdb)|*.pdb|Event Tracing Log Files(*.etl)|*.etl|Source Files(*.c *.cpp *.h *.inl)|*.c;*.cpp;*.h;*.inl|All Files(*.*)|*.*|"));
-    dialog.GetOFN().lpstrFile=sTempBuffer;
-    dialog.GetOFN().nMaxFile=_countof(sTempBuffer);
+    TCHAR sTempBuffer[1024 * 10] = { 0 };
+    CFileDialog dialog(TRUE, _T("pdb"), NULL, OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST, _T("All Supported Files|*.pdb;*.etl;*.c;*.cpp;*.h;*.inl|PDB Files(*.pdb)|*.pdb|Event Tracing Log Files(*.etl)|*.etl|Source Files(*.c *.cpp *.h *.inl)|*.c;*.cpp;*.h;*.inl|All Files(*.*)|*.*|"));
+    dialog.GetOFN().lpstrFile = sTempBuffer;
+    dialog.GetOFN().nMaxFile = _countof(sTempBuffer);
 
-    if(dialog.DoModal()==IDOK)
+    if (dialog.DoModal() == IDOK)
     {
         std::tstring sPath;
-        TCHAR *pString=dialog.GetOFN().lpstrFile;
+        TCHAR* pString = dialog.GetOFN().lpstrFile;
 
         //lpstrFile es un array de cadenas, si solo hay una cadena solo se ha seleccionado un archivo,
         // en caso contrario la primera cadena es el directorio y las demas son los nombres de los archivos.
 
-        if(pString[_tcslen(pString)+1]!=0)
+        if (pString[_tcslen(pString) + 1] != 0)
         {
-            sPath=pString;
-            sPath+=_T("\\");
-            pString=pString+_tcslen(pString)+1;
+            sPath = pString;
+            sPath += _T("\\");
+            pString = pString + _tcslen(pString) + 1;
         }
-        while(pString[0]!=0)
+        while (pString[0] != 0)
         {
             std::tstring sProvider = sPath;
-            sProvider+=pString;
-            OpenFile(sProvider.c_str(),NULL);
-            pString=pString+_tcslen(pString)+1;
+            sProvider += pString;
+            OpenFile(sProvider.c_str(), NULL);
+            pString = pString + _tcslen(pString) + 1;
         }
     }
 }
@@ -416,65 +416,65 @@ void CMainFrame::OnShowSourceContainer()
 
 void CMainFrame::OnCloseLog()
 {
-    if(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_ReadLog)
+    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog)
     {
         theApp.CloseETL();
     }
 }
-void CMainFrame::OnUpdateFileCloselog(CCmdUI *pCmdUI)
+void CMainFrame::OnUpdateFileCloselog(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_ReadLog);
+    pCmdUI->Enable(theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog);
 }
 
 void CMainFrame::OnFileLogtofile()
 {
-    CFileDialog dialog(FALSE,_T("etl"),NULL,OFN_PATHMUSTEXIST|OFN_OVERWRITEPROMPT,_T("Event Tracing Log Files(*.etl)|*.etl|All Files(*.*)|*.*"));
-    if(dialog.DoModal()==IDOK)
+    CFileDialog dialog(FALSE, _T("etl"), NULL, OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, _T("Event Tracing Log Files(*.etl)|*.etl|All Files(*.*)|*.*"));
+    if (dialog.DoModal() == IDOK)
     {
         theApp.CreateETL(dialog.GetOFN().lpstrFile);
     }
 }
 
-void CMainFrame::OnUpdateFileLogtofile(CCmdUI *pCmdUI)
+void CMainFrame::OnUpdateFileLogtofile(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType()!=eTraceControllerSessionType_CreateLog);
+    pCmdUI->Enable(theApp.m_Controller.GetSessionType() != eTraceControllerSessionType_CreateLog);
 }
 
 void CMainFrame::OnFileStoploggintofile()
 {
-    if(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_CreateLog)
+    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog)
     {
         theApp.CloseETL();
     }
 }
 
-void CMainFrame::OnUpdateFileStoploggintofile(CCmdUI *pCmdUI)
+void CMainFrame::OnUpdateFileStoploggintofile(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_CreateLog);
+    pCmdUI->Enable(theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog);
 }
 
 void CMainFrame::OnSessionTypeChanged()
 {
     std::tstring sCaption;
-    switch(theApp.m_Controller.GetSessionType())
+    switch (theApp.m_Controller.GetSessionType())
     {
     case eTraceControllerSessionType_None:
-        sCaption=_T("ETViewer - No session");
+        sCaption = _T("ETViewer - No session");
         break;
     case eTraceControllerSessionType_RealTime:
-        sCaption=_T("ETViewer - Real Time");
-        break;	
+        sCaption = _T("ETViewer - Real Time");
+        break;
     case eTraceControllerSessionType_ReadLog:
-        sCaption=_T("ETViewer - Open Log File '");
-        sCaption+=theApp.m_Controller.GetFileName();
-        sCaption+=_T("'");
-        break;	
+        sCaption = _T("ETViewer - Open Log File '");
+        sCaption += theApp.m_Controller.GetFileName();
+        sCaption += _T("'");
+        break;
 
     case eTraceControllerSessionType_CreateLog:
-        sCaption=_T("ETViewer - Logging to File '");
-        sCaption+=theApp.m_Controller.GetFileName();
-        sCaption+=_T("'");
-        break;	
+        sCaption = _T("ETViewer - Logging to File '");
+        sCaption += theApp.m_Controller.GetFileName();
+        sCaption += _T("'");
+        break;
     }
     SetWindowText(sCaption.c_str());
 
@@ -482,27 +482,27 @@ void CMainFrame::OnSessionTypeChanged()
     m_FilterDialogBar.OnSessionTypeChanged();
 }
 
-LRESULT CMainFrame::OnIPCCommand(WPARAM wParam,LPARAM lParam)
+LRESULT CMainFrame::OnIPCCommand(WPARAM wParam, LPARAM lParam)
 {
-    TCHAR sCommandLine[1024*10]={0};
+    TCHAR sCommandLine[1024 * 10] = { 0 };
     SetForegroundWindow();
     BringToTop(SW_SHOW);
-    GlobalGetAtomName(wParam,sCommandLine,_countof(sCommandLine));
-    TCHAR *pArgs[]={sCommandLine};
-    theApp.ProcessCommandLine(1,pArgs);
+    GlobalGetAtomName(wParam, sCommandLine, _countof(sCommandLine));
+    TCHAR* pArgs[] = { sCommandLine };
+    theApp.ProcessCommandLine(1, pArgs);
     return 0L;
 };
 
 void CMainFrame::OnEditSettings()
 {
     CSettingsDialog dialog;
-    dialog.DoModal();	
+    dialog.DoModal();
     theApp.UpdateFileMonitor();
 }
 
-void CMainFrame::OnTimer( UINT nTimerId)
+void CMainFrame::OnTimer(UINT nTimerId)
 {
-    if(nTimerId==FILE_CHANGE_TIMER_ID)
+    if (nTimerId == FILE_CHANGE_TIMER_ID)
     {
         theApp.CheckFileChangeOperations();
     }

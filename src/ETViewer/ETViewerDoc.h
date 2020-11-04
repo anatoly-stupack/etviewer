@@ -30,17 +30,17 @@ protected: // Crear sólo a partir de serialización
     CETViewerDoc();
     DECLARE_DYNCREATE(CETViewerDoc)
 
-// Atributos
+    // Atributos
 public:
 
-// Operaciones
+    // Operaciones
 public:
 
-// Reemplazos
-    public:
+    // Reemplazos
+public:
     virtual BOOL OnNewDocument();
 
-// Implementación
+    // Implementación
 public:
     virtual ~CETViewerDoc();
 #ifdef _DEBUG
@@ -50,7 +50,7 @@ public:
 
 protected:
 
-// Funciones de asignación de mensajes generadas
+    // Funciones de asignación de mensajes generadas
 protected:
     DECLARE_MESSAGE_MAP()
 };

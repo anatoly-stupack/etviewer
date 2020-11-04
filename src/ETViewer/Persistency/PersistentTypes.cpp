@@ -27,170 +27,170 @@
 #include ".\persistency.h"
 #include ".\persistenttypes.h"
 
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<DWORD> *pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<DWORD>* pItem)
 {
-    TCHAR sTemp[1024]={0};
+    TCHAR sTemp[1024] = { 0 };
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    _stprintf_s(sTemp,_T("%d"),*pItem->GetValueAddress());
-    prop.value=sTemp;
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    _stprintf_s(sTemp, _T("%d"), *pItem->GetValueAddress());
+    prop.value = sTemp;
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<DWORD> *pItem)
-{
-    pItem->SetDefaultValue();
-    SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){(*pItem->GetValueAddress())=_ttoi(prop.value.c_str());return S_OK;}
-    return E_FAIL;
-}
-
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<DWORD> *pItem)
-{
-    SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
-}
-
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<int> *pItem)
-{
-    TCHAR sTemp[1024]={0};
-    SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    _stprintf_s(sTemp,_T("%d"),*pItem->GetValueAddress());
-    prop.value=sTemp;
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
-}
-
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<int> *pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<DWORD>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){(*pItem->GetValueAddress())=_ttoi(prop.value.c_str());return S_OK;}
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { (*pItem->GetValueAddress()) = _ttoi(prop.value.c_str()); return S_OK; }
     return E_FAIL;
 }
 
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<int> *pItem)
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<DWORD>* pItem)
 {
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<int>* pItem)
 {
-    TCHAR sTemp[1024]={0};
+    TCHAR sTemp[1024] = { 0 };
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    _stprintf_s(sTemp,_T("%d"),(int)(*pItem->GetValueAddress()));
-    prop.value=sTemp;
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    _stprintf_s(sTemp, _T("%d"), *pItem->GetValueAddress());
+    prop.value = sTemp;
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<int>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){(*pItem->GetValueAddress())=_ttoi(prop.value.c_str())?true:false;return S_OK;}
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { (*pItem->GetValueAddress()) = _ttoi(prop.value.c_str()); return S_OK; }
     return E_FAIL;
 }
 
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<bool> *pItem)
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<int>* pItem)
 {
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<float> *pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem)
 {
-    TCHAR sTemp[1024]={0};
+    TCHAR sTemp[1024] = { 0 };
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    _stprintf_s(sTemp,_T("%f"),*pItem->GetValueAddress());
-    prop.value=sTemp;
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    _stprintf_s(sTemp, _T("%d"), (int)(*pItem->GetValueAddress()));
+    prop.value = sTemp;
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<float> *pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){(*pItem->GetValueAddress())=(float)_ttof(prop.value.c_str());return S_OK;}
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { (*pItem->GetValueAddress()) = _ttoi(prop.value.c_str()) ? true : false; return S_OK; }
     return E_FAIL;
 }
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<float> *pItem)
+
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem)
 {
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<double> *pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<float>* pItem)
 {
-    TCHAR sTemp[1024]={0};
+    TCHAR sTemp[1024] = { 0 };
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    _stprintf_s(sTemp,_T("%f"),*pItem->GetValueAddress());
-    prop.value=sTemp;
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    _stprintf_s(sTemp, _T("%f"), *pItem->GetValueAddress());
+    prop.value = sTemp;
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<double> *pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<float>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){(*pItem->GetValueAddress())=_ttof(prop.value.c_str());return S_OK;}
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { (*pItem->GetValueAddress()) = (float)_ttof(prop.value.c_str()); return S_OK; }
     return E_FAIL;
 }
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<double> *pItem)
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<float>* pItem)
 {
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencySave(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring>*pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<double>* pItem)
 {
+    TCHAR sTemp[1024] = { 0 };
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    prop.value=*pItem->GetValueAddress();
-    return piNode->AddProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    _stprintf_s(sTemp, _T("%f"), *pItem->GetValueAddress());
+    prop.value = sTemp;
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring>*pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<double>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    if(piNode->GetProperty(&prop)){*pItem->GetValueAddress()=prop.value;return S_OK;}
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { (*pItem->GetValueAddress()) = _ttof(prop.value.c_str()); return S_OK; }
+    return E_FAIL;
+}
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<double>* pItem)
+{
+    SPersistencyProperty prop;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
+}
+
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
+{
+    SPersistencyProperty prop;
+    prop.name = pItem->GetName();
+    prop.value = *pItem->GetValueAddress();
+    return piNode->AddProperty(prop) ? S_OK : E_FAIL;
+}
+
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
+{
+    pItem->SetDefaultValue();
+    SPersistencyProperty prop;
+    prop.name = pItem->GetName();
+    if (piNode->GetProperty(&prop)) { *pItem->GetValueAddress() = prop.value; return S_OK; }
     return E_FAIL;
 }
 
-HRESULT PersistencyRemove(IPersistencyNode *piNode,CPersistentReferenceT<std::tstring> *pItem)
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
 {
     SPersistencyProperty prop;
-    prop.name=pItem->GetName();
-    return piNode->RemoveProperty(prop)?S_OK:E_FAIL;
+    prop.name = pItem->GetName();
+    return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-void PersistencyInitialize(CPersistentReferenceT<DWORD> *pItem)			{(*pItem->GetValueAddress())=0;}
-void PersistencyInitialize(CPersistentReferenceT<int> *pItem)			{(*pItem->GetValueAddress())=0;}
-void PersistencyInitialize(CPersistentReferenceT<float> *pItem)			{(*pItem->GetValueAddress())=0;}
-void PersistencyInitialize(CPersistentReferenceT<double> *pItem)		{(*pItem->GetValueAddress())=0;}
-void PersistencyInitialize(CPersistentReferenceT<bool> *pItem)			{(*pItem->GetValueAddress())=0;}
-void PersistencyInitialize(CPersistentReferenceT<std::tstring> *pItem)   {(*pItem->GetValueAddress())=_T("");}
+void PersistencyInitialize(CPersistentReferenceT<DWORD>* pItem) { (*pItem->GetValueAddress()) = 0; }
+void PersistencyInitialize(CPersistentReferenceT<int>* pItem) { (*pItem->GetValueAddress()) = 0; }
+void PersistencyInitialize(CPersistentReferenceT<float>* pItem) { (*pItem->GetValueAddress()) = 0; }
+void PersistencyInitialize(CPersistentReferenceT<double>* pItem) { (*pItem->GetValueAddress()) = 0; }
+void PersistencyInitialize(CPersistentReferenceT<bool>* pItem) { (*pItem->GetValueAddress()) = 0; }
+void PersistencyInitialize(CPersistentReferenceT<std::tstring>* pItem) { (*pItem->GetValueAddress()) = _T(""); }
 
 
-void PersistencyFree(CPersistentReferenceT<DWORD> *prop){}
-void PersistencyFree(CPersistentReferenceT<int> *prop){}
-void PersistencyFree(CPersistentReferenceT<float> *prop){}
-void PersistencyFree(CPersistentReferenceT<double> *prop){}
-void PersistencyFree(CPersistentReferenceT<bool> *pItem){}
-void PersistencyFree(CPersistentReferenceT<std::tstring> *pItem){}
+void PersistencyFree(CPersistentReferenceT<DWORD>* prop) {}
+void PersistencyFree(CPersistentReferenceT<int>* prop) {}
+void PersistencyFree(CPersistentReferenceT<float>* prop) {}
+void PersistencyFree(CPersistentReferenceT<double>* prop) {}
+void PersistencyFree(CPersistentReferenceT<bool>* pItem) {}
+void PersistencyFree(CPersistentReferenceT<std::tstring>* pItem) {}
 

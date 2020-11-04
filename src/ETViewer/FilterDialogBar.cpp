@@ -34,10 +34,10 @@
 IMPLEMENT_DYNAMIC(CFilterDialogBar, CDialogBar)
 CFilterDialogBar::CFilterDialogBar()
 {
-    m_FilterChangedColor=RGB(255,255,0);
-    m_hFilterChangedBrush=CreateSolidBrush(m_FilterChangedColor);
-    m_OldIncludeEditProc=NULL;
-    m_OldExcludeEditProc=NULL;
+    m_FilterChangedColor = RGB(255, 255, 0);
+    m_hFilterChangedBrush = CreateSolidBrush(m_FilterChangedColor);
+    m_OldIncludeEditProc = NULL;
+    m_OldExcludeEditProc = NULL;
 }
 
 CFilterDialogBar::~CFilterDialogBar()
@@ -54,43 +54,43 @@ END_MESSAGE_MAP()
 
 // CFilterDialogBar message handlers
 
-void CFilterDialogBar::InitDialogBar() 
+void CFilterDialogBar::InitDialogBar()
 {
     unsigned x;
 
-    m_CBIncludeFilter.Attach(::GetDlgItem(m_hWnd,IDC_CB_INCLUDE_FILTER));
-    m_CBExcludeFilter.Attach(::GetDlgItem(m_hWnd,IDC_CB_EXCLUDE_FILTER));
+    m_CBIncludeFilter.Attach(::GetDlgItem(m_hWnd, IDC_CB_INCLUDE_FILTER));
+    m_CBExcludeFilter.Attach(::GetDlgItem(m_hWnd, IDC_CB_EXCLUDE_FILTER));
 
     m_EDIncludeEdit.Attach(m_CBIncludeFilter.GetWindow(GW_CHILD)->m_hWnd);
     m_EDExcludeEdit.Attach(m_CBExcludeFilter.GetWindow(GW_CHILD)->m_hWnd);
 
 
-    for(x=0;x<theApp.m_InstantIncludeFilterList.size();x++)
+    for (x = 0; x < theApp.m_InstantIncludeFilterList.size(); x++)
     {
         m_CBIncludeFilter.AddString(theApp.m_InstantIncludeFilterList[x].c_str());
     }
-    for(x=0;x<theApp.m_InstantExcludeFilterList.size();x++)
+    for (x = 0; x < theApp.m_InstantExcludeFilterList.size(); x++)
     {
         m_CBExcludeFilter.AddString(theApp.m_InstantExcludeFilterList[x].c_str());
     }
 
-    m_OldIncludeEditProc=(WNDPROC)GetWindowLong(m_EDIncludeEdit.m_hWnd,GWL_WNDPROC);
-    SetWindowLong(m_EDIncludeEdit.m_hWnd,GWL_USERDATA,(DWORD)this);
-    SetWindowLong(m_EDIncludeEdit.m_hWnd,GWL_WNDPROC,(DWORD)InstantEditProc);
+    m_OldIncludeEditProc = (WNDPROC)GetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_WNDPROC);
+    SetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_USERDATA, (DWORD)this);
+    SetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_WNDPROC, (DWORD)InstantEditProc);
 
-    m_OldExcludeEditProc=(WNDPROC)GetWindowLong(m_EDExcludeEdit.m_hWnd,GWL_WNDPROC);
-    SetWindowLong(m_EDExcludeEdit.m_hWnd,GWL_USERDATA,(DWORD)this);
-    SetWindowLong(m_EDExcludeEdit.m_hWnd,GWL_WNDPROC,(DWORD)InstantEditProc);
+    m_OldExcludeEditProc = (WNDPROC)GetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC);
+    SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_USERDATA, (DWORD)this);
+    SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC, (DWORD)InstantEditProc);
 
     m_EDIncludeEdit.SetWindowText(theApp.m_InstantIncludeFilter.c_str());
     m_EDExcludeEdit.SetWindowText(theApp.m_InstantExcludeFilter.c_str());
 }
 
-LRESULT CALLBACK CFilterDialogBar::InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK CFilterDialogBar::InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CFilterDialogBar *pThis=(CFilterDialogBar *)GetWindowLong(hwnd,GWL_USERDATA);
-    if(uMsg==WM_MOUSEWHEEL){return 0L;}
-    if(uMsg==WM_KEYDOWN || uMsg==WM_SYSKEYDOWN)
+    CFilterDialogBar* pThis = (CFilterDialogBar*)GetWindowLong(hwnd, GWL_USERDATA);
+    if (uMsg == WM_MOUSEWHEEL) { return 0L; }
+    if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
     {
         /*CEdit *pEdit=NULL;
         if(hwnd==pThis->m_EDExcludeEdit.m_hWnd){pEdit=&pThis->m_EDExcludeEdit;}
@@ -120,26 +120,26 @@ LRESULT CALLBACK CFilterDialogBar::InstantEditProc(HWND hwnd, UINT uMsg, WPARAM 
         pThis->ProcessSpecialKeyStroke(wParam);*/
     }
 
-    if(hwnd==pThis->m_EDExcludeEdit.m_hWnd){return CallWindowProc(pThis->m_OldExcludeEditProc,hwnd,uMsg,wParam,lParam);}
-    if(hwnd==pThis->m_EDIncludeEdit.m_hWnd){return CallWindowProc(pThis->m_OldIncludeEditProc,hwnd,uMsg,wParam,lParam);}
+    if (hwnd == pThis->m_EDExcludeEdit.m_hWnd) { return CallWindowProc(pThis->m_OldExcludeEditProc, hwnd, uMsg, wParam, lParam); }
+    if (hwnd == pThis->m_EDIncludeEdit.m_hWnd) { return CallWindowProc(pThis->m_OldIncludeEditProc, hwnd, uMsg, wParam, lParam); }
     return 0L;
 }
 
 void CFilterDialogBar::OnDestroy()
 {
-    TCHAR sTempText[1024]={0};
+    TCHAR sTempText[1024] = { 0 };
 
     theApp.m_InstantIncludeFilterList.clear();
     int x;
-    for(x=0;x<m_CBIncludeFilter.GetCount();x++)
+    for (x = 0; x < m_CBIncludeFilter.GetCount(); x++)
     {
-        m_CBIncludeFilter.GetLBText(x,sTempText);
+        m_CBIncludeFilter.GetLBText(x, sTempText);
         theApp.m_InstantIncludeFilterList.push_back(sTempText);
     }
     theApp.m_InstantExcludeFilterList.clear();
-    for(x=0;x<m_CBExcludeFilter.GetCount();x++)
+    for (x = 0; x < m_CBExcludeFilter.GetCount(); x++)
     {
-        m_CBExcludeFilter.GetLBText(x,sTempText);
+        m_CBExcludeFilter.GetLBText(x, sTempText);
         theApp.m_InstantExcludeFilterList.push_back(sTempText);
     }
 
@@ -151,58 +151,58 @@ void CFilterDialogBar::OnDestroy()
 }
 void CFilterDialogBar::OnOk()
 {
-    bool		 bAddComboString=false;
-    CComboBox   *pCombo=NULL;
-    CWnd		*pEdit=NULL;
+    bool		 bAddComboString = false;
+    CComboBox* pCombo = NULL;
+    CWnd* pEdit = NULL;
     TCHAR		newText[2048];
 
-    if(GetFocus()==&m_CBIncludeFilter || GetFocus()==&m_EDIncludeEdit)
+    if (GetFocus() == &m_CBIncludeFilter || GetFocus() == &m_EDIncludeEdit)
     {
-        TCHAR sTemp[1024]={0};
-        m_CBIncludeFilter.GetWindowText(sTemp,_countof(sTemp));
-        theApp.m_InstantIncludeFilter=sTemp;
-        _tcscpy_s(newText,theApp.m_InstantIncludeFilter.c_str());
-        bAddComboString=true;
-        pCombo=&m_CBIncludeFilter;
-        pEdit=&m_EDIncludeEdit;
+        TCHAR sTemp[1024] = { 0 };
+        m_CBIncludeFilter.GetWindowText(sTemp, _countof(sTemp));
+        theApp.m_InstantIncludeFilter = sTemp;
+        _tcscpy_s(newText, theApp.m_InstantIncludeFilter.c_str());
+        bAddComboString = true;
+        pCombo = &m_CBIncludeFilter;
+        pEdit = &m_EDIncludeEdit;
 
         theApp.UpdateInstantFilters();
     }
-    if(GetFocus()==&m_CBExcludeFilter || GetFocus()==&m_EDExcludeEdit)
+    if (GetFocus() == &m_CBExcludeFilter || GetFocus() == &m_EDExcludeEdit)
     {
-        TCHAR sTemp[1024]={0};
-        m_CBExcludeFilter.GetWindowText(sTemp,_countof(sTemp));
-        theApp.m_InstantExcludeFilter=sTemp;
-        _tcscpy_s(newText,theApp.m_InstantExcludeFilter.c_str());
-        bAddComboString=true;
-        pCombo=&m_CBExcludeFilter;
-        pEdit=&m_EDExcludeEdit;
+        TCHAR sTemp[1024] = { 0 };
+        m_CBExcludeFilter.GetWindowText(sTemp, _countof(sTemp));
+        theApp.m_InstantExcludeFilter = sTemp;
+        _tcscpy_s(newText, theApp.m_InstantExcludeFilter.c_str());
+        bAddComboString = true;
+        pCombo = &m_CBExcludeFilter;
+        pEdit = &m_EDExcludeEdit;
 
         theApp.UpdateInstantFilters();
     }
-    if(bAddComboString)
+    if (bAddComboString)
     {
-        if(_tcscmp(newText,_T(""))!=0)
+        if (_tcscmp(newText, _T("")) != 0)
         {
-            TCHAR existingText[2048]={0};
-            TCHAR tempText[2048]={0};
+            TCHAR existingText[2048] = { 0 };
+            TCHAR tempText[2048] = { 0 };
 
-            _tcscpy_s(tempText,newText);
+            _tcscpy_s(tempText, newText);
             _tcsupr_s(tempText);
 
             int x;
-            for(x=0;x<pCombo->GetCount();x++)
+            for (x = 0; x < pCombo->GetCount(); x++)
             {
-                pCombo->GetLBText(x,existingText);
+                pCombo->GetLBText(x, existingText);
                 _tcsupr_s(existingText);
-                if(_tcscmp(existingText,tempText)==0)
+                if (_tcscmp(existingText, tempText) == 0)
                 {
                     pCombo->DeleteString(x);
                     break;
                 }
             }
-            pCombo->InsertString(0,newText);
-            if(pCombo->GetCount()>MAX_INSTANT_FILTERS){pCombo->DeleteString(pCombo->GetCount()-1);}
+            pCombo->InsertString(0, newText);
+            if (pCombo->GetCount() > MAX_INSTANT_FILTERS) { pCombo->DeleteString(pCombo->GetCount() - 1); }
         }
         pEdit->SetWindowText(newText);
         OnChangedInstantFilters();
@@ -211,13 +211,13 @@ void CFilterDialogBar::OnOk()
 
 void CFilterDialogBar::OnCancel()
 {
-    if(GetFocus()==&m_CBIncludeFilter || GetFocus()==&m_EDIncludeEdit)
+    if (GetFocus() == &m_CBIncludeFilter || GetFocus() == &m_EDIncludeEdit)
     {
         m_CBIncludeFilter.SetWindowText(theApp.m_InstantIncludeFilter.c_str());
         OnChangedInstantFilters();
     }
 
-    if(GetFocus()==&m_CBExcludeFilter || GetFocus()==&m_EDExcludeEdit)
+    if (GetFocus() == &m_CBExcludeFilter || GetFocus() == &m_EDExcludeEdit)
     {
         m_CBExcludeFilter.SetWindowText(theApp.m_InstantExcludeFilter.c_str());
         OnChangedInstantFilters();
@@ -227,12 +227,12 @@ void CFilterDialogBar::OnCancel()
 void CFilterDialogBar::OnCbnSelchangeCbIncludeFilter()
 {
     TCHAR newFilter[2048];
-    int index=m_CBIncludeFilter.GetCurSel();
-    if(index!=-1)
+    int index = m_CBIncludeFilter.GetCurSel();
+    if (index != -1)
     {
-        m_CBIncludeFilter.GetLBText(index,newFilter);
+        m_CBIncludeFilter.GetLBText(index, newFilter);
         m_EDIncludeEdit.SetWindowText(newFilter);
-        theApp.m_InstantIncludeFilter=newFilter;
+        theApp.m_InstantIncludeFilter = newFilter;
         OnChangedInstantFilters();
         theApp.UpdateInstantFilters();
     }
@@ -241,12 +241,12 @@ void CFilterDialogBar::OnCbnSelchangeCbIncludeFilter()
 void CFilterDialogBar::OnCbnSelchangeCbExcludeFilter()
 {
     TCHAR newFilter[2048];
-    int index=m_CBExcludeFilter.GetCurSel();
-    if(index!=-1)
+    int index = m_CBExcludeFilter.GetCurSel();
+    if (index != -1)
     {
-        m_CBExcludeFilter.GetLBText(index,newFilter);
+        m_CBExcludeFilter.GetLBText(index, newFilter);
         m_EDExcludeEdit.SetWindowText(newFilter);
-        theApp.m_InstantExcludeFilter=newFilter;
+        theApp.m_InstantExcludeFilter = newFilter;
         OnChangedInstantFilters();
         theApp.UpdateInstantFilters();
     }
@@ -255,23 +255,23 @@ void CFilterDialogBar::OnCbnSelchangeCbExcludeFilter()
 HBRUSH CFilterDialogBar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
     HBRUSH hbr = CDialogBar::OnCtlColor(pDC, pWnd, nCtlColor);
-    if(pWnd==&m_CBIncludeFilter || pWnd==&m_EDIncludeEdit)
+    if (pWnd == &m_CBIncludeFilter || pWnd == &m_EDIncludeEdit)
     {
-        TCHAR sTemp[1024]={0};
-        m_EDIncludeEdit.GetWindowText(sTemp,1024);
-        if(_tcscmp(sTemp,theApp.m_InstantIncludeFilter.c_str())!=0)
+        TCHAR sTemp[1024] = { 0 };
+        m_EDIncludeEdit.GetWindowText(sTemp, 1024);
+        if (_tcscmp(sTemp, theApp.m_InstantIncludeFilter.c_str()) != 0)
         {
-            hbr=m_hFilterChangedBrush;
+            hbr = m_hFilterChangedBrush;
             pDC->SetBkColor(m_FilterChangedColor);
         }
     }
-    if(pWnd==&m_CBExcludeFilter || pWnd==&m_EDExcludeEdit)
+    if (pWnd == &m_CBExcludeFilter || pWnd == &m_EDExcludeEdit)
     {
-        TCHAR sTemp[1024]={0};
-        m_EDExcludeEdit.GetWindowText(sTemp,1024);
-        if(_tcscmp(sTemp,theApp.m_InstantExcludeFilter.c_str())!=0)
+        TCHAR sTemp[1024] = { 0 };
+        m_EDExcludeEdit.GetWindowText(sTemp, 1024);
+        if (_tcscmp(sTemp, theApp.m_InstantExcludeFilter.c_str()) != 0)
         {
-            hbr=m_hFilterChangedBrush;
+            hbr = m_hFilterChangedBrush;
             pDC->SetBkColor(m_FilterChangedColor);
         }
     }
@@ -286,8 +286,8 @@ void CFilterDialogBar::OnChangedInstantFilters()
 
 void CFilterDialogBar::OnSessionTypeChanged()
 {
-    if(theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_RealTime || 
-        theApp.m_Controller.GetSessionType()==eTraceControllerSessionType_CreateLog)
+    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_RealTime ||
+        theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog)
     {
         m_CBIncludeFilter.EnableWindow(TRUE);
         m_CBExcludeFilter.EnableWindow(TRUE);

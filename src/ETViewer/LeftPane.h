@@ -27,7 +27,7 @@
 class CLeftPane : public CFrameWnd
 {
 
-DECLARE_DYNCREATE(CLeftPane)
+    DECLARE_DYNCREATE(CLeftPane)
 
 public:
 
@@ -42,5 +42,3 @@ public:
 protected:
     virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 };
-
-

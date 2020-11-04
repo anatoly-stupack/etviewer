@@ -24,18 +24,18 @@
 
 #include "stdafx.h"
 
-SIZE GetRectSize(RECT &rect)
+SIZE GetRectSize(RECT& rect)
 {
     SIZE size;
-    size.cx=rect.right-rect.left;
-    size.cy=rect.bottom-rect.top;
+    size.cx = rect.right - rect.left;
+    size.cy = rect.bottom - rect.top;
     return size;
 }
 
-POINT GetRectPos(RECT &rect)
+POINT GetRectPos(RECT& rect)
 {
     POINT pos;
-    pos.x=rect.left;
-    pos.y=rect.top;
+    pos.x = rect.left;
+    pos.y = rect.top;
     return pos;
 }

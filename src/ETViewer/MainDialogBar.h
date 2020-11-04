@@ -58,5 +58,3 @@ protected:
 public:
     afx_msg void OnDestroy();
 };
-
-

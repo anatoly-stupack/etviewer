@@ -32,10 +32,10 @@ class CHighLightPane : public CListView
     HIMAGELIST			m_hImageList;
     bool				m_bDisableColumnResize;
 
-    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    void SwapItems(int index1,int index2);
-    void GetItemColorRects(int index,RECT *pR1,RECT *pR2);
+    void SwapItems(int index1, int index2);
+    void GetItemColorRects(int index, RECT* pR1, RECT* pR2);
 
     void LoadFilters();
     void SaveFilters();
@@ -74,7 +74,5 @@ protected:
 public:
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-    afx_msg void OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
 };
-
-

@@ -37,17 +37,17 @@ class CSettingsDialog : public CDialog
 
     void UpdateFont();
 
-    void SwapItems(int index1,int index2);
+    void SwapItems(int index1, int index2);
     void AddSourcePath(int index);
     void OnInsertSourcePath();
 
-    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
     CSettingsDialog(CWnd* pParent = NULL);   // standard constructor
     virtual ~CSettingsDialog();
 
-// Dialog Data
+    // Dialog Data
     enum { IDD = IDD_SETTINGS };
 
 protected:

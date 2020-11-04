@@ -40,7 +40,6 @@ CLeftPane::~CLeftPane()
 {
 }
 
-
 BEGIN_MESSAGE_MAP(CLeftPane, CFrameWnd)
 END_MESSAGE_MAP()
 

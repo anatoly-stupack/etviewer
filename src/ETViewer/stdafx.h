@@ -68,8 +68,8 @@
 #include "persistency\persistentTypes.h"
 #include "persistency\configfile.h"
 
-SIZE  GetRectSize(RECT &rect);
-POINT GetRectPos(RECT &rect);
+SIZE  GetRectSize(RECT& rect);
+POINT GetRectPos(RECT& rect);
 
 #ifdef _UNICODE
 #if defined _M_IX86

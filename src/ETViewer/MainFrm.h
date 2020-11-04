@@ -32,24 +32,24 @@ class CProviderTree;
 class CHighLightPane;
 class CMainFrame : public CFrameWnd
 {
-    
+
 protected: // Crear sólo a partir de serialización
     CMainFrame();
     DECLARE_DYNCREATE(CMainFrame)
 
-// Atributos
+    // Atributos
 protected:
     CSplitterWnd m_wndSplitter;
 public:
 
-// Operaciones
+    // Operaciones
 public:
-// Reemplazos
+    // Reemplazos
 public:
     virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-// Implementación
+    // Implementación
 public:
     virtual ~CMainFrame();
     CETViewerView* GetTracePane();
@@ -60,8 +60,8 @@ public:
     virtual void Dump(CDumpContext& dc) const;
 #endif
 
-    bool OpenFile(const TCHAR *pFile,bool *pbKnownFileType);
-    void LookupError(const TCHAR *pErrorString);
+    bool OpenFile(const TCHAR* pFile, bool* pbKnownFileType);
+    void LookupError(const TCHAR* pErrorString);
     void OnSessionTypeChanged();
 protected:  // Miembros incrustados de la barra de control
 
@@ -69,9 +69,9 @@ protected:  // Miembros incrustados de la barra de control
     CMainDialogBar      m_MainDialogBar;
     CFilterDialogBar    m_FilterDialogBar;
 
-    bool IsAncestorOf(HWND hWnd,HWND hAncestor);
+    bool IsAncestorOf(HWND hWnd, HWND hAncestor);
 
-// Funciones de asignación de mensajes generadas
+    // Funciones de asignación de mensajes generadas
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     DECLARE_MESSAGE_MAP()
@@ -91,14 +91,12 @@ public:
     afx_msg void OnCancel();
     afx_msg void OnDropFiles(HDROP hDropInfo);
     afx_msg void OnCloseLog();
-    afx_msg void OnUpdateFileCloselog(CCmdUI *pCmdUI);
+    afx_msg void OnUpdateFileCloselog(CCmdUI* pCmdUI);
     afx_msg void OnFileLogtofile();
-    afx_msg void OnUpdateFileLogtofile(CCmdUI *pCmdUI);
+    afx_msg void OnUpdateFileLogtofile(CCmdUI* pCmdUI);
     afx_msg void OnFileStoploggintofile();
-    afx_msg void OnUpdateFileStoploggintofile(CCmdUI *pCmdUI);
-    afx_msg LRESULT OnIPCCommand(WPARAM wParam,LPARAM lParam);
+    afx_msg void OnUpdateFileStoploggintofile(CCmdUI* pCmdUI);
+    afx_msg LRESULT OnIPCCommand(WPARAM wParam, LPARAM lParam);
     afx_msg void OnEditSettings();
-    afx_msg void OnTimer( UINT nTimerId);
+    afx_msg void OnTimer(UINT nTimerId);
 };
-
-

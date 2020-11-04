@@ -28,21 +28,21 @@
 
 class CSaveAllTracesQuestionDialog : public CDialog
 {
-// Construction
+    // Construction
 public:
     CSaveAllTracesQuestionDialog(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
     //{{AFX_DATA(CSaveAllTracesQuestionDialog)
     enum { IDD = IDD_SAVEALLTRACESQUESTIONDIALOG };
-        // NOTE: the ClassWizard will add data members here
-    //}}AFX_DATA
+    // NOTE: the ClassWizard will add data members here
+//}}AFX_DATA
 
 
 // Overrides
     // ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(CSaveAllTracesQuestionDialog)
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     //}}AFX_VIRTUAL
 

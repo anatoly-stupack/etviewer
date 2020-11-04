@@ -29,7 +29,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // CSaveAllTracesQuestionDialog dialog
 
-
 CSaveAllTracesQuestionDialog::CSaveAllTracesQuestionDialog(CWnd* pParent /*=NULL*/)
     : CDialog(CSaveAllTracesQuestionDialog::IDD, pParent)
 {
@@ -38,7 +37,6 @@ CSaveAllTracesQuestionDialog::CSaveAllTracesQuestionDialog(CWnd* pParent /*=NULL
     //}}AFX_DATA_INIT
 }
 
-
 void CSaveAllTracesQuestionDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
@@ -46,7 +44,6 @@ void CSaveAllTracesQuestionDialog::DoDataExchange(CDataExchange* pDX)
         // NOTE: the ClassWizard will add DDX and DDV calls here
     //}}AFX_DATA_MAP
 }
-
 
 BEGIN_MESSAGE_MAP(CSaveAllTracesQuestionDialog, CDialog)
     //{{AFX_MSG_MAP(CSaveAllTracesQuestionDialog)
@@ -57,7 +54,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSaveAllTracesQuestionDialog message handlers
 
-void CSaveAllTracesQuestionDialog::OnSelectedTraces() 
+void CSaveAllTracesQuestionDialog::OnSelectedTraces()
 {
     EndDialog(IDC_BT_SELECTED);
 }

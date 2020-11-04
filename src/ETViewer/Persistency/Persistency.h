@@ -48,105 +48,105 @@ struct SPersistencyProperty
 class IPersistencyNode
 {
 public:
-    virtual void Clear()=0;
-    virtual bool AddProperty(SPersistencyProperty property)=0;
-    virtual bool GetProperty(SPersistencyProperty *pProperty)=0;
-    virtual bool RemoveProperty(SPersistencyProperty property)=0;
+    virtual void Clear() = 0;
+    virtual bool AddProperty(SPersistencyProperty property) = 0;
+    virtual bool GetProperty(SPersistencyProperty* pProperty) = 0;
+    virtual bool RemoveProperty(SPersistencyProperty property) = 0;
 
-    virtual IPersistencyNode *AddNode(std::tstring id)=0;
-    virtual IPersistencyNode *GetNode(std::tstring id)=0;
-    virtual void DeleteNode(std::tstring id)=0;
+    virtual IPersistencyNode* AddNode(std::tstring id) = 0;
+    virtual IPersistencyNode* GetNode(std::tstring id) = 0;
+    virtual void DeleteNode(std::tstring id) = 0;
 };
 
 class IPersistencyItem
 {
 public:
 
-    virtual void Initialize()=0;
-    virtual void Free()=0;
-    virtual void SetDefaultValue()=0;
+    virtual void Initialize() = 0;
+    virtual void Free() = 0;
+    virtual void SetDefaultValue() = 0;
 
-    virtual HRESULT Load(IPersistencyNode *)=0;
-    virtual HRESULT Save(IPersistencyNode *)=0;
-    virtual HRESULT Remove(IPersistencyNode *)=0;
+    virtual HRESULT Load(IPersistencyNode*) = 0;
+    virtual HRESULT Save(IPersistencyNode*) = 0;
+    virtual HRESULT Remove(IPersistencyNode*) = 0;
 
-    virtual TCHAR *GetName()=0;
+    virtual TCHAR* GetName() = 0;
 };
 
 
-template<typename T1> 
-class CPersistentReferenceT:public IPersistencyItem
+template<typename T1>
+class CPersistentReferenceT :public IPersistencyItem
 {
 protected:
 
     DWORD		m_dwFlags;
 
-    T1			*m_pValue;
+    T1* m_pValue;
     TCHAR		m_sName[200];
 
 public:
 
-    TCHAR *GetName(){return m_sName;}
-    T1	 *GetValueAddress(){return m_pValue;}
-    void SetDefaultValue(){}
+    TCHAR* GetName() { return m_sName; }
+    T1* GetValueAddress() { return m_pValue; }
+    void SetDefaultValue() {}
 
-    CPersistentReferenceT(T1 *pValue,TCHAR *pName,DWORD flags)
+    CPersistentReferenceT(T1* pValue, TCHAR* pName, DWORD flags)
     {
-        m_dwFlags=flags;
-        m_pValue=pValue;
-        _tcscpy_s(m_sName,200,pName);
+        m_dwFlags = flags;
+        m_pValue = pValue;
+        _tcscpy_s(m_sName, 200, pName);
     }
-    virtual ~CPersistentReferenceT(){}
+    virtual ~CPersistentReferenceT() {}
 };
 
 
-template<typename T1> 
-class CPersistentSimpleReferenceT:public CPersistentReferenceT<T1>
+template<typename T1>
+class CPersistentSimpleReferenceT :public CPersistentReferenceT<T1>
 {
 public:
 
-    void	Initialize(){PersistencyInitialize(this);}
-    void	Free(){PersistencyFree(this);}
-    void	SetDefaultValue(){}
-    HRESULT Load(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_READ){hr=PersistencyLoad(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
-    HRESULT Save(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencySave(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
-    HRESULT Remove(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencyRemove(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
+    void	Initialize() { PersistencyInitialize(this); }
+    void	Free() { PersistencyFree(this); }
+    void	SetDefaultValue() {}
+    HRESULT Load(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_READ) { hr = PersistencyLoad(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
+    HRESULT Save(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_WRITE) { hr = PersistencySave(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
+    HRESULT Remove(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_WRITE) { hr = PersistencyRemove(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
 
-    CPersistentSimpleReferenceT(T1 *pValue,TCHAR *pName,DWORD flags):CPersistentReferenceT<T1>(pValue,pName,flags){}
-    virtual ~CPersistentSimpleReferenceT(){}
+    CPersistentSimpleReferenceT(T1* pValue, TCHAR* pName, DWORD flags) :CPersistentReferenceT<T1>(pValue, pName, flags) {}
+    virtual ~CPersistentSimpleReferenceT() {}
 };
 
 
-template<typename T1> 
-class CPersistentValueReferenceT:public CPersistentReferenceT<T1>
+template<typename T1>
+class CPersistentValueReferenceT :public CPersistentReferenceT<T1>
 {
 protected:
     T1 m_DefValue;
 
 public:
-    CPersistentValueReferenceT<T1> *SetDefaultValueAndReturnThis(T1 def)
+    CPersistentValueReferenceT<T1>* SetDefaultValueAndReturnThis(T1 def)
     {
-        PersistencyAsign(&m_DefValue,&def);
+        PersistencyAsign(&m_DefValue, &def);
         return this;
     }
 
-    CPersistentValueReferenceT(T1 *pValue,TCHAR *pName,DWORD flags)
-        :CPersistentReferenceT<T1>(pValue,pName,flags)
+    CPersistentValueReferenceT(T1* pValue, TCHAR* pName, DWORD flags)
+        :CPersistentReferenceT<T1>(pValue, pName, flags)
     {
     }
-    void	Initialize(){PersistencyInitialize(this);}
-    void	Free(){PersistencyFree(this);}
-    void	SetDefaultValue(){PersistencyAsign(m_pValue,&m_DefValue);}
+    void	Initialize() { PersistencyInitialize(this); }
+    void	Free() { PersistencyFree(this); }
+    void	SetDefaultValue() { PersistencyAsign(m_pValue, &m_DefValue); }
 
-    HRESULT Load(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_READ){hr=PersistencyLoad(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
-    HRESULT Save(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencySave(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
-    HRESULT Remove(IPersistencyNode *piNode){HRESULT hr=S_OK;if(m_dwFlags&PF_WRITE){hr=PersistencyRemove(piNode,this);}if(m_dwFlags&PF_OPTIONAL){return S_OK;}return hr;}
+    HRESULT Load(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_READ) { hr = PersistencyLoad(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
+    HRESULT Save(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_WRITE) { hr = PersistencySave(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
+    HRESULT Remove(IPersistencyNode* piNode) { HRESULT hr = S_OK; if (m_dwFlags & PF_WRITE) { hr = PersistencyRemove(piNode, this); }if (m_dwFlags & PF_OPTIONAL) { return S_OK; }return hr; }
 
-    ~CPersistentValueReferenceT(){}
+    ~CPersistentValueReferenceT() {}
 };
 
-template<typename T1> CPersistentValueReferenceT<T1> *PersistCreateReferenceWithDefaultValue(T1 *pVar,TCHAR *name,DWORD flags=PF_NORMAL){return new CPersistentValueReferenceT<T1>(pVar,name,flags);}
-template<typename T1> CPersistentSimpleReferenceT<T1> *PersistCreateReference(T1 *pVar,TCHAR *name,DWORD flags=PF_NORMAL){return new CPersistentSimpleReferenceT<T1>(pVar,name,flags);}
+template<typename T1> CPersistentValueReferenceT<T1>* PersistCreateReferenceWithDefaultValue(T1* pVar, TCHAR* name, DWORD flags = PF_NORMAL) { return new CPersistentValueReferenceT<T1>(pVar, name, flags); }
+template<typename T1> CPersistentSimpleReferenceT<T1>* PersistCreateReference(T1* pVar, TCHAR* name, DWORD flags = PF_NORMAL) { return new CPersistentSimpleReferenceT<T1>(pVar, name, flags); }
 
 #define DECLARE_SERIALIZABLE(className)\
     static HRESULT PersistencyLoad(IPersistencyNode *piParent,CPersistentReferenceT<className>*pItem)\
@@ -218,13 +218,13 @@ if(bInSpecifiedSubMap){\
     delete [] ppOtherClassItems;\
 }
 
-void	_PersistencyDefaultValue(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
-HRESULT _PersistencySave(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
-HRESULT _PersistencyLoad(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
-HRESULT _PersistencyRemove(IPersistencyItem **ppiList,IPersistencyNode *piNode,TCHAR *pPrefixName=NULL);
-void	_PersistencyInitialize(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
-void	_PersistencyFree(IPersistencyItem **ppiList,TCHAR *pPrefixName=NULL);
-void	_FreePersistencyPropertyMap(IPersistencyItem ***ppiList);
+void	_PersistencyDefaultValue(IPersistencyItem** ppiList, TCHAR* pPrefixName = NULL);
+HRESULT _PersistencySave(IPersistencyItem** ppiList, IPersistencyNode* piNode, TCHAR* pPrefixName = NULL);
+HRESULT _PersistencyLoad(IPersistencyItem** ppiList, IPersistencyNode* piNode, TCHAR* pPrefixName = NULL);
+HRESULT _PersistencyRemove(IPersistencyItem** ppiList, IPersistencyNode* piNode, TCHAR* pPrefixName = NULL);
+void	_PersistencyInitialize(IPersistencyItem** ppiList, TCHAR* pPrefixName = NULL);
+void	_PersistencyFree(IPersistencyItem** ppiList, TCHAR* pPrefixName = NULL);
+void	_FreePersistencyPropertyMap(IPersistencyItem*** ppiList);
 
 #define END_PERSIST_MAP()\
     int x;\

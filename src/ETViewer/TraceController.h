@@ -39,7 +39,7 @@ struct STraceEvenTracingNormalizedData
     GUID   sourceFileGUID;
     WORD   sourceTraceIndex;
     int    nParamBuffer;
-    BYTE  *pParamBuffer;
+    BYTE* pParamBuffer;
 
     DWORD	dwProcessId;
     DWORD	dwThreadId;
@@ -60,31 +60,31 @@ struct STraceEvenTracingNormalizedData
 
     STraceEvenTracingNormalizedData()
     {
-        bFormatted=false;
-        dwLine=0;
-        dwSequenceIndex=0;
-        dwProcessId=0;
-        dwThreadId=0;
-        memset(&systemTime,0,sizeof(systemTime));
-        timeStamp.QuadPart=0;
-        sourceFileGUID=GUID_NULL;
-        sourceTraceIndex=0;
-        nParamBuffer=0;
-        pParamBuffer=NULL;
+        bFormatted = false;
+        dwLine = 0;
+        dwSequenceIndex = 0;
+        dwProcessId = 0;
+        dwThreadId = 0;
+        memset(&systemTime, 0, sizeof(systemTime));
+        timeStamp.QuadPart = 0;
+        sourceFileGUID = GUID_NULL;
+        sourceTraceIndex = 0;
+        nParamBuffer = 0;
+        pParamBuffer = NULL;
     }
 
     ~STraceEvenTracingNormalizedData()
     {
-        delete [] pParamBuffer;
-        pParamBuffer=NULL;
+        delete[] pParamBuffer;
+        pParamBuffer = NULL;
     }
 };
 
 class ITraceEvents
 {
 public:
-    virtual void ProcessTrace(STraceEvenTracingNormalizedData *pTraceData)=0;
-    virtual void ProcessUnknownTrace(STraceEvenTracingNormalizedData *pTraceData)=0;
+    virtual void ProcessTrace(STraceEvenTracingNormalizedData* pTraceData) = 0;
+    virtual void ProcessUnknownTrace(STraceEvenTracingNormalizedData* pTraceData) = 0;
 };
 
 enum eTraceControllerSessionType
@@ -99,21 +99,21 @@ class CTraceController
 {
     struct STraceProviderData
     {
-        CTraceProvider   *pProvider;
+        CTraceProvider* pProvider;
         DWORD			  dwLevel;
         DWORD			  dwFlags;
         bool			  bEnabled;
 
-        STraceProviderData(){pProvider=NULL;dwFlags=0;dwLevel=0;bEnabled=false;}
+        STraceProviderData() { pProvider = NULL; dwFlags = 0; dwLevel = 0; bEnabled = false; }
     };
 
     HANDLE m_hMutex;
 
-    std::map<STraceFormatEntryKey,STraceFormatEntry *> m_FormatEntries;
-    std::map<GUID,STraceProviderData,CGUIDComparer> m_Providers;
+    std::map<STraceFormatEntryKey, STraceFormatEntry*> m_FormatEntries;
+    std::map<GUID, STraceProviderData, CGUIDComparer> m_Providers;
 
-    ITraceEvents *m_piEventCallback;
-    
+    ITraceEvents* m_piEventCallback;
+
     bool m_bPaused;
 
     std::tstring    m_sLogFileName;
@@ -123,8 +123,8 @@ class CTraceController
     EVENT_TRACE_LOGFILE m_ConsumerProperties;
     HANDLE  m_hConsumerThread;
 
-    EVENT_TRACE_PROPERTIES *m_pSessionProperties;
-    
+    EVENT_TRACE_PROPERTIES* m_pSessionProperties;
+
     LARGE_INTEGER m_liPerformanceFrequency;
     LARGE_INTEGER m_liReferenceCounter;
     FILETIME	  m_liReferenceFileTime;
@@ -135,21 +135,21 @@ class CTraceController
     static VOID WINAPI	EventCallback(PEVENT_TRACE pEvent);
     static DWORD WINAPI ConsumerThread(LPVOID lpThreadParameter);
 
-    void InitializeRealTimeSession(const TCHAR *pSessionName);
-    void InitializeCreateLog(const TCHAR *pSessionName,const TCHAR *pFileName);
+    void InitializeRealTimeSession(const TCHAR* pSessionName);
+    void InitializeCreateLog(const TCHAR* pSessionName, const TCHAR* pFileName);
 
-    bool Format(STraceEvenTracingNormalizedData *pData);
+    bool Format(STraceEvenTracingNormalizedData* pData);
 
-    void RemoveProviderFormatEntries(CTraceProvider *pProvider);
-    void AddProviderFormatEntries(CTraceProvider *pProvider);
+    void RemoveProviderFormatEntries(CTraceProvider* pProvider);
+    void AddProviderFormatEntries(CTraceProvider* pProvider);
 
 public:
 
     eTraceControllerSessionType GetSessionType();
 
-    ULONG OpenLog(const TCHAR *pLogFile,ITraceEvents *piEvents);
-    ULONG CreateLog(const TCHAR *pLogFile,ITraceEvents *piEvents);
-    ULONG StartRealTime(TCHAR *pSessionName,ITraceEvents *piEvents);
+    ULONG OpenLog(const TCHAR* pLogFile, ITraceEvents* piEvents);
+    ULONG CreateLog(const TCHAR* pLogFile, ITraceEvents* piEvents);
+    ULONG StartRealTime(TCHAR* pSessionName, ITraceEvents* piEvents);
     void  Stop();
 
     void  Pause(bool bPause);
@@ -157,19 +157,19 @@ public:
 
     void FlushTraces();
 
-    bool AddProvider(CTraceProvider *pProvider,DWORD dwFlags,DWORD dwLevel);
-    void RemoveProvider(CTraceProvider *pProvider);
-    void ReplaceProvider(CTraceProvider *pOldProvider, CTraceProvider *pNewProvider);
+    bool AddProvider(CTraceProvider* pProvider, DWORD dwFlags, DWORD dwLevel);
+    void RemoveProvider(CTraceProvider* pProvider);
+    void ReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
 
-    DWORD	GetProviderFlags(CTraceProvider *pProvider);
-    void	SetProviderFlags(CTraceProvider *pProvider,DWORD dwFlags);
-    DWORD	GetProviderLevel(CTraceProvider *pProvider);
-    void	SetProviderLevel(CTraceProvider *pProvider,DWORD dwLevel);
+    DWORD	GetProviderFlags(CTraceProvider* pProvider);
+    void	SetProviderFlags(CTraceProvider* pProvider, DWORD dwFlags);
+    DWORD	GetProviderLevel(CTraceProvider* pProvider);
+    void	SetProviderLevel(CTraceProvider* pProvider, DWORD dwLevel);
 
-    bool	IsProviderEnabled(CTraceProvider *pProvider);
-    void	EnableProvider(CTraceProvider *pProvider,bool bEnabled);
+    bool	IsProviderEnabled(CTraceProvider* pProvider);
+    void	EnableProvider(CTraceProvider* pProvider, bool bEnabled);
 
-    bool	FormatTrace(STraceEvenTracingNormalizedData *pData);
+    bool	FormatTrace(STraceEvenTracingNormalizedData* pData);
 
     std::tstring GetFileName();
 

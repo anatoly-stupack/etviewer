@@ -32,7 +32,7 @@
 
 class CSourceFileContainer : public CDialog
 {
-// Construction
+    // Construction
 public:
     CSourceFileContainer(CWnd* pParent = NULL);   // standard constructor
 
@@ -51,18 +51,18 @@ public:
 // Overrides
     // ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(CSourceFileContainer)
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     //}}AFX_VIRTUAL
 
-    CSourceFileViewer *GetViewerAt(int index);
+    CSourceFileViewer* GetViewerAt(int index);
 
-    public:
+public:
 
-    void GetFiles(std::set<std::tstring> *psFiles);
-    void ReloadFile(const TCHAR *sFile);
+    void GetFiles(std::set<std::tstring>* psFiles);
+    void ReloadFile(const TCHAR* sFile);
 
-    bool ShowFile(const TCHAR *pFile,int line,bool bShowErrorIfFailed=true);
+    bool ShowFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
     void BrowseForAndShowFile();
     void ShowSelectedFile();
     void SetMetrics();
@@ -70,7 +70,7 @@ public:
     void SelectNext();
     void SelectPrevious();
 
-// Implementation
+    // Implementation
 protected:
 
     // Generated message map functions

@@ -58,17 +58,17 @@ protected: // Crear sólo a partir de serialización
     void UpdateProviderIcons(HTREEITEM hItem);
     void UpdateProviderSubTree(HTREEITEM hProviderItem);
 
-// Atributos
+    // Atributos
 public:
     CETViewerDoc* GetDocument();
 
-// Operaciones
+    // Operaciones
 public:
 
-// Reemplazos
-    public:
+    // Reemplazos
+public:
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-    protected:
+protected:
     virtual void OnInitialUpdate(); // Se llama la primera vez después de la construcción
 
 // Implementación
@@ -79,9 +79,9 @@ public:
     virtual void Dump(CDumpContext& dc) const;
 #endif
 
-    void OnAddProvider(CTraceProvider *pProvider);
-    void OnRemoveProvider(CTraceProvider *pProvider);
-    void OnReplaceProvider(CTraceProvider *pOldProvider,CTraceProvider *pNewProvider);
+    void OnAddProvider(CTraceProvider* pProvider);
+    void OnRemoveProvider(CTraceProvider* pProvider);
+    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
     void OnProvidersModified();
     void OnSessionTypeChanged();
     void OnRemoveSelectedProvider();
@@ -89,19 +89,21 @@ public:
 
 protected:
 
-// Funciones de asignación de mensajes generadas
+    // Funciones de asignación de mensajes generadas
 protected:
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnNMClick(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnNMClick(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-    afx_msg void OnNMRclick(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 #ifndef _DEBUG  // Versión de depuración en ProviderTree.cpp
 inline CETViewerDoc* CProviderTree::GetDocument()
-   { return reinterpret_cast<CETViewerDoc*>(m_pDocument); }
+{
+    return reinterpret_cast<CETViewerDoc*>(m_pDocument);
+}
 #endif
 

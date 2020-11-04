@@ -42,14 +42,14 @@ public:
     bool			m_bFindInTraceText;
     static std::tstring	m_LastTextToFind;
 
-    CFindDialog  *m_pFindDialog;
+    CFindDialog* m_pFindDialog;
 
-    virtual void BeginFind(CWnd *pParent,HWND owner,const TCHAR *pTextToFind=NULL);
+    virtual void BeginFind(CWnd* pParent, HWND owner, const TCHAR* pTextToFind = NULL);
 
-    virtual bool FindAndDeleteAll(const TCHAR *pText)=0;
-    virtual bool FindAndMarkAll(const TCHAR *pText)=0;
-    virtual bool FindNext(const TCHAR *pText)=0;
-    virtual void SetFocusOnOwnerWindow()=0;
+    virtual bool FindAndDeleteAll(const TCHAR* pText) = 0;
+    virtual bool FindAndMarkAll(const TCHAR* pText) = 0;
+    virtual bool FindNext(const TCHAR* pText) = 0;
+    virtual void SetFocusOnOwnerWindow() = 0;
 };
 
 // CFindDialog dialog
@@ -58,14 +58,14 @@ class CFindDialog : public CFindReplaceDialog
 {
     DECLARE_DYNAMIC(CFindDialog)
 
-    CFindDialogClient *m_pFindClient;
+    CFindDialogClient* m_pFindClient;
 
 public:
-    CFindDialog(CFindDialogClient *pFindClient);   // standard constructor
+    CFindDialog(CFindDialogClient* pFindClient);   // standard constructor
     virtual ~CFindDialog();
 
-// Dialog Data
-    //{{AFX_DATA(CFindDialog)
+    // Dialog Data
+        //{{AFX_DATA(CFindDialog)
     enum { IDD = IDD_FIND_DIALOG };
     CEdit	m_EDTextToFind;
     CButton m_BTUp;
@@ -84,7 +84,7 @@ public:
     std::deque<std::tstring> m_TextList;
 
     void Save();
-    void SetText(const TCHAR *pTextToFind);
+    void SetText(const TCHAR* pTextToFind);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

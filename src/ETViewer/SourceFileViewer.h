@@ -36,54 +36,54 @@ class CSourceFileViewer : public CDialog, public CFindDialogClient
 {
     DWORD				m_OldEditProc;
     HFONT				m_hFileFont;
-    CHAR				*m_pFileBuffer;
-    CHAR				*m_pFileBufferUpper;
-    TCHAR               *m_pFileBufferWide;
+    CHAR* m_pFileBuffer;
+    CHAR* m_pFileBufferUpper;
+    TCHAR* m_pFileBufferWide;
     DWORD				m_FileBufferLength;
 
     TCHAR m_SourceFile[MAX_PATH];
     int  m_SourceLine;
-    CSourceFileContainer	*m_pContainer;
+    CSourceFileContainer* m_pContainer;
 
-// Construction
+    // Construction
 public:
     CSourceFileViewer(CSourceFileContainer* pParent = NULL);   // standard constructor
 
     void ShowLine(int line);
     std::tstring GetFile();
 
-// Dialog Data
-    //{{AFX_DATA(CSourceFileViewer)
+    // Dialog Data
+        //{{AFX_DATA(CSourceFileViewer)
     enum { IDD = IDD_SOURCE_FILE_VIEWER };
     CEdit	m_EDLine;
     CEdit	m_EDFullPath;
     CRichEditCtrl	m_EDFile;
     //}}AFX_DATA
 
-    DWORD OpenFile(const TCHAR *pFile,int line,bool bShowErrorIfFailed=true);
+    DWORD OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
     void Reload();
-    bool FindNext(const TCHAR *pText);
+    bool FindNext(const TCHAR* pText);
     void Copy();
     void ShowFindDialog();
 
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CSourceFileViewer)
-    protected:
+    // Overrides
+        // ClassWizard generated virtual function overrides
+        //{{AFX_VIRTUAL(CSourceFileViewer)
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     //}}AFX_VIRTUAL
 
 
-    bool FindAndDeleteAll(const TCHAR *pText);
-    bool FindAndMarkAll(const TCHAR *pText);
+    bool FindAndDeleteAll(const TCHAR* pText);
+    bool FindAndMarkAll(const TCHAR* pText);
     void SetFocusOnOwnerWindow();
 
-    static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void SetMetrics();
     void UpdateLine();
     void OnFind();
 
-// Implementation
+    // Implementation
 protected:
 
     // Generated message map functions
