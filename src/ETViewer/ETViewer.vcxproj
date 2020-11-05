@@ -178,7 +178,6 @@
     <ClInclude Include="Persistency\ConfigFile.h" />
     <ClInclude Include="Persistency\Persistency.h" />
     <ClInclude Include="Persistency\PersistentTypes.h" />
-    <ClInclude Include="tstring.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\add_prov.ico" />

@@ -29,7 +29,7 @@
 class CSettingsDialog : public CDialog
 {
     CFont  m_TraceFont;
-    std::tstring m_sTraceFont;
+    std::wstring m_sTraceFont;
     DWORD  m_dwTraceFontSize;
     WNDPROC	m_OldListViewProc;
 

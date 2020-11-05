@@ -34,35 +34,35 @@ HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<int>* pr
 HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<float>* prop);
 HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<double>* prop);
 HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem);
-HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem);
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem);
 
 HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem);
 HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<int>* pItem);
 HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<DWORD>* prop);
 HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<float>* prop);
 HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<double>* prop);
-HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem);
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem);
 
 HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<DWORD>* prop);
 HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<int>* prop);
 HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<float>* prop);
 HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<double>* prop);
 HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<bool>* pItem);
-HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem);
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem);
 
 void PersistencyInitialize(CPersistentReferenceT<DWORD>* prop);
 void PersistencyInitialize(CPersistentReferenceT<int>* prop);
 void PersistencyInitialize(CPersistentReferenceT<float>* prop);
 void PersistencyInitialize(CPersistentReferenceT<double>* prop);
 void PersistencyInitialize(CPersistentReferenceT<bool>* pItem);
-void PersistencyInitialize(CPersistentReferenceT<std::tstring>* pItem);
+void PersistencyInitialize(CPersistentReferenceT<std::wstring>* pItem);
 
 void PersistencyFree(CPersistentReferenceT<DWORD>* prop);
 void PersistencyFree(CPersistentReferenceT<int>* prop);
 void PersistencyFree(CPersistentReferenceT<float>* prop);
 void PersistencyFree(CPersistentReferenceT<double>* prop);
 void PersistencyFree(CPersistentReferenceT<bool>* pItem);
-void PersistencyFree(CPersistentReferenceT<std::tstring>* pItem);
+void PersistencyFree(CPersistentReferenceT<std::wstring>* pItem);
 
 /////////////////////////////////////////////////////
 // Funciones para guardar contenedores no asociativos

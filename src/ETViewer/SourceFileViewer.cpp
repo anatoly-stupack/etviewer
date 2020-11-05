@@ -268,7 +268,7 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR* pFile, int line, bool bShowErrorI
     PostMessage(WM_USER + 1);
     ShowLine(m_SourceLine);
 
-    std::tstring sTemp;
+    std::wstring sTemp;
     sTemp = m_SourceFile;
     if (m_SourceLine)
     {
@@ -470,10 +470,10 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
             DWORD command = ::TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_RETURNCMD, p.x, p.y, 0, pThis->m_hWnd, NULL);
             if (command == ID_OPEN_AS_SOURCE_FILE)
             {
-                std::deque<std::tstring> dirs;
+                std::deque<std::wstring> dirs;
 
                 // include the same directory as the file showed by this viewer
-                std::tstring temp1;
+                std::wstring temp1;
                 TCHAR drive[MAX_PATH] = { 0 }, path[MAX_PATH] = { 0 };
                 _tsplitpath_s(pThis->m_SourceFile, drive, MAX_PATH, path, MAX_PATH, NULL, 0, NULL, 0);
                 temp1 = drive;
@@ -619,7 +619,7 @@ bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
     if (!pParent) { pParent = this; }
     if (pText == NULL)
     {
-        std::tstring sTemp;
+        std::wstring sTemp;
         sTemp = m_LastTextToFind;
         sTemp += _T(" was not found");
         pParent->MessageBox(sTemp.c_str(), _T(""), MB_OK);
@@ -637,7 +637,7 @@ void CSourceFileViewer::Copy()
     m_EDFile.Copy();
 }
 
-std::tstring CSourceFileViewer::GetFile()
+std::wstring CSourceFileViewer::GetFile()
 {
     return m_SourceFile;
 }

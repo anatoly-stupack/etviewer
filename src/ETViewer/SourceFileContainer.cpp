@@ -133,7 +133,7 @@ void CSourceFileContainer::OnSourceFileChanged(NMHDR* pNMHDR, LRESULT* pResult)
     ShowSelectedFile();
     *pResult = 0;
 }
-void CSourceFileContainer::GetFiles(std::set<std::tstring>* psFiles)
+void CSourceFileContainer::GetFiles(std::set<std::wstring>* psFiles)
 {
     psFiles->clear();
     for (int x = 0; x < m_TCSourceFiles.GetItemCount(); x++)
@@ -271,7 +271,7 @@ void CSourceFileContainer::BrowseForAndShowFile()
     dialog.GetOFN().nMaxFile = _countof(sTempBuffer);
     if (dialog.DoModal() == IDOK)
     {
-        std::tstring sPath;
+        std::wstring sPath;
         TCHAR* pString = dialog.GetOFN().lpstrFile;
 
         if (pString[_tcslen(pString) + 1] != 0)
@@ -282,7 +282,7 @@ void CSourceFileContainer::BrowseForAndShowFile()
         }
         while (pString[0] != 0)
         {
-            std::tstring sFileName = sPath;
+            std::wstring sFileName = sPath;
             sFileName += pString;
 
             ShowFile(sFileName.c_str(), true);

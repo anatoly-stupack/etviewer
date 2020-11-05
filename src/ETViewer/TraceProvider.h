@@ -26,9 +26,9 @@
 #include <windows.h>
 #include <set>
 #include <map>
-#include "tstring.h"
 #include <vector>
 #include <deque>
+#include <string>
 #include <dbghelp.h>
 
 #define TRACE_LEVEL_NONE        0   // Tracing is not on
@@ -94,9 +94,9 @@ struct STraceFormatEntry
     DWORD						        m_dwLine;
     std::vector<STraceFormatElement>    m_vElements;
     std::vector<STraceFormatParam>	    m_vParams;
-    std::tstring						m_sFunction;
-    std::tstring						m_sLevel;
-    std::tstring						m_sFlag;
+    std::wstring						m_sFunction;
+    std::wstring						m_sLevel;
+    std::wstring						m_sFlag;
     CTraceSourceFile* m_pSourceFile;
     CTraceProvider* m_pProvider;
 
@@ -136,8 +136,8 @@ class CTraceSourceFile
 public:
 
     GUID			GetGUID();
-    std::tstring	GetFileName();
-    std::tstring    GetFileNameWithPath();
+    std::wstring	GetFileName();
+    std::wstring    GetFileNameWithPath();
 
     CTraceProvider* GetProvider();
     void			SetProvider(CTraceProvider* pProvider);
@@ -150,9 +150,9 @@ public:
 class CTraceProvider
 {
     GUID						    m_ProviderGUID;
-    std::map<std::tstring, DWORD>	m_TraceFlags;
-    std::tstring					m_sComponentName;
-    std::set<std::tstring>          m_sFileList;
+    std::map<std::wstring, DWORD>	m_TraceFlags;
+    std::wstring					m_sComponentName;
+    std::set<std::wstring>          m_sFileList;
     DWORD						    m_dwAllSupportedFlagsMask;
 
     std::vector<STraceFormatEntry*>				m_FormatEntries;
@@ -166,14 +166,14 @@ public:
     void	SetGUID(GUID guid);
 
     DWORD	GetAllSupportedFlagsMask();
-    void	GetSupportedFlags(std::map<std::tstring, DWORD>* pmFlags);
-    void	AddSupportedFlag(std::tstring sName, DWORD dwValue);
-    DWORD	GetSupportedFlagValue(std::tstring sName);
+    void	GetSupportedFlags(std::map<std::wstring, DWORD>* pmFlags);
+    void	AddSupportedFlag(std::wstring sName, DWORD dwValue);
+    DWORD	GetSupportedFlagValue(std::wstring sName);
 
-    std::tstring	GetComponentName();
-    std::set<std::tstring>	GetFileList();
+    std::wstring	GetComponentName();
+    std::set<std::wstring>	GetFileList();
 
-    void                AddFileName(std::tstring sFileName);
+    void                AddFileName(std::wstring sFileName);
     void				AddSourceFile(CTraceSourceFile* pSourceFile);
     void 				GetSourceFiles(std::vector<CTraceSourceFile*>* pvSources);
     CTraceSourceFile* GetSourceFile(GUID sourceGUID);
@@ -181,7 +181,7 @@ public:
     void				AddFormatEntry(STraceFormatEntry* pFormatEntry);
     void 				GetFormatEntries(std::vector<STraceFormatEntry*>* pvFormatEntries);
 
-    CTraceProvider(std::tstring sComponentName, std::tstring sFileName);
+    CTraceProvider(std::wstring sComponentName, std::wstring sFileName);
     ~CTraceProvider(void);
 };
 
@@ -204,13 +204,13 @@ class CTraceReader
 protected:
     std::deque<STraceFormatEntry*>                     m_sTempFormatEntries;
     std::map<GUID, CTraceSourceFile*, CGUIDComparer>    m_sTempSourceFiles;
-    std::map<std::tstring, CTraceProvider*>             m_sTempProviders;
-    std::tstring                                        m_sFileName;
+    std::map<std::wstring, CTraceProvider*>             m_sTempProviders;
+    std::wstring                                        m_sFileName;
 
-    void				 AddSourceFile(GUID guid, std::tstring sFileName);
+    void				 AddSourceFile(GUID guid, std::wstring sFileName);
     CTraceSourceFile* FindSourceFile(GUID sourceFile);
-    CTraceProvider* FindOrCreateProvider(std::tstring sProviderName);
-    CTraceProvider* FindProviderByFlag(std::tstring sFlagName);
+    CTraceProvider* FindOrCreateProvider(std::wstring sProviderName);
+    CTraceProvider* FindProviderByFlag(std::wstring sFlagName);
 
 };
 

@@ -31,7 +31,7 @@
 
 CConfigFileNode::~CConfigFileNode()
 {
-    std::multimap<std::tstring, CConfigFileNode*>::iterator i;
+    std::multimap<std::wstring, CConfigFileNode*>::iterator i;
     for (i = m_mNodes.begin(); i != m_mNodes.end(); i++)
     {
         CConfigFileNode* pNode = i->second;
@@ -39,10 +39,10 @@ CConfigFileNode::~CConfigFileNode()
     }
 }
 
-std::tstring		CConfigFileNode::GetValue(std::tstring sValue) { return m_mData[sValue]; }
-bool			CConfigFileNode::HasValue(std::tstring sValue) { return m_mData.find(sValue) != m_mData.end(); }
+std::wstring		CConfigFileNode::GetValue(std::wstring sValue) { return m_mData[sValue]; }
+bool			CConfigFileNode::HasValue(std::wstring sValue) { return m_mData.find(sValue) != m_mData.end(); }
 
-CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bool bAdd)
+CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::wstring sNodePath, bool bAdd)
 {
     const TCHAR* pNodePath = sNodePath.c_str();
     const TCHAR* pSubNodeEnd = _tcschr(pNodePath, _T('\\'));
@@ -50,7 +50,7 @@ CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bo
     {
         TCHAR sSubNodeName[MAX_PATH] = { 0 };
         _tcsncpy_s(sSubNodeName, pNodePath, (DWORD)(pSubNodeEnd - pNodePath));
-        std::multimap<std::tstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::tstring)sSubNodeName);
+        std::multimap<std::wstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::wstring)sSubNodeName);
         if (i != m_mNodes.end())
         {
             CConfigFileNode* pNode = i->second;
@@ -62,7 +62,7 @@ CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bo
             {
                 CConfigFileNode* pNode = new CConfigFileNode;
                 pNode->m_sName = sSubNodeName;
-                m_mNodes.insert(std::pair<std::tstring, CConfigFileNode*>(sSubNodeName, pNode));
+                m_mNodes.insert(std::pair<std::wstring, CConfigFileNode*>(sSubNodeName, pNode));
                 return pNode->GetAddNode_Internal((pSubNodeEnd + 1), bAdd);
             }
             else
@@ -73,7 +73,7 @@ CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bo
     }
     else
     {
-        std::multimap<std::tstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::tstring)pNodePath);
+        std::multimap<std::wstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::wstring)pNodePath);
         if (i != m_mNodes.end())
         {
             CConfigFileNode* pNode = i->second;
@@ -85,7 +85,7 @@ CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bo
             {
                 CConfigFileNode* pNode = new CConfigFileNode;
                 pNode->m_sName = sNodePath;
-                m_mNodes.insert(std::pair<std::tstring, CConfigFileNode*>(sNodePath, pNode));
+                m_mNodes.insert(std::pair<std::wstring, CConfigFileNode*>(sNodePath, pNode));
                 return pNode;
             }
             else
@@ -96,10 +96,10 @@ CConfigFileNode* CConfigFileNode::GetAddNode_Internal(std::tstring sNodePath, bo
     }
 }
 
-IPersistencyNode* CConfigFileNode::AddNode(std::tstring id) { return GetAddNode_Internal(id, true); }
-IPersistencyNode* CConfigFileNode::GetNode(std::tstring id) { return GetAddNode_Internal(id, false); }
+IPersistencyNode* CConfigFileNode::AddNode(std::wstring id) { return GetAddNode_Internal(id, true); }
+IPersistencyNode* CConfigFileNode::GetNode(std::wstring id) { return GetAddNode_Internal(id, false); }
 
-void CConfigFileNode::DeleteNode(std::tstring sNodePath)
+void CConfigFileNode::DeleteNode(std::wstring sNodePath)
 {
     const TCHAR* pNodePath = sNodePath.c_str();
     const TCHAR* pSubNodeEnd = _tcschr(pNodePath, _T('\\'));
@@ -107,7 +107,7 @@ void CConfigFileNode::DeleteNode(std::tstring sNodePath)
     {
         TCHAR sSubNodeName[MAX_PATH] = { 0 };
         _tcsncpy_s(sSubNodeName, pNodePath, (DWORD)(pSubNodeEnd - pNodePath));
-        std::multimap<std::tstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::tstring)sSubNodeName);
+        std::multimap<std::wstring, CConfigFileNode*>::iterator i = m_mNodes.find((std::wstring)sSubNodeName);
         if (i != m_mNodes.end())
         {
             CConfigFileNode* pNode = i->second;
@@ -116,7 +116,7 @@ void CConfigFileNode::DeleteNode(std::tstring sNodePath)
     }
     else
     {
-        std::multimap<std::tstring, CConfigFileNode*>::iterator i = m_mNodes.find(sNodePath);
+        std::multimap<std::wstring, CConfigFileNode*>::iterator i = m_mNodes.find(sNodePath);
         if (i != m_mNodes.end())
         {
             CConfigFileNode* pNode = i->second;
@@ -130,7 +130,7 @@ void CConfigFileNode::DeleteNode(std::tstring sNodePath)
 void CConfigFileNode::Clear()
 {
     m_mData.clear();
-    std::multimap<std::tstring, CConfigFileNode*>::iterator i;
+    std::multimap<std::wstring, CConfigFileNode*>::iterator i;
     for (i = m_mNodes.begin(); i != m_mNodes.end(); i++)
     {
         CConfigFileNode* pNode = i->second;
@@ -142,14 +142,14 @@ void CConfigFileNode::Clear()
 bool CConfigFileNode::AddProperty(SPersistencyProperty prop) { m_mData[prop.name] = prop.value; return true; }
 bool CConfigFileNode::GetProperty(SPersistencyProperty* pProp)
 {
-    std::map<std::tstring, std::tstring>::iterator i = m_mData.find(pProp->name);
+    std::map<std::wstring, std::wstring>::iterator i = m_mData.find(pProp->name);
     if (i == m_mData.end()) { return false; }
     pProp->value = i->second;
     return true;
 }
 bool CConfigFileNode::RemoveProperty(SPersistencyProperty prop)
 {
-    std::map<std::tstring, std::tstring>::iterator i = m_mData.find(prop.name);
+    std::map<std::wstring, std::wstring>::iterator i = m_mData.find(prop.name);
     if (i == m_mData.end()) { return false; }
     m_mData.erase(i);
     return true;
@@ -169,7 +169,7 @@ CConfigFile::~CConfigFile(void)
 }
 
 
-bool CConfigFile::Open(std::tstring sFileName)
+bool CConfigFile::Open(std::wstring sFileName)
 {
     DWORD dwFileLength = 0;
 
@@ -199,10 +199,10 @@ bool CConfigFile::Open(std::tstring sFileName)
     {
         if (pToken[0] == _T('*') && _tcschr(CONFIG_FILE_DELIMITER, pToken[1]) == NULL)
         {
-            std::tstring sToken = pToken + 1;
+            std::wstring sToken = pToken + 1;
             CConfigFileNode* pNode = new CConfigFileNode;
             pNode->m_sName = sToken; // se esquiva el asterisco de bloque
-            pCurrentNode->m_mNodes.insert(std::pair<std::tstring, CConfigFileNode*>(sToken, pNode));
+            pCurrentNode->m_mNodes.insert(std::pair<std::wstring, CConfigFileNode*>(sToken, pNode));
             pCurrentNode = pNode;
         }
         else if (pToken[0] == _T('{'))
@@ -264,7 +264,7 @@ bool CConfigFile::Open(std::tstring sFileName)
     return true;
 }
 
-bool CConfigFile::Save(std::tstring sFileName)
+bool CConfigFile::Save(std::wstring sFileName)
 {
     m_hFile = CreateFile(sFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (m_hFile != INVALID_HANDLE_VALUE)
@@ -283,13 +283,13 @@ void CConfigFile::SaveNode(CConfigFileNode* pNode)
     if (pNode != &m_RootNode)
     {
         SaveBeginSection(pNode->m_sName);
-        std::map<std::tstring, std::tstring>::iterator iData;
+        std::map<std::wstring, std::wstring>::iterator iData;
         for (iData = pNode->m_mData.begin(); iData != pNode->m_mData.end(); iData++)
         {
             SaveValue(iData->first, iData->second);
         }
     }
-    std::multimap<std::tstring, CConfigFileNode*>::iterator iChild;
+    std::multimap<std::wstring, CConfigFileNode*>::iterator iChild;
     for (iChild = pNode->m_mNodes.begin(); iChild != pNode->m_mNodes.end(); iChild++)
     {
         CConfigFileNode* pChild = iChild->second;
@@ -301,7 +301,7 @@ void CConfigFile::SaveNode(CConfigFileNode* pNode)
     }
 }
 
-void CConfigFile::SaveLine(std::tstring sValue)
+void CConfigFile::SaveLine(std::wstring sValue)
 {
     DWORD dwWritten = 0;
     TCHAR sTemp[512] = { 0 };
@@ -315,11 +315,11 @@ void CConfigFile::SaveLine(std::tstring sValue)
     WriteFile(m_hFile, sTemp, (DWORD)_tcslen(sTemp) * sizeof(TCHAR), &dwWritten, NULL);
 }
 
-void CConfigFile::SaveValue(std::tstring sName, std::tstring sValue) { TCHAR sTemp[512] = { 0 }; _stprintf_s(sTemp, _T("%s=\"%s\""), sName.c_str(), sValue.c_str()); SaveLine(sTemp); }
+void CConfigFile::SaveValue(std::wstring sName, std::wstring sValue) { TCHAR sTemp[512] = { 0 }; _stprintf_s(sTemp, _T("%s=\"%s\""), sName.c_str(), sValue.c_str()); SaveLine(sTemp); }
 
-void CConfigFile::SaveBeginSection(std::tstring sName)
+void CConfigFile::SaveBeginSection(std::wstring sName)
 {
-    SaveLine((std::tstring)_T("*") + sName);
+    SaveLine((std::wstring)_T("*") + sName);
     SaveLine(_T("{"));
     m_dwSaveTabCount++;
 }
@@ -331,5 +331,5 @@ void CConfigFile::SaveEndSection()
 }
 
 IPersistencyNode* CConfigFile::GetRoot() { return &m_RootNode; }
-IPersistencyNode* CConfigFile::GetNode(std::tstring id) { return m_RootNode.GetNode(id); }
-IPersistencyNode* CConfigFile::AddNode(std::tstring id) { return m_RootNode.AddNode(id); }
+IPersistencyNode* CConfigFile::GetNode(std::wstring id) { return m_RootNode.GetNode(id); }
+IPersistencyNode* CConfigFile::AddNode(std::wstring id) { return m_RootNode.AddNode(id); }

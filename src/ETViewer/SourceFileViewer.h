@@ -50,7 +50,7 @@ public:
     CSourceFileViewer(CSourceFileContainer* pParent = NULL);   // standard constructor
 
     void ShowLine(int line);
-    std::tstring GetFile();
+    std::wstring GetFile();
 
     // Dialog Data
         //{{AFX_DATA(CSourceFileViewer)

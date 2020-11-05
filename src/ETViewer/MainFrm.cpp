@@ -387,7 +387,7 @@ void CMainFrame::OnOpenFile()
 
     if (dialog.DoModal() == IDOK)
     {
-        std::tstring sPath;
+        std::wstring sPath;
         TCHAR* pString = dialog.GetOFN().lpstrFile;
 
         //lpstrFile es un array de cadenas, si solo hay una cadena solo se ha seleccionado un archivo,
@@ -401,7 +401,7 @@ void CMainFrame::OnOpenFile()
         }
         while (pString[0] != 0)
         {
-            std::tstring sProvider = sPath;
+            std::wstring sProvider = sPath;
             sProvider += pString;
             OpenFile(sProvider.c_str(), NULL);
             pString = pString + _tcslen(pString) + 1;
@@ -455,7 +455,7 @@ void CMainFrame::OnUpdateFileStoploggintofile(CCmdUI* pCmdUI)
 
 void CMainFrame::OnSessionTypeChanged()
 {
-    std::tstring sCaption;
+    std::wstring sCaption;
     switch (theApp.m_Controller.GetSessionType())
     {
     case eTraceControllerSessionType_None:

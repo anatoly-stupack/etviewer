@@ -34,7 +34,7 @@ struct CColumnInfo
 {
     int					width;
     bool				visible;
-    std::tstring        name;
+    std::wstring        name;
     DWORD				format;
     int					id;
     int					iSubItem;
@@ -96,7 +96,7 @@ public:
 
 protected:
 
-    std::tstring		m_LastTextToFind;
+    std::wstring		m_LastTextToFind;
     bool				m_bFindDirectionUp;
 
     std::deque<CColumnInfo>		m_ColumnInfo;
@@ -123,7 +123,7 @@ protected:
 
     CFont* m_pTraceFont;
     DWORD m_dwTraceFontSize;
-    std::tstring m_sTraceFont;
+    std::wstring m_sTraceFont;
 
     COLORREF m_cNormalTextColor;
     COLORREF m_cNormalBkColor;
@@ -203,8 +203,8 @@ public:
     void OnProvidersModified();
     void OnSessionTypeChanged();
 
-    void SetTraceFont(std::tstring sTraceFont, DWORD dwFontSize);
-    void GetTraceFont(std::tstring* psTraceFont, DWORD* pdwFontSize);
+    void SetTraceFont(std::wstring sTraceFont, DWORD dwFontSize);
+    void GetTraceFont(std::wstring* psTraceFont, DWORD* pdwFontSize);
 
     void SortItems(CColumnInfo* pColumn);
 

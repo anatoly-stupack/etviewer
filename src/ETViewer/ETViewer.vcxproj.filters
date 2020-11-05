@@ -161,9 +161,6 @@
     <ClInclude Include="Persistency\PersistentTypes.h">
       <Filter>Persistency</Filter>
     </ClInclude>
-    <ClInclude Include="tstring.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\add_prov.ico">

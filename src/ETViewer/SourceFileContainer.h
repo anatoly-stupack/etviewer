@@ -59,7 +59,7 @@ protected:
 
 public:
 
-    void GetFiles(std::set<std::tstring>* psFiles);
+    void GetFiles(std::set<std::wstring>* psFiles);
     void ReloadFile(const TCHAR* sFile);
 
     bool ShowFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);

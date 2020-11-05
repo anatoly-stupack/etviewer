@@ -30,8 +30,6 @@
 
 #include "Dbghelp.h"
 
-using namespace std;
-
 #define PARAMETER_INDEX_BASE 10
 
 struct STypeEnumerationData
@@ -259,12 +257,12 @@ GUID CTraceSourceFile::GetGUID()
     return m_SourceFileGUID;
 }
 
-tstring CTraceSourceFile::GetFileName()
+std::wstring CTraceSourceFile::GetFileName()
 {
     return m_SourceFileName;
 }
 
-tstring CTraceSourceFile::GetFileNameWithPath()
+std::wstring CTraceSourceFile::GetFileNameWithPath()
 {
     return m_SourceFileNameWithPath;
 }
@@ -289,7 +287,7 @@ void CTraceSourceFile::SetProvider(CTraceProvider* pProvider)
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-CTraceProvider::CTraceProvider(tstring sComponentName, tstring sFileName)
+CTraceProvider::CTraceProvider(std::wstring sComponentName, std::wstring sFileName)
 {
     m_sComponentName = sComponentName;
     m_sFileList.insert(sFileName);
@@ -306,7 +304,7 @@ void CTraceProvider::FreeAll(void)
 {
     unsigned x;
 
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
     for (i = m_sSourceFiles.begin(); i != m_sSourceFiles.end(); i++)
     {
         CTraceSourceFile* pSource = i->second;
@@ -332,17 +330,17 @@ void CTraceProvider::SetGUID(GUID guid)
     m_ProviderGUID = guid;
 }
 
-tstring CTraceProvider::GetComponentName()
+std::wstring CTraceProvider::GetComponentName()
 {
     return m_sComponentName;
 }
 
-std::set<std::tstring>	CTraceProvider::GetFileList()
+std::set<std::wstring>	CTraceProvider::GetFileList()
 {
     return m_sFileList;
 }
 
-void CTraceProvider::AddFileName(std::tstring sFileName)
+void CTraceProvider::AddFileName(std::wstring sFileName)
 {
     m_sFileList.insert(sFileName);
 }
@@ -352,9 +350,9 @@ void CTraceProvider::AddSourceFile(CTraceSourceFile* pSourceFile)
     m_sSourceFiles[pSourceFile->GetGUID()] = pSourceFile;
 }
 
-void CTraceProvider::GetSourceFiles(vector<CTraceSourceFile*>* pvSources)
+void CTraceProvider::GetSourceFiles(std::vector<CTraceSourceFile*>* pvSources)
 {
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
     for (i = m_sSourceFiles.begin(); i != m_sSourceFiles.end(); i++)
     {
         pvSources->push_back(i->second);
@@ -363,7 +361,7 @@ void CTraceProvider::GetSourceFiles(vector<CTraceSourceFile*>* pvSources)
 
 CTraceSourceFile* CTraceProvider::GetSourceFile(GUID sourceGUID)
 {
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator i;
     i = m_sSourceFiles.find(sourceGUID);
     if (i != m_sSourceFiles.end()) { return i->second; }
     return 0;
@@ -374,7 +372,7 @@ void CTraceProvider::AddFormatEntry(STraceFormatEntry* pFormatEntry)
     m_FormatEntries.push_back(pFormatEntry);
 }
 
-void CTraceProvider::GetFormatEntries(vector<STraceFormatEntry*>* pvFormatEntries)
+void CTraceProvider::GetFormatEntries(std::vector<STraceFormatEntry*>* pvFormatEntries)
 {
     unsigned x;
     for (x = 0; x < m_FormatEntries.size(); x++)
@@ -385,15 +383,15 @@ void CTraceProvider::GetFormatEntries(vector<STraceFormatEntry*>* pvFormatEntrie
 }
 
 DWORD CTraceProvider::GetAllSupportedFlagsMask() { return m_dwAllSupportedFlagsMask; }
-void  CTraceProvider::GetSupportedFlags(map<tstring, DWORD>* pmFlags) { *pmFlags = m_TraceFlags; }
-void  CTraceProvider::AddSupportedFlag(tstring sName, DWORD dwValue)
+void  CTraceProvider::GetSupportedFlags(std::map<std::wstring, DWORD>* pmFlags) { *pmFlags = m_TraceFlags; }
+void  CTraceProvider::AddSupportedFlag(std::wstring sName, DWORD dwValue)
 {
     m_TraceFlags[sName] = dwValue;
     m_dwAllSupportedFlagsMask |= dwValue;
 }
-DWORD CTraceProvider::GetSupportedFlagValue(tstring sName)
+DWORD CTraceProvider::GetSupportedFlagValue(std::wstring sName)
 {
-    map<tstring, DWORD>::iterator i;
+    std::map<std::wstring, DWORD>::iterator i;
     i = m_TraceFlags.find(sName);
     if (i != m_TraceFlags.end()) { return i->second; }
     return 0;
@@ -407,9 +405,9 @@ DWORD CTraceProvider::GetSupportedFlagValue(tstring sName)
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////
 
-CTraceProvider* CTraceReader::FindOrCreateProvider(tstring sProviderName)
+CTraceProvider* CTraceReader::FindOrCreateProvider(std::wstring sProviderName)
 {
-    map<tstring, CTraceProvider*>::iterator iProvider;
+    std::map<std::wstring, CTraceProvider*>::iterator iProvider;
 
     iProvider = m_sTempProviders.find(sProviderName);
     if (iProvider != m_sTempProviders.end())
@@ -425,7 +423,7 @@ CTraceProvider* CTraceReader::FindOrCreateProvider(tstring sProviderName)
 }
 CTraceSourceFile* CTraceReader::FindSourceFile(GUID sourceFile)
 {
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iSourceFile;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iSourceFile;
 
     iSourceFile = m_sTempSourceFiles.find(sourceFile);
     if (iSourceFile != m_sTempSourceFiles.end())
@@ -435,9 +433,9 @@ CTraceSourceFile* CTraceReader::FindSourceFile(GUID sourceFile)
     return NULL;
 }
 
-CTraceProvider* CTraceReader::FindProviderByFlag(tstring sFlagName)
+CTraceProvider* CTraceReader::FindProviderByFlag(std::wstring sFlagName)
 {
-    map<tstring, CTraceProvider*>::iterator iProvider;
+    std::map<std::wstring, CTraceProvider*>::iterator iProvider;
 
     for (iProvider = m_sTempProviders.begin(); iProvider != m_sTempProviders.end(); iProvider++)
     {
@@ -450,9 +448,9 @@ CTraceProvider* CTraceReader::FindProviderByFlag(tstring sFlagName)
     return NULL;
 }
 
-void CTraceReader::AddSourceFile(GUID guid, tstring sFileName)
+void CTraceReader::AddSourceFile(GUID guid, std::wstring sFileName)
 {
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iSourceFile;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iSourceFile;
 
     iSourceFile = m_sTempSourceFiles.find(guid);
     if (iSourceFile == m_sTempSourceFiles.end())
@@ -462,7 +460,7 @@ void CTraceReader::AddSourceFile(GUID guid, tstring sFileName)
     }
 }
 
-eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, vector<CTraceProvider*>* pvProviders)
+eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, std::vector<CTraceProvider*>* pvProviders)
 {
     eTraceReaderError eResult = eTraceReaderError_Generic;
 
@@ -573,7 +571,7 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, vector<CTraceProvid
 
     if (eResult != eTraceReaderError_Success)
     {
-        map<tstring, CTraceProvider*>::iterator iProvider;
+        std::map<std::wstring, CTraceProvider*>::iterator iProvider;
 
         for (iProvider = m_sTempProviders.begin(); iProvider != m_sTempProviders.end(); iProvider++)
         {
@@ -584,7 +582,7 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, vector<CTraceProvid
     }
     else
     {
-        map<tstring, CTraceProvider*>::iterator iSource;
+        std::map<std::wstring, CTraceProvider*>::iterator iSource;
 
         for (iSource = m_sTempProviders.begin(); iSource != m_sTempProviders.end(); iSource++)
         {
@@ -635,7 +633,7 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, vector<CTraceProvid
 
     // Free the source file instances used as templates
 
-    map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iProvider;
+    std::map<GUID, CTraceSourceFile*, CGUIDComparer>::iterator iProvider;
     for (iProvider = m_sTempSourceFiles.begin(); iProvider != m_sTempSourceFiles.end(); iProvider++)
     {
         CTraceSourceFile* pSource = iProvider->second;
@@ -713,7 +711,7 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, 
         }
         if (_tcsncmp(pSymInfo->Name, _T("TMF:"), 4) == 0 && pSymInfo->NameLen)
         {
-            tstring sCompName;
+            std::wstring sCompName;
             TCHAR sTraceLevel[MAX_PATH] = { 0 };
             TCHAR sTraceFlag[MAX_PATH] = { 0 };
             GUID sSourceFileGUID = GUID_NULL;

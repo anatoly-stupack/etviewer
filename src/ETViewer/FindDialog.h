@@ -40,7 +40,7 @@ public:
     bool			m_bHideMarkButtons;
     bool			m_bFindInPIDName;
     bool			m_bFindInTraceText;
-    static std::tstring	m_LastTextToFind;
+    static std::wstring	m_LastTextToFind;
 
     CFindDialog* m_pFindDialog;
 
@@ -81,7 +81,7 @@ public:
 
     bool UpdateOptions();
 
-    std::deque<std::tstring> m_TextList;
+    std::deque<std::wstring> m_TextList;
 
     void Save();
     void SetText(const TCHAR* pTextToFind);

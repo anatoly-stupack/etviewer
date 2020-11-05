@@ -26,8 +26,6 @@
 #include ".\tracecontroller.h"
 #include <versionhelpers.h>
 
-using namespace std;
-
 struct S_NEW_FORMAT_MOF_DATA
 {
     DWORD sequenceId;
@@ -76,7 +74,7 @@ bool CTraceController::AddProvider(CTraceProvider* pProvider, DWORD dwFlags, DWO
     bool bNewProvider = false;
 
     WaitForSingleObject(m_hMutex, INFINITE);
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
 
     AddProviderFormatEntries(pProvider);
@@ -113,7 +111,7 @@ void CTraceController::RemoveProvider(CTraceProvider* pProvider)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
 
     if (i != m_Providers.end())
@@ -135,7 +133,7 @@ void CTraceController::RemoveProvider(CTraceProvider* pProvider)
 
 void CTraceController::AddProviderFormatEntries(CTraceProvider* pProvider)
 {
-    vector<STraceFormatEntry*> lEntries;
+    std::vector<STraceFormatEntry*> lEntries;
     pProvider->GetFormatEntries(&lEntries);
 
     for (unsigned x = 0; x < lEntries.size(); x++)
@@ -147,7 +145,7 @@ void CTraceController::AddProviderFormatEntries(CTraceProvider* pProvider)
 
 void CTraceController::RemoveProviderFormatEntries(CTraceProvider* pProvider)
 {
-    map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i;
+    std::map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i;
 
     for (i = m_FormatEntries.begin(); i != m_FormatEntries.end();)
     {
@@ -168,7 +166,7 @@ void CTraceController::ReplaceProvider(CTraceProvider* pOldProvider, CTraceProvi
     if (pOldProvider->GetGUID() != pNewProvider->GetGUID()) { return; }
 
     WaitForSingleObject(m_hMutex, INFINITE);
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pOldProvider->GetGUID());
 
     if (i != m_Providers.end())
@@ -194,7 +192,7 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData* pData)
 
     STraceFormatEntryKey key(pData->sourceFileGUID, pData->sourceTraceIndex);
 
-    map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i = m_FormatEntries.find(key);
+    std::map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i = m_FormatEntries.find(key);
     if (i == m_FormatEntries.end())
     {
         ReleaseMutex(m_hMutex);
@@ -552,7 +550,7 @@ ULONG CTraceController::StartRealTime(TCHAR* pSessionName, ITraceEvents* piEvent
     }
     if (errorCode == ERROR_SUCCESS)
     {
-        map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+        std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
 
         for (i = m_Providers.begin(); i != m_Providers.end(); i++)
         {
@@ -643,7 +641,7 @@ ULONG CTraceController::CreateLog(const TCHAR* pFileName, ITraceEvents* piEvents
     }
     if (errorCode == ERROR_SUCCESS)
     {
-        map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+        std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
 
         for (i = m_Providers.begin(); i != m_Providers.end(); i++)
         {
@@ -669,7 +667,7 @@ void CTraceController::Stop()
 {
     if (m_eSessionType == eTraceControllerSessionType_None) { return; }
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
 
     if (m_hSession)
     {
@@ -706,7 +704,7 @@ DWORD CTraceController::GetProviderFlags(CTraceProvider* pProvider)
     DWORD dwFlags = 0;
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -722,7 +720,7 @@ void CTraceController::SetProviderFlags(CTraceProvider* pProvider, DWORD dwFlags
 {
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -748,7 +746,7 @@ DWORD CTraceController::GetProviderLevel(CTraceProvider* pProvider)
     DWORD dwLevel = 0;
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -764,7 +762,7 @@ void CTraceController::SetProviderLevel(CTraceProvider* pProvider, DWORD dwLevel
 {
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -791,7 +789,7 @@ bool CTraceController::IsProviderEnabled(CTraceProvider* pProvider)
 
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -808,7 +806,7 @@ void CTraceController::EnableProvider(CTraceProvider* pProvider, bool bEnabled)
 
     WaitForSingleObject(m_hMutex, INFINITE);
 
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
     i = m_Providers.find(pProvider->GetGUID());
     if (i != m_Providers.end())
     {
@@ -838,7 +836,7 @@ void CTraceController::FlushTraces()
 void CTraceController::Pause(bool bPause)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
-    map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
+    std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
 
     m_bPaused = bPause;
 
@@ -864,7 +862,7 @@ eTraceControllerSessionType CTraceController::GetSessionType()
     return m_eSessionType;
 }
 
-tstring CTraceController::GetFileName()
+std::wstring CTraceController::GetFileName()
 {
     return m_sLogFileName;
 }

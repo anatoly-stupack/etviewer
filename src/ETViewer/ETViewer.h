@@ -69,7 +69,7 @@ enum
 
 class CHightLightFilter
 {
-    std::tstring        m_Text;
+    std::wstring        m_Text;
     DWORD				m_dwTextLen;
     DWORD				m_TextColor;
     DWORD				m_BkColor;
@@ -90,8 +90,8 @@ public:
     void		SetEnabled(bool bEnable) { m_bEnabled = bEnable; }
     bool		GetEnabled() { return m_bEnabled; }
 
-    void		    SetText(std::tstring sText) { m_Text = sText; m_dwTextLen = (DWORD)_tcslen(m_Text.c_str()); }
-    std::tstring& GetText() { return m_Text; }
+    void		    SetText(std::wstring sText) { m_Text = sText; m_dwTextLen = (DWORD)_tcslen(m_Text.c_str()); }
+    std::wstring& GetText() { return m_Text; }
     DWORD		    GetTextLen() { return m_dwTextLen; }
 
     CHightLightFilter(const CHightLightFilter& otherFilter)
@@ -165,7 +165,7 @@ class CFilter
 {
 public:
 
-    std::tstring		m_Text;
+    std::wstring		m_Text;
     DWORD       		m_dwTextLen;
     bool		        m_bInclusionFilter;
 
@@ -189,7 +189,7 @@ enum eFileMonitoringMode
 
 struct SPendingFileChangeOperation
 {
-    std::tstring sFileName;
+    std::wstring sFileName;
     DWORD  dwChangeTime; // Tick count
 };
 
@@ -216,8 +216,8 @@ public:
     // Reemplazos
 public:
 
-    void AddFileChangeOperation(std::tstring sFileName);
-    void RemoveFileChangeOperation(std::tstring sFileName);
+    void AddFileChangeOperation(std::wstring sFileName);
+    void RemoveFileChangeOperation(std::wstring sFileName);
     void RemoveExpiredFileChangeOperations();
     void CheckFileChangeOperations();
 
@@ -225,22 +225,22 @@ public:
 
     virtual BOOL InitInstance();
 
-    std::tstring		     m_sConfigFile;
+    std::wstring		     m_sConfigFile;
     CConfigFile				 m_ConfigFile;
 
     std::deque<CHightLightFilter> m_HighLightFilters;
     std::deque<CHightLightFilter> m_SplittedHighLightFilters;
-    std::deque<std::tstring>		 m_RecentSourceFiles;
-    std::deque<std::tstring>		 m_RecentPDBFiles;
-    std::deque<std::tstring>		 m_RecentLogFiles;
-    std::deque<std::tstring>		 m_SourceDirectories;
+    std::deque<std::wstring>		 m_RecentSourceFiles;
+    std::deque<std::wstring>		 m_RecentPDBFiles;
+    std::deque<std::wstring>		 m_RecentLogFiles;
+    std::deque<std::wstring>		 m_SourceDirectories;
 
     std::deque<CFilter>			m_dSplittedInstantFilters;
 
-    std::tstring 					m_InstantIncludeFilter;
-    std::tstring 					m_InstantExcludeFilter;
-    std::deque<std::tstring>		m_InstantIncludeFilterList;
-    std::deque<std::tstring>		m_InstantExcludeFilterList;
+    std::wstring 					m_InstantIncludeFilter;
+    std::wstring 					m_InstantExcludeFilter;
+    std::deque<std::wstring>		m_InstantIncludeFilterList;
+    std::deque<std::wstring>		m_InstantExcludeFilterList;
     bool					m_bAssociateETL;
     bool					m_bAssociatePDB;
     bool					m_bAssociateSources;
@@ -260,7 +260,7 @@ public:
 
     bool AddProvider(CTraceProvider* pProvider);
     void ReloadProvider(CTraceProvider* pProvider);
-    bool ReloadPDBProviders(std::tstring sFileName);
+    bool ReloadPDBProviders(std::wstring sFileName);
     void ReloadAllProviders();
     void RemoveProvider(CTraceProvider* pProvider);
     void RemoveAllProviders();
@@ -283,7 +283,7 @@ public:
     bool FilterTrace(const TCHAR* pText);
 
     // IFileMonitorCallback
-    void OnFileChanged(std::tstring sFile);
+    void OnFileChanged(std::wstring sFile);
 
     BEGIN_PERSIST_MAP(CETViewerApp)
         PERSIST(m_InstantIncludeFilter, _T("IncludeFilter"))

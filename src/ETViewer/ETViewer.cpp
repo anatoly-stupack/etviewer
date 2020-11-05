@@ -251,7 +251,7 @@ void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, T
 
     if (dwError == ERROR_SUCCESS)
     {
-        std::tstring sKeyName = pFileTypeName;
+        std::wstring sKeyName = pFileTypeName;
         sKeyName += _T("\\shell\\open\\command");
         dwError = RegCreateKey(HKEY_CLASSES_ROOT, sKeyName.c_str(), &hKey);
         if (dwError == ERROR_SUCCESS)
@@ -272,10 +272,10 @@ BOOL CETViewerApp::ProcessCommandLine(int argc, TCHAR** argw)
     bool bPDBSpecified = false, bSilent = false, bSourceSpecified = false;
     bool bLevelSpecified = false, bValidLevel = true, bFailedToOpenETL = false;
     DWORD dwLevel = TRACE_LEVEL_VERBOSE;
-    std::tstring sETLFile;
+    std::wstring sETLFile;
 
-    std::vector<std::tstring> vPDBsToLoad;
-    std::vector<std::tstring> vSourcesToLoad;
+    std::vector<std::wstring> vPDBsToLoad;
+    std::vector<std::wstring> vSourcesToLoad;
 
     for (x = 0; x < (ULONG)argc; x++)
     {
@@ -423,7 +423,7 @@ BOOL CETViewerApp::ProcessCommandLine(int argc, TCHAR** argw)
         }
         if (bFailedToOpenETL)
         {
-            std::tstring sText = _T("Failed to open .etl file '");
+            std::wstring sText = _T("Failed to open .etl file '");
             sText += sETLFile;
             sText += _T("'");
             MessageBox(GetActiveWindow(), sText.c_str(), _T("ETViewer"), MB_ICONSTOP | MB_OK);
@@ -561,9 +561,9 @@ void CETViewerApp::LookupError(const TCHAR* pText)
 
 void CETViewerApp::AddRecentSourceFile(const TCHAR* pFile)
 {
-    std::tstring file;
+    std::wstring file;
     file = pFile;
-    std::deque<std::tstring>::iterator i;
+    std::deque<std::wstring>::iterator i;
     for (i = m_RecentSourceFiles.begin(); i != m_RecentSourceFiles.end(); i++)
     {
         if (_tcscmp(i->c_str(), pFile) == 0)
@@ -582,9 +582,9 @@ void CETViewerApp::AddRecentSourceFile(const TCHAR* pFile)
 
 void CETViewerApp::AddRecentPDBFile(const TCHAR* pFile)
 {
-    std::tstring file;
+    std::wstring file;
     file = pFile;
-    std::deque<std::tstring>::iterator i;
+    std::deque<std::wstring>::iterator i;
     for (i = m_RecentPDBFiles.begin(); i != m_RecentPDBFiles.end(); i++)
     {
         if (_tcscmp(i->c_str(), pFile) == 0)
@@ -603,9 +603,9 @@ void CETViewerApp::AddRecentPDBFile(const TCHAR* pFile)
 
 void CETViewerApp::AddRecentLogFile(const TCHAR* pFile)
 {
-    std::tstring file;
+    std::wstring file;
     file = pFile;
-    std::deque<std::tstring>::iterator i;
+    std::deque<std::wstring>::iterator i;
     for (i = m_RecentLogFiles.begin(); i != m_RecentLogFiles.end(); i++)
     {
         if (_tcscmp(i->c_str(), pFile) == 0)
@@ -639,7 +639,7 @@ bool CETViewerApp::OpenPDB(const TCHAR* pFile, bool bShowErrorIfFailed)
                 {
                     if (bShowErrorIfFailed)
                     {
-                        std::tstring sTemp = _T("The provider '");
+                        std::wstring sTemp = _T("The provider '");
                         sTemp += pProvider->GetComponentName().c_str();
                         sTemp += _T(" has already been loaded");
                         MessageBox(GetActiveWindow(), sTemp.c_str(), _T("ETViewer"), MB_ICONSTOP | MB_OK);
@@ -653,7 +653,7 @@ bool CETViewerApp::OpenPDB(const TCHAR* pFile, bool bShowErrorIfFailed)
     {
         if (bShowErrorIfFailed)
         {
-            std::tstring sTemp = _T("Failed to load pdb file '");
+            std::wstring sTemp = _T("Failed to load pdb file '");
             sTemp += pFile;
             sTemp += _T("'.\r\n\r\n");
             switch (eErrorCode)
@@ -702,7 +702,7 @@ bool CETViewerApp::OpenCodeAddress(const TCHAR* pFile, DWORD dwLine, bool bShowE
 
     if (_tcscmp(pFile, _T("")) == 0) { return false; }
 
-    std::tstring sFile = pFile;
+    std::wstring sFile = pFile;
 
     bool bAccesible = false;
     if (_taccess(sFile.c_str(), 0))
@@ -716,7 +716,7 @@ bool CETViewerApp::OpenCodeAddress(const TCHAR* pFile, DWORD dwLine, bool bShowE
                 pRemainder = _tcschr(pRemainder, _T('\\'));
                 if (pRemainder)
                 {
-                    std::tstring sTempFile = theApp.m_SourceDirectories[x];
+                    std::wstring sTempFile = theApp.m_SourceDirectories[x];
                     sTempFile += pRemainder;
 
                     if (_taccess(sTempFile.c_str(), 0) == 0)
@@ -910,8 +910,8 @@ void CETViewerApp::ReloadAllProviders()
     CETViewerView* pTraceViewer = m_pFrame->GetTracePane();
     CProviderTree* pTree = m_pFrame->GetProviderTree();
 
-    std::set<std::tstring> sPDBsToLoad;
-    std::set<std::tstring>::iterator iPDB;
+    std::set<std::wstring> sPDBsToLoad;
+    std::set<std::wstring>::iterator iPDB;
     std::set<CTraceProvider*>::iterator iProvider;
     for (iProvider = m_sProviders.begin(); iProvider != m_sProviders.end(); iProvider++)
     {
@@ -925,7 +925,7 @@ void CETViewerApp::ReloadAllProviders()
 
     for (iPDB = sPDBsToLoad.begin(); iPDB != sPDBsToLoad.end(); iPDB++)
     {
-        std::tstring sPDB = *iPDB;
+        std::wstring sPDB = *iPDB;
         std::vector<CTraceProvider*> loadedProviders;
         CTracePDBReader reader;
         reader.LoadFromPDB(sPDB.c_str(), &loadedProviders);
@@ -971,7 +971,7 @@ void CETViewerApp::ReloadAllProviders()
     }
 }
 
-bool CETViewerApp::ReloadPDBProviders(std::tstring sFileName)
+bool CETViewerApp::ReloadPDBProviders(std::wstring sFileName)
 {
     CETViewerView* pTraceViewer = m_pFrame->GetTracePane();
     CProviderTree* pTree = m_pFrame->GetProviderTree();
@@ -1126,21 +1126,21 @@ void CETViewerApp::RefreshRecentFilesMenus()
 void CETViewerApp::OnRecentPDBFile(UINT nID)
 {
     if (m_RecentPDBFiles.size() == 0) { return; }
-    std::tstring file = m_RecentPDBFiles[nID - RECENT_PDB_FILE_BASE_INDEX];
+    std::wstring file = m_RecentPDBFiles[nID - RECENT_PDB_FILE_BASE_INDEX];
     m_pFrame->OpenFile(file.c_str(), NULL);
 }
 
 void CETViewerApp::OnRecentSourceFile(UINT nID)
 {
     if (m_RecentSourceFiles.size() == 0) { return; }
-    std::tstring file = m_RecentSourceFiles[nID - RECENT_SOURCE_FILE_BASE_INDEX];
+    std::wstring file = m_RecentSourceFiles[nID - RECENT_SOURCE_FILE_BASE_INDEX];
     OpenCodeAddress(file.c_str(), 0, true);
 }
 
 void CETViewerApp::OnRecentLogFile(UINT nID)
 {
     if (m_RecentLogFiles.size() == 0) { return; }
-    std::tstring file = m_RecentLogFiles[nID - RECENT_LOG_FILE_BASE_INDEX];
+    std::wstring file = m_RecentLogFiles[nID - RECENT_LOG_FILE_BASE_INDEX];
     m_pFrame->OpenFile(file.c_str(), NULL);
 }
 
@@ -1174,12 +1174,12 @@ void CETViewerApp::UpdateFileAssociations()
     }
 }
 
-void CETViewerApp::OnFileChanged(std::tstring sFile)
+void CETViewerApp::OnFileChanged(std::wstring sFile)
 {
     AddFileChangeOperation(sFile);
 }
 
-void CETViewerApp::AddFileChangeOperation(std::tstring sFileName)
+void CETViewerApp::AddFileChangeOperation(std::wstring sFileName)
 {
     WaitForSingleObject(m_hPendingFileChangesMutex, INFINITE);
     bool bFound = false;
@@ -1203,7 +1203,7 @@ void CETViewerApp::AddFileChangeOperation(std::tstring sFileName)
     ReleaseMutex(m_hPendingFileChangesMutex);
 }
 
-void CETViewerApp::RemoveFileChangeOperation(std::tstring sFileName)
+void CETViewerApp::RemoveFileChangeOperation(std::wstring sFileName)
 {
     WaitForSingleObject(m_hPendingFileChangesMutex, INFINITE);
 
@@ -1275,7 +1275,7 @@ void CETViewerApp::CheckFileChangeOperations()
         {
             if (bMustAsk)
             {
-                std::tstring sQuestion;
+                std::wstring sQuestion;
                 sQuestion = _T("File '");
                 sQuestion += op.sFileName;
                 sQuestion += _T("' has changed.\r\n\r\nDo you want to reload it?");
@@ -1310,7 +1310,7 @@ void CETViewerApp::CheckFileChangeOperations()
             {
                 if (bMustAsk)
                 {
-                    std::tstring sQuestion;
+                    std::wstring sQuestion;
                     sQuestion = _T("File '");
                     sQuestion += op.sFileName;
                     sQuestion += _T("' cannot be reloaded.\r\n\r\nDo you want to retry?");
@@ -1344,7 +1344,7 @@ void CETViewerApp::CheckFileChangeOperations()
 
 void CETViewerApp::UpdateFileMonitor()
 {
-    std::set<std::tstring> sFiles;
+    std::set<std::wstring> sFiles;
 
     if (m_eSourceMonitoringMode != eFileMonitoringMode_None &&
         m_eSourceMonitoringMode != eFileMonitoringMode_Ignore)

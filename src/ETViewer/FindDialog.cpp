@@ -28,7 +28,7 @@
 
 #define MAX_FIND_TEXTS 20
 
-std::tstring	CFindDialogClient::m_LastTextToFind;
+std::wstring	CFindDialogClient::m_LastTextToFind;
 
 CFindDialogClient::CFindDialogClient()
 {

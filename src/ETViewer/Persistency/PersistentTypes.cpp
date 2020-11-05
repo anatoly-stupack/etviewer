@@ -155,7 +155,7 @@ HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<double
     return piNode->RemoveProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
+HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem)
 {
     SPersistencyProperty prop;
     prop.name = pItem->GetName();
@@ -163,7 +163,7 @@ HRESULT PersistencySave(IPersistencyNode* piNode, CPersistentReferenceT<std::tst
     return piNode->AddProperty(prop) ? S_OK : E_FAIL;
 }
 
-HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
+HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem)
 {
     pItem->SetDefaultValue();
     SPersistencyProperty prop;
@@ -172,7 +172,7 @@ HRESULT PersistencyLoad(IPersistencyNode* piNode, CPersistentReferenceT<std::tst
     return E_FAIL;
 }
 
-HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<std::tstring>* pItem)
+HRESULT PersistencyRemove(IPersistencyNode* piNode, CPersistentReferenceT<std::wstring>* pItem)
 {
     SPersistencyProperty prop;
     prop.name = pItem->GetName();
@@ -184,7 +184,7 @@ void PersistencyInitialize(CPersistentReferenceT<int>* pItem) { (*pItem->GetValu
 void PersistencyInitialize(CPersistentReferenceT<float>* pItem) { (*pItem->GetValueAddress()) = 0; }
 void PersistencyInitialize(CPersistentReferenceT<double>* pItem) { (*pItem->GetValueAddress()) = 0; }
 void PersistencyInitialize(CPersistentReferenceT<bool>* pItem) { (*pItem->GetValueAddress()) = 0; }
-void PersistencyInitialize(CPersistentReferenceT<std::tstring>* pItem) { (*pItem->GetValueAddress()) = _T(""); }
+void PersistencyInitialize(CPersistentReferenceT<std::wstring>* pItem) { (*pItem->GetValueAddress()) = _T(""); }
 
 
 void PersistencyFree(CPersistentReferenceT<DWORD>* prop) {}
@@ -192,5 +192,5 @@ void PersistencyFree(CPersistentReferenceT<int>* prop) {}
 void PersistencyFree(CPersistentReferenceT<float>* prop) {}
 void PersistencyFree(CPersistentReferenceT<double>* prop) {}
 void PersistencyFree(CPersistentReferenceT<bool>* pItem) {}
-void PersistencyFree(CPersistentReferenceT<std::tstring>* pItem) {}
+void PersistencyFree(CPersistentReferenceT<std::wstring>* pItem) {}
 

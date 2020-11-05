@@ -326,7 +326,7 @@ void CETViewerView::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         {
             if (pActivate->iItem != -1)
             {
-                std::tstring sFile;
+                std::wstring sFile;
                 DWORD line = 0;
                 WaitForSingleObject(m_hTracesMutex, INFINITE);
                 SETViewerTrace* pTrace = m_lTraces[pActivate->iItem];
@@ -790,7 +790,7 @@ bool CETViewerView::FindNext(const TCHAR* pText)
         CWnd* pParent = GetActiveWindow();
         if (!pParent) { pParent = this; }
 
-        std::tstring str = pText;
+        std::wstring str = pText;
         str += _T(" was not found");
         pParent->MessageBox(str.c_str(), _T("ETViewer"), MB_OK);
         return false;
@@ -1722,14 +1722,14 @@ void CETViewerView::OnSessionTypeChanged()
     }
 }
 
-void CETViewerView::SetTraceFont(std::tstring sTraceFont, DWORD dwFontSize)
+void CETViewerView::SetTraceFont(std::wstring sTraceFont, DWORD dwFontSize)
 {
     m_sTraceFont = sTraceFont;
     m_dwTraceFontSize = dwFontSize;
     UpdateFont();
 }
 
-void CETViewerView::GetTraceFont(std::tstring* psTraceFont, DWORD* pdwFontSize)
+void CETViewerView::GetTraceFont(std::wstring* psTraceFont, DWORD* pdwFontSize)
 {
     *psTraceFont = m_sTraceFont;
     *pdwFontSize = m_dwTraceFontSize;

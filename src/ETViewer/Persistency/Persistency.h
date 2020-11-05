@@ -30,9 +30,9 @@
 #include <list>
 #include <set>
 #include <deque>
-#include "..\tstring.h"
 #include <strsafe.h>
 #include <vector>
+#include <string>
 
 #define PF_READ					0x0001
 #define PF_WRITE				0x0002
@@ -41,8 +41,8 @@
 
 struct SPersistencyProperty
 {
-    std::tstring name;
-    std::tstring value;
+    std::wstring name;
+    std::wstring value;
 };
 
 class IPersistencyNode
@@ -53,9 +53,9 @@ public:
     virtual bool GetProperty(SPersistencyProperty* pProperty) = 0;
     virtual bool RemoveProperty(SPersistencyProperty property) = 0;
 
-    virtual IPersistencyNode* AddNode(std::tstring id) = 0;
-    virtual IPersistencyNode* GetNode(std::tstring id) = 0;
-    virtual void DeleteNode(std::tstring id) = 0;
+    virtual IPersistencyNode* AddNode(std::wstring id) = 0;
+    virtual IPersistencyNode* GetNode(std::wstring id) = 0;
+    virtual void DeleteNode(std::wstring id) = 0;
 };
 
 class IPersistencyItem

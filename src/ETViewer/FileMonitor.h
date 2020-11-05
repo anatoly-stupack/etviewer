@@ -27,7 +27,7 @@
 class IFileMonitorCallback
 {
 public:
-    virtual void OnFileChanged(std::tstring sFile) = 0;
+    virtual void OnFileChanged(std::wstring sFile) = 0;
 };
 class CFileMonitor
 {
@@ -36,7 +36,7 @@ class CFileMonitor
     HANDLE				 m_hThread;
     HANDLE				 m_hMutex;
 
-    std::map<std::tstring, time_t>   m_mMonitorizedFiles;
+    std::map<std::wstring, time_t>   m_mMonitorizedFiles;
 
     static DWORD WINAPI FileMonitorThread_Stub(LPVOID lpThreadParameter);
     void FileMonitorThread();
@@ -47,10 +47,10 @@ public:
 
     void Start();
     void Stop();
-    void AddFile(std::tstring sFile);
-    void RemoveFile(std::tstring sFile);
-    void GetFiles(std::set<std::tstring>* pdFilesToMonitor);
-    void SetFiles(std::set<std::tstring>* pdFilesToMonitor);
+    void AddFile(std::wstring sFile);
+    void RemoveFile(std::wstring sFile);
+    void GetFiles(std::set<std::wstring>* pdFilesToMonitor);
+    void SetFiles(std::set<std::wstring>* pdFilesToMonitor);
 
     CFileMonitor(IFileMonitorCallback* piCallback);
     ~CFileMonitor(void);

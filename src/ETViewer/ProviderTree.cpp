@@ -151,15 +151,15 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
             TCHAR filename[MAX_PATH] = { 0 };
             TCHAR extension[MAX_PATH] = { 0 };
             _tsplitpath_s(file.c_str(), NULL, 0, NULL, 0, filename, MAX_PATH, extension, MAX_PATH);
-            std::tstring sfilename = filename;
+            std::wstring sfilename = filename;
             sfilename += _T(".");
             sfilename += extension;
             hTempItem = treeCtrl.InsertItem(sfilename.c_str(), 0, 0, hModuleItems, TVI_SORT);
         }
     }
 
-    std::map<std::tstring, DWORD> traceLevels;
-    std::map<std::tstring, DWORD>::iterator i;
+    std::map<std::wstring, DWORD> traceLevels;
+    std::map<std::wstring, DWORD>::iterator i;
 
     pProvider->GetSupportedFlags(&traceLevels);
 

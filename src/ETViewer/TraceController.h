@@ -49,13 +49,13 @@ struct STraceEvenTracingNormalizedData
 
     // Only available when formatted.
 
-    std::tstring    sText;
-    std::tstring    sSource;
-    std::tstring    sSourceFile;
-    std::tstring    sFunction;
-    std::tstring    sComponent;
-    std::tstring    sLevel;
-    std::tstring    sFlag;
+    std::wstring    sText;
+    std::wstring    sSource;
+    std::wstring    sSourceFile;
+    std::wstring    sFunction;
+    std::wstring    sComponent;
+    std::wstring    sLevel;
+    std::wstring    sFlag;
     DWORD	dwLine;
 
     STraceEvenTracingNormalizedData()
@@ -116,8 +116,8 @@ class CTraceController
 
     bool m_bPaused;
 
-    std::tstring    m_sLogFileName;
-    std::tstring    m_sSessionName;
+    std::wstring    m_sLogFileName;
+    std::wstring    m_sSessionName;
     TRACEHANDLE     m_hSession;
     TRACEHANDLE     m_hConsumerSession;
     EVENT_TRACE_LOGFILE m_ConsumerProperties;
@@ -171,7 +171,7 @@ public:
 
     bool	FormatTrace(STraceEvenTracingNormalizedData* pData);
 
-    std::tstring GetFileName();
+    std::wstring GetFileName();
 
     CTraceController(void);
     ~CTraceController(void);

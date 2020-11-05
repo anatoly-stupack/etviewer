@@ -57,19 +57,19 @@ void CFileMonitor::Stop()
     m_hThread = NULL;
 }
 
-void CFileMonitor::AddFile(std::tstring sFile)
+void CFileMonitor::AddFile(std::wstring sFile)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
-    std::tstring sTempFile = sFile;
+    std::wstring sTempFile = sFile;
     _tcsupr_s(const_cast<TCHAR*>(sTempFile.c_str()), sTempFile.length() + 1);
     m_mMonitorizedFiles[sTempFile] = GetFileTimeStamp(sFile.c_str());
     ReleaseMutex(m_hMutex);
 }
 
-void CFileMonitor::GetFiles(std::set<std::tstring>* pdFilesToMonitor)
+void CFileMonitor::GetFiles(std::set<std::wstring>* pdFilesToMonitor)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
-    std::map<std::tstring, time_t>::iterator i;
+    std::map<std::wstring, time_t>::iterator i;
     for (i = m_mMonitorizedFiles.begin(); i != m_mMonitorizedFiles.end(); i++)
     {
         pdFilesToMonitor->insert(i->first);
@@ -77,24 +77,24 @@ void CFileMonitor::GetFiles(std::set<std::tstring>* pdFilesToMonitor)
     ReleaseMutex(m_hMutex);
 }
 
-void CFileMonitor::SetFiles(std::set<std::tstring>* pdFilesToMonitor)
+void CFileMonitor::SetFiles(std::set<std::wstring>* pdFilesToMonitor)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
     m_mMonitorizedFiles.clear();
-    std::set<std::tstring>::iterator i;
+    std::set<std::wstring>::iterator i;
     for (i = pdFilesToMonitor->begin(); i != pdFilesToMonitor->end(); i++)
     {
-        std::tstring sTempFile = *i;
+        std::wstring sTempFile = *i;
         _tcsupr_s(const_cast<TCHAR*>(sTempFile.c_str()), sTempFile.length() + 1);
         m_mMonitorizedFiles[sTempFile] = GetFileTimeStamp(sTempFile.c_str());
     }
     ReleaseMutex(m_hMutex);
 }
 
-void CFileMonitor::RemoveFile(std::tstring sFile)
+void CFileMonitor::RemoveFile(std::wstring sFile)
 {
     WaitForSingleObject(m_hMutex, INFINITE);
-    std::tstring sTempFile = sFile;
+    std::wstring sTempFile = sFile;
     _tcsupr_s(const_cast<TCHAR*>(sTempFile.c_str()), sTempFile.length() + 1);
     m_mMonitorizedFiles.erase(sTempFile);
     ReleaseMutex(m_hMutex);
@@ -115,7 +115,7 @@ void CFileMonitor::FileMonitorThread()
         if (dwWaitResult == WAIT_OBJECT_0) { break; }
 
         WaitForSingleObject(m_hMutex, INFINITE);
-        std::map<std::tstring, time_t>::iterator i;
+        std::map<std::wstring, time_t>::iterator i;
         for (i = m_mMonitorizedFiles.begin(); i != m_mMonitorizedFiles.end(); i++)
         {
             time_t nNewTime = GetFileTimeStamp(i->first.c_str());
