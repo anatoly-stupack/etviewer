@@ -428,7 +428,10 @@ void CMainFrame::OnUpdateFileCloselog(CCmdUI* pCmdUI)
 
 void CMainFrame::OnFileLogtofile()
 {
-    CFileDialog dialog(FALSE, _T("etl"), NULL, OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, _T("Event Tracing Log Files(*.etl)|*.etl|All Files(*.*)|*.*"));
+    CFileDialog dialog(
+        FALSE, L"etl", NULL, OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT,
+        L"Event Tracing Log Files(*.etl)|*.etl|All Files(*.*)|*.*|");
+
     if (dialog.DoModal() == IDOK)
     {
         theApp.CreateETL(dialog.GetOFN().lpstrFile);
