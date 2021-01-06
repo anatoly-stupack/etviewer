@@ -44,7 +44,10 @@ public:
 
     void WriteStringValue(const std::wstring& name, const std::wstring& value);
 
-    void WriteMultiStringValue(const std::wstring& name, const std::list<std::wstring>& value);
+    void WriteMultiStringValue(const std::wstring& name, const std::list<std::wstring>& list);
+
+private:
+    DWORD CreateBaseKey();
 
 private:
     const std::wstring m_BasePath;

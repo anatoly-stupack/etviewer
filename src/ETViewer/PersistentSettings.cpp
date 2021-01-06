@@ -128,7 +128,13 @@ void PersistentSettings::WriteBoolValue(const std::wstring& name, bool value)
 
 void PersistentSettings::WriteDwordValue(const std::wstring& name, DWORD value)
 {
-    auto result = RegSetKeyValue(
+    auto result = CreateBaseKey();
+    if (result != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+    result = RegSetKeyValue(
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
         name.c_str(),
@@ -144,7 +150,13 @@ void PersistentSettings::WriteDwordValue(const std::wstring& name, DWORD value)
 
 void PersistentSettings::WriteStringValue(const std::wstring& name, const std::wstring& value)
 {
-    auto result = RegSetKeyValue(
+    auto result = CreateBaseKey();
+    if (result != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+    result = RegSetKeyValue(
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
         name.c_str(),
@@ -158,7 +170,58 @@ void PersistentSettings::WriteStringValue(const std::wstring& name, const std::w
     }
 }
 
-void PersistentSettings::WriteMultiStringValue(const std::wstring& name, const std::list<std::wstring>& value)
+void PersistentSettings::WriteMultiStringValue(const std::wstring& name, const std::list<std::wstring>& list)
 {
-    // TODO: implement
+    auto result = CreateBaseKey();
+    if (result != ERROR_SUCCESS)
+    {
+        return;
+    }
+
+    std::wstring buffer;
+
+    for (auto& item : list)
+    {
+        buffer += item;
+        buffer.push_back(L'\0');
+    }
+
+    if (buffer.size() == 0)
+    {
+        return;
+    }
+
+    buffer.push_back(L'\0');
+
+    result = RegSetKeyValue(
+        HKEY_CURRENT_USER,
+        m_BasePath.c_str(),
+        name.c_str(),
+        REG_SZ,
+        buffer.data(),
+        buffer.size() * sizeof(wchar_t));
+
+    if (result != ERROR_SUCCESS)
+    {
+        return;
+    }
+}
+
+DWORD PersistentSettings::CreateBaseKey()
+{
+    HKEY key = nullptr;
+    auto result = RegCreateKeyEx(
+        HKEY_CURRENT_USER,
+        m_BasePath.c_str(),
+        0, nullptr, 0, 0,
+        nullptr, &key, nullptr);
+
+    if (result != ERROR_SUCCESS)
+    {
+        return result;
+    }
+
+    RegCloseKey(key);
+
+    return result;
 }
