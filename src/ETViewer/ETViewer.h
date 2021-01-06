@@ -22,18 +22,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
 #pragma once
 
 #ifndef __AFXWIN_H__
 #error incluye 'stdafx.h' antes de incluir este archivo para PCH
 #endif
 
-#include "resource.h"       // Símbolos principales
-#include "SourceFileContainer.h"       // Símbolos principales
-#include "TraceController.h"      
-#include "MainFrm.h"      
-#include "FileMonitor.h"      
+#include "resource.h"
+#include "SourceFileContainer.h"
+#include "TraceController.h"
+#include "MainFrm.h"
+#include "FileMonitor.h"
+#include "HighLightFilter.h"
 
 #define RECENT_PDB_FILE_BASE_INDEX					3000
 #define RECENT_PDB_FILE_MAX							15
@@ -67,109 +67,15 @@ enum
     eETViewerSortDirection_Descending,
 };
 
-class CHightLightFilter
-{
-    std::wstring        m_Text;
-    DWORD				m_dwTextLen;
-    DWORD				m_TextColor;
-    DWORD				m_BkColor;
-    bool				m_bEnabled;
-    HPEN				m_hPen;
-    HBRUSH				m_hBrush;
-
-public:
-
-
-    HPEN		GetPen() { return m_hPen; }
-    HBRUSH		GetBrush() { return m_hBrush; }
-
-    COLORREF	GetTextColor() { return m_TextColor; }
-    void		SetTextColor(COLORREF textColor) { m_TextColor = textColor; UpdateObjects(); }
-    COLORREF	GetBkColor() { return m_BkColor; }
-    void		SetBkColor(COLORREF bkColor) { m_BkColor = bkColor; UpdateObjects(); }
-    void		SetEnabled(bool bEnable) { m_bEnabled = bEnable; }
-    bool		GetEnabled() { return m_bEnabled; }
-
-    void		    SetText(std::wstring sText) { m_Text = sText; m_dwTextLen = (DWORD)_tcslen(m_Text.c_str()); }
-    std::wstring& GetText() { return m_Text; }
-    DWORD		    GetTextLen() { return m_dwTextLen; }
-
-    CHightLightFilter(const CHightLightFilter& otherFilter)
-    {
-        m_Text = otherFilter.m_Text;
-        m_TextColor = otherFilter.m_TextColor;
-        m_BkColor = otherFilter.m_BkColor;
-        m_bEnabled = otherFilter.m_bEnabled;
-        m_dwTextLen = otherFilter.m_dwTextLen;
-        UpdateObjects();
-    }
-    CHightLightFilter& operator = (CHightLightFilter& otherFilter)
-    {
-        m_Text = otherFilter.m_Text;
-        m_TextColor = otherFilter.m_TextColor;
-        m_BkColor = otherFilter.m_BkColor;
-        m_bEnabled = otherFilter.m_bEnabled;
-        m_dwTextLen = otherFilter.m_dwTextLen;
-        UpdateObjects();
-        return *this;
-    }
-
-    CHightLightFilter()
-    {
-        m_Text.clear();
-        m_bEnabled = true;
-        m_dwTextLen = 0;
-        m_hPen = NULL;
-        m_hBrush = NULL;
-        SetTextColor(RGB(0, 0, 0));
-        SetBkColor(RGB(255, 255, 255));
-    }
-    ~CHightLightFilter()
-    {
-        if (m_hPen) { DeleteObject(m_hPen); m_hPen = NULL; }
-        if (m_hBrush) { DeleteObject(m_hBrush); m_hBrush = NULL; }
-    }
-
-    void UpdateObjects()
-    {
-        if (m_hPen) { DeleteObject(m_hPen); m_hPen = NULL; }
-        if (m_hBrush) { DeleteObject(m_hBrush); m_hBrush = NULL; }
-
-        POINT	 P = { 1,1 };
-        LOGPEN   LP = { 0 };
-        LP.lopnColor = m_BkColor;
-        LP.lopnWidth = P;
-        LP.lopnStyle = PS_SOLID;
-
-        LOGBRUSH LB = { 0 };
-        LB.lbColor = m_BkColor;
-        LB.lbStyle = BS_SOLID;
-
-        m_hBrush = CreateBrushIndirect(&LB);
-        m_hPen = CreatePenIndirect(&LP);
-    }
-
-    BEGIN_PERSIST_MAP(CHightLightFilter)
-        PERSIST(m_Text, _T("Text"))
-        PERSIST(m_dwTextLen, _T("TextLength"))
-        PERSIST(m_TextColor, _T("TextColor"))
-        PERSIST(m_BkColor, _T("BkColor"))
-        PERSIST(m_bEnabled, _T("Enabled"))
-    END_PERSIST_MAP()
-
-};
-
-DECLARE_SERIALIZABLE(CHightLightFilter)
-
 class CFilter
 {
 public:
 
     std::wstring		m_Text;
-    DWORD       		m_dwTextLen;
+    DWORD       		m_dwTextLen; // TODO: remove
     bool		        m_bInclusionFilter;
 
-    CFilter()
+    CFilter() // TODO: constructor with parameters
     {
         m_Text[0] = 0;
         m_bInclusionFilter = true;
@@ -186,14 +92,11 @@ enum eFileMonitoringMode
     eFileMonitoringMode_Ask
 };
 
-
 struct SPendingFileChangeOperation
 {
     std::wstring sFileName;
     DWORD  dwChangeTime; // Tick count
 };
-
-DECLARE_SERIALIZABLE_ENUMERATION(eFileMonitoringMode);
 
 class CETViewerApp : public CWinApp, public IFileMonitorCallback
 {
@@ -201,20 +104,7 @@ public:
     CETViewerApp();
     ~CETViewerApp();
 
-    std::set<CTraceProvider*> m_sProviders;
-    CTracePDBReader		  m_PDBReader;
-
-    HANDLE m_hInstantTraceMutex;
-    HANDLE m_hSingleInstanceMutex;
-
-    std::list<SPendingFileChangeOperation> m_lPendingFileChanges;
-    HANDLE							  m_hPendingFileChangesMutex;
-    bool							  m_bCheckingFileChangeOperations;
-
     void OnClose();
-
-    // Reemplazos
-public:
 
     void AddFileChangeOperation(std::wstring sFileName);
     void RemoveFileChangeOperation(std::wstring sFileName);
@@ -225,38 +115,9 @@ public:
 
     virtual BOOL InitInstance();
 
-    std::wstring		     m_sConfigFile;
-    CConfigFile				 m_ConfigFile;
-
-    std::deque<CHightLightFilter> m_HighLightFilters;
-    std::deque<CHightLightFilter> m_SplittedHighLightFilters;
-    std::deque<std::wstring>		 m_RecentSourceFiles;
-    std::deque<std::wstring>		 m_RecentPDBFiles;
-    std::deque<std::wstring>		 m_RecentLogFiles;
-    std::deque<std::wstring>		 m_SourceDirectories;
-
-    std::deque<CFilter>			m_dSplittedInstantFilters;
-
-    std::wstring 					m_InstantIncludeFilter;
-    std::wstring 					m_InstantExcludeFilter;
-    std::deque<std::wstring>		m_InstantIncludeFilterList;
-    std::deque<std::wstring>		m_InstantExcludeFilterList;
-    bool					m_bAssociateETL;
-    bool					m_bAssociatePDB;
-    bool					m_bAssociateSources;
-
-    eFileMonitoringMode		m_ePDBMonitoringMode;
-    eFileMonitoringMode		m_eSourceMonitoringMode;
-
-    CSourceFileContainer m_SourceFileContainer;
-    CTraceController	 m_Controller;
-    CMainFrame* m_pFrame;
-    CFileMonitor* m_pFileMonitor;
-
     void RefreshRecentFilesMenus();
 
     void UpdateHighLightFilters();
-    void UpdateInstantFilters();
 
     bool AddProvider(CTraceProvider* pProvider);
     void ReloadProvider(CTraceProvider* pProvider);
@@ -285,31 +146,46 @@ public:
     // IFileMonitorCallback
     void OnFileChanged(std::wstring sFile);
 
-    BEGIN_PERSIST_MAP(CETViewerApp)
-        PERSIST(m_InstantIncludeFilter, _T("IncludeFilter"))
-        PERSIST(m_InstantExcludeFilter, _T("ExcludeFilter"))
-        PERSIST(m_InstantIncludeFilterList, _T("IncludeFilterList"))
-        PERSIST(m_InstantExcludeFilterList, _T("ExcludeFilterList"))
-        PERSIST(m_HighLightFilters, _T("HighLightFilters"))
-        PERSIST(m_RecentSourceFiles, _T("RecentSourceFiles"))
-        PERSIST(m_RecentPDBFiles, _T("RecentPDBFiles"))
-        PERSIST_FLAGS(m_RecentLogFiles, _T("m_RecentLogFiles"), PF_NORMAL | PF_OPTIONAL)
-        PERSIST_FLAGS(m_SourceDirectories, _T("SourceDirectories"), PF_NORMAL | PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociateETL, _T("AssociateETL"), false, PF_NORMAL | PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociatePDB, _T("AssociatePDB"), false, PF_NORMAL | PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_bAssociateSources, _T("AssociateSources"), false, PF_NORMAL | PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_ePDBMonitoringMode, _T("PDBMonitoringMode"), eFileMonitoringMode_AutoReload, PF_NORMAL | PF_OPTIONAL)
-        PERSIST_VALUE_FLAGS(m_eSourceMonitoringMode, _T("SourceMonitoringMode"), eFileMonitoringMode_AutoReload, PF_NORMAL | PF_OPTIONAL)
-    END_PERSIST_MAP();
-
-    DECLARE_CONFIG_FILE_MEDIA();
-    // Implementación
     afx_msg void OnAppAbout();
     afx_msg void OnRecentPDBFile(UINT nID);
     afx_msg void OnRecentSourceFile(UINT nID);
     afx_msg void OnRecentLogFile(UINT nID);
+
     DECLARE_MESSAGE_MAP()
+
     virtual int ExitInstance();
+
+    // TODO: make private
+public:
+    std::set<CTraceProvider*> m_sProviders;
+    CTracePDBReader m_PDBReader;
+
+    HANDLE m_hInstantTraceMutex;
+    HANDLE m_hSingleInstanceMutex;
+    HANDLE m_hPendingFileChangesMutex;
+
+    std::list<SPendingFileChangeOperation> m_lPendingFileChanges;
+    bool m_bCheckingFileChangeOperations;
+
+    std::list<std::wstring> m_RecentSourceFiles;
+    std::list<std::wstring> m_RecentPDBFiles;
+    std::list<std::wstring> m_RecentLogFiles;
+    std::list<std::wstring> m_SourceDirectories;
+
+    std::list<CFilter>	m_InstantFilters;
+    std::list<CHighLightFilter> m_HighLightFilters;
+
+    bool m_bAssociateETL;
+    bool m_bAssociatePDB;
+    bool m_bAssociateSources;
+
+    eFileMonitoringMode	m_ePDBMonitoringMode;
+    eFileMonitoringMode	m_eSourceMonitoringMode;
+
+    CSourceFileContainer m_SourceFileContainer;
+    CTraceController m_Controller;
+    CMainFrame* m_pFrame;
+    CFileMonitor* m_pFileMonitor;
 };
 
 extern CETViewerApp theApp;

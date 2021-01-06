@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "FilterDialogBar.h"
-#include ".\filterdialogbar.h"
 
 #define MAX_INSTANT_FILTERS		20
 
@@ -44,7 +43,6 @@ CFilterDialogBar::~CFilterDialogBar()
 {
 }
 
-
 BEGIN_MESSAGE_MAP(CFilterDialogBar, CDialogBar)
     ON_WM_DESTROY()
     ON_CBN_SELCHANGE(IDC_CB_INCLUDE_FILTER, OnCbnSelchangeCbIncludeFilter)
@@ -52,26 +50,24 @@ BEGIN_MESSAGE_MAP(CFilterDialogBar, CDialogBar)
     ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
-// CFilterDialogBar message handlers
-
 void CFilterDialogBar::InitDialogBar()
 {
-    unsigned x;
-
     m_CBIncludeFilter.Attach(::GetDlgItem(m_hWnd, IDC_CB_INCLUDE_FILTER));
     m_CBExcludeFilter.Attach(::GetDlgItem(m_hWnd, IDC_CB_EXCLUDE_FILTER));
 
     m_EDIncludeEdit.Attach(m_CBIncludeFilter.GetWindow(GW_CHILD)->m_hWnd);
     m_EDExcludeEdit.Attach(m_CBExcludeFilter.GetWindow(GW_CHILD)->m_hWnd);
 
-
-    for (x = 0; x < theApp.m_InstantIncludeFilterList.size(); x++)
+    for (auto& filter : theApp.m_InstantFilters)
     {
-        m_CBIncludeFilter.AddString(theApp.m_InstantIncludeFilterList[x].c_str());
-    }
-    for (x = 0; x < theApp.m_InstantExcludeFilterList.size(); x++)
-    {
-        m_CBExcludeFilter.AddString(theApp.m_InstantExcludeFilterList[x].c_str());
+        if (filter.m_bInclusionFilter)
+        {
+            m_CBIncludeFilter.AddString(filter.m_Text.c_str());
+        }
+        else
+        {
+            m_CBExcludeFilter.AddString(filter.m_Text.c_str());
+        }
     }
 
     m_OldIncludeEditProc = (WNDPROC)GetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_WNDPROC);
@@ -82,8 +78,28 @@ void CFilterDialogBar::InitDialogBar()
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_USERDATA, (DWORD)this);
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC, (DWORD)InstantEditProc);
 
-    m_EDIncludeEdit.SetWindowText(theApp.m_InstantIncludeFilter.c_str());
-    m_EDExcludeEdit.SetWindowText(theApp.m_InstantExcludeFilter.c_str());
+    for (auto& filter : theApp.m_InstantFilters)
+    {
+        if (filter.m_bInclusionFilter)
+        {
+            if (!m_InstantIncludeFilters.empty())
+            {
+                m_InstantIncludeFilters += L";";
+            }
+            m_InstantIncludeFilters += filter.m_Text;
+        }
+        else
+        {
+            if (!m_InstantExcludeFilters.empty())
+            {
+                m_InstantExcludeFilters += L";";
+            }
+            m_InstantExcludeFilters += filter.m_Text;
+        }
+    }
+
+    m_EDIncludeEdit.SetWindowText(m_InstantIncludeFilters.c_str());
+    m_EDExcludeEdit.SetWindowText(m_InstantExcludeFilters.c_str());
 }
 
 LRESULT CALLBACK CFilterDialogBar::InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -129,18 +145,30 @@ void CFilterDialogBar::OnDestroy()
 {
     TCHAR sTempText[1024] = { 0 };
 
-    theApp.m_InstantIncludeFilterList.clear();
-    int x;
-    for (x = 0; x < m_CBIncludeFilter.GetCount(); x++)
-    {
-        m_CBIncludeFilter.GetLBText(x, sTempText);
-        theApp.m_InstantIncludeFilterList.push_back(sTempText);
-    }
-    theApp.m_InstantExcludeFilterList.clear();
-    for (x = 0; x < m_CBExcludeFilter.GetCount(); x++)
+    theApp.m_InstantFilters.clear();
+
+    for (auto x = 0; x < m_CBExcludeFilter.GetCount(); x++)
     {
         m_CBExcludeFilter.GetLBText(x, sTempText);
-        theApp.m_InstantExcludeFilterList.push_back(sTempText);
+
+        CFilter filter;
+        filter.m_Text = sTempText;
+        filter.m_dwTextLen = filter.m_Text.size();
+        filter.m_bInclusionFilter = false;
+
+        theApp.m_InstantFilters.push_back(filter);
+    }
+
+    for (auto x = 0; x < m_CBIncludeFilter.GetCount(); x++)
+    {
+        m_CBIncludeFilter.GetLBText(x, sTempText);
+
+        CFilter filter;
+        filter.m_Text = sTempText;
+        filter.m_dwTextLen = filter.m_Text.size();
+        filter.m_bInclusionFilter = true;
+
+        theApp.m_InstantFilters.push_back(filter);
     }
 
     m_CBIncludeFilter.Detach();
@@ -149,36 +177,37 @@ void CFilterDialogBar::OnDestroy()
     m_EDExcludeEdit.Detach();
     CDialogBar::OnDestroy();
 }
+
 void CFilterDialogBar::OnOk()
 {
-    bool		 bAddComboString = false;
-    CComboBox* pCombo = NULL;
-    CWnd* pEdit = NULL;
-    TCHAR		newText[2048];
+    bool bAddComboString = false;
+    CComboBox* pCombo = nullptr;
+    CWnd* pEdit = nullptr;
+    TCHAR newText[2048] = { 0 };
 
     if (GetFocus() == &m_CBIncludeFilter || GetFocus() == &m_EDIncludeEdit)
     {
         TCHAR sTemp[1024] = { 0 };
         m_CBIncludeFilter.GetWindowText(sTemp, _countof(sTemp));
-        theApp.m_InstantIncludeFilter = sTemp;
-        _tcscpy_s(newText, theApp.m_InstantIncludeFilter.c_str());
+        m_InstantIncludeFilters = sTemp;
+        _tcscpy_s(newText, m_InstantIncludeFilters.c_str());
         bAddComboString = true;
         pCombo = &m_CBIncludeFilter;
         pEdit = &m_EDIncludeEdit;
 
-        theApp.UpdateInstantFilters();
+        UpdateInstantFilters();
     }
     if (GetFocus() == &m_CBExcludeFilter || GetFocus() == &m_EDExcludeEdit)
     {
         TCHAR sTemp[1024] = { 0 };
         m_CBExcludeFilter.GetWindowText(sTemp, _countof(sTemp));
-        theApp.m_InstantExcludeFilter = sTemp;
-        _tcscpy_s(newText, theApp.m_InstantExcludeFilter.c_str());
+        m_InstantExcludeFilters = sTemp;
+        _tcscpy_s(newText, m_InstantExcludeFilters.c_str());
         bAddComboString = true;
         pCombo = &m_CBExcludeFilter;
         pEdit = &m_EDExcludeEdit;
 
-        theApp.UpdateInstantFilters();
+        UpdateInstantFilters();
     }
     if (bAddComboString)
     {
@@ -213,13 +242,13 @@ void CFilterDialogBar::OnCancel()
 {
     if (GetFocus() == &m_CBIncludeFilter || GetFocus() == &m_EDIncludeEdit)
     {
-        m_CBIncludeFilter.SetWindowText(theApp.m_InstantIncludeFilter.c_str());
+        m_CBIncludeFilter.SetWindowText(m_InstantIncludeFilters.c_str());
         OnChangedInstantFilters();
     }
 
     if (GetFocus() == &m_CBExcludeFilter || GetFocus() == &m_EDExcludeEdit)
     {
-        m_CBExcludeFilter.SetWindowText(theApp.m_InstantExcludeFilter.c_str());
+        m_CBExcludeFilter.SetWindowText(m_InstantExcludeFilters.c_str());
         OnChangedInstantFilters();
     }
 }
@@ -232,9 +261,9 @@ void CFilterDialogBar::OnCbnSelchangeCbIncludeFilter()
     {
         m_CBIncludeFilter.GetLBText(index, newFilter);
         m_EDIncludeEdit.SetWindowText(newFilter);
-        theApp.m_InstantIncludeFilter = newFilter;
+        m_InstantIncludeFilters = newFilter;
         OnChangedInstantFilters();
-        theApp.UpdateInstantFilters();
+        UpdateInstantFilters();
     }
 }
 
@@ -246,9 +275,9 @@ void CFilterDialogBar::OnCbnSelchangeCbExcludeFilter()
     {
         m_CBExcludeFilter.GetLBText(index, newFilter);
         m_EDExcludeEdit.SetWindowText(newFilter);
-        theApp.m_InstantExcludeFilter = newFilter;
+        m_InstantExcludeFilters = newFilter;
         OnChangedInstantFilters();
-        theApp.UpdateInstantFilters();
+        UpdateInstantFilters();
     }
 }
 
@@ -259,7 +288,7 @@ HBRUSH CFilterDialogBar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
     {
         TCHAR sTemp[1024] = { 0 };
         m_EDIncludeEdit.GetWindowText(sTemp, 1024);
-        if (_tcscmp(sTemp, theApp.m_InstantIncludeFilter.c_str()) != 0)
+        if (_tcscmp(sTemp, m_InstantIncludeFilters.c_str()) != 0)
         {
             hbr = m_hFilterChangedBrush;
             pDC->SetBkColor(m_FilterChangedColor);
@@ -269,7 +298,7 @@ HBRUSH CFilterDialogBar::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
     {
         TCHAR sTemp[1024] = { 0 };
         m_EDExcludeEdit.GetWindowText(sTemp, 1024);
-        if (_tcscmp(sTemp, theApp.m_InstantExcludeFilter.c_str()) != 0)
+        if (_tcscmp(sTemp, m_InstantExcludeFilters.c_str()) != 0)
         {
             hbr = m_hFilterChangedBrush;
             pDC->SetBkColor(m_FilterChangedColor);
@@ -297,4 +326,32 @@ void CFilterDialogBar::OnSessionTypeChanged()
         m_CBIncludeFilter.EnableWindow(FALSE);
         m_CBExcludeFilter.EnableWindow(FALSE);
     }
+}
+
+void CFilterDialogBar::UpdateInstantFilters()
+{
+    std::wstring token;
+    std::list<CFilter> instantFilters;
+
+    std::wistringstream excludeStream(m_InstantExcludeFilters);
+    while (std::getline(excludeStream, token, L';'))
+    {
+        CFilter filter;
+        filter.m_Text = token;
+        filter.m_dwTextLen = token.size();
+        filter.m_bInclusionFilter = false;
+        instantFilters.push_back(filter);
+    }
+
+    std::wistringstream includeStream(m_InstantIncludeFilters);
+    while (std::getline(includeStream, token, L';'))
+    {
+        CFilter filter;
+        filter.m_Text = token;
+        filter.m_dwTextLen = token.size();
+        filter.m_bInclusionFilter = true;
+        instantFilters.push_back(filter);
+    }
+
+    theApp.m_InstantFilters.swap(instantFilters);
 }

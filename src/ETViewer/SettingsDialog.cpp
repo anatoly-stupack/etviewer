@@ -146,10 +146,11 @@ BOOL CSettingsDialog::OnInitDialog()
     theApp.m_pFrame->GetTracePane()->GetTraceFont(&m_sTraceFont, &m_dwTraceFontSize);
     UpdateFont();
 
-    DWORD x;
-    for (x = 0; x < theApp.m_SourceDirectories.size(); x++)
+    auto menuIndex = 0;
+    for (auto& directory : theApp.m_SourceDirectories)
     {
-        m_LWSourcePaths.InsertItem(x, theApp.m_SourceDirectories[x].c_str());
+        m_LWSourcePaths.InsertItem(menuIndex, directory.c_str());
+        menuIndex++;
     }
     return TRUE;
 }

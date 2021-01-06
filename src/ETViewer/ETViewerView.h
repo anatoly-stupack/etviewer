@@ -40,6 +40,7 @@ struct CColumnInfo
     int					iSubItem;
     int					iOrder;
 
+    /*
     BEGIN_PERSIST_MAP(CColumnInfo)
         PERSIST(width, _T("Width"))
         PERSIST(visible, _T("Visible"))
@@ -48,12 +49,11 @@ struct CColumnInfo
         PERSIST(id, _T("Id"))
         PERSIST(iOrder, _T("Order"))
     END_PERSIST_MAP();
+    */
 
     CColumnInfo() { width = 100; visible = false; }
     CColumnInfo(int _id, TCHAR* n, int fmt, int w, bool v, int o) { id = _id; format = fmt; width = w; visible = v; name = n; iSubItem = -1; iOrder = o; }
 };
-
-DECLARE_SERIALIZABLE(CColumnInfo);
 
 struct SETViewerTrace
 {
@@ -159,20 +159,19 @@ protected:
 
     TCHAR* GetTraceText(SETViewerTrace* pTrace, CColumnInfo* pColumn, TCHAR* pAuxBuffer, unsigned nAuxLen);
 
+    /*
     BEGIN_PERSIST_MAP(CETViewerView)
         PERSIST(m_ColumnInfo, _T("Columns"))
         PERSIST(m_dwTraceFontSize, _T("FontSize"));
     PERSIST(m_sTraceFont, _T("FontFamily"));
     PERSIST(m_bShowLastTrace, _T("ShowLastTrace"));
     END_PERSIST_MAP();
-
-    DECLARE_CONFIG_FILE_MEDIA();
-
+    */
 
 public:
 
-    bool Load(CConfigFile* pFile);
-    bool Save(CConfigFile* pFile);
+    bool Load();
+    bool Save();
 
     void OnFontBigger();
     void OnFontSmaller();

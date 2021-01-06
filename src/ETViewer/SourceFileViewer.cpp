@@ -480,11 +480,12 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                 temp1 += path;
                 if (_tcscmp(temp1.c_str(), _T("")) != 0) { dirs.push_back(temp1); }
 
-                int x = 0;
-                for (x = 0; x < (int)theApp.m_SourceDirectories.size(); x++)
+                for (auto& directory : theApp.m_SourceDirectories)
                 {
-                    dirs.push_back(theApp.m_SourceDirectories[x].c_str());
+                    dirs.push_back(directory.c_str());
                 }
+
+                int x = 0;
                 if (!theApp.OpenCodeAddress(fileToOpen, 0, false))
                 {
                     for (x = 0; x < (int)dirs.size(); x++)

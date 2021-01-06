@@ -310,27 +310,37 @@ void CSourceFileContainer::OnFind()
 
 void CSourceFileContainer::OnRecentFile()
 {
-    if (theApp.m_RecentSourceFiles.size() == 0) { return; }
+    if (theApp.m_RecentSourceFiles.size() == 0)
+    {
+        return;
+    }
 
     CMenu* pMenu = new CMenu;
     pMenu->CreatePopupMenu();
 
-    for (unsigned x = 0; x < theApp.m_RecentSourceFiles.size(); x++)
+    auto menuIndex = 0;
+    for (auto& file : theApp.m_RecentSourceFiles)
     {
-        TCHAR* pText = (TCHAR*)theApp.m_RecentSourceFiles[x].c_str();
-        pMenu->InsertMenu(x, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX + x, pText);
+        pMenu->InsertMenu(menuIndex, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX + menuIndex, file.c_str());
+        menuIndex++;
     }
+
     POINT p = { 0 };
     ::GetCursorPos(&p);
     int res = ::TrackPopupMenu(pMenu->m_hMenu, TPM_LEFTALIGN | TPM_RETURNCMD, p.x, p.y, 0, m_hWnd, NULL);
     if (res)
     {
-        TCHAR file[MAX_PATH] = { 0 };
-        _tcscpy_s(file, (TCHAR*)theApp.m_RecentSourceFiles[res - RECENT_SOURCE_FILE_BASE_INDEX].c_str());
-        ShowFile(file, 0, true);
+        unsigned fileIndex = res - RECENT_SOURCE_FILE_BASE_INDEX;
+        if (fileIndex <= theApp.m_RecentSourceFiles.size())
+        {
+            auto file = theApp.m_RecentSourceFiles.begin();
+
+            std::advance(file, res - RECENT_SOURCE_FILE_BASE_INDEX);
+
+            ShowFile(file->c_str(), 0, true);
+        }
     }
     delete pMenu;
-
 }
 
 BOOL CSourceFileContainer::OnEraseBkgnd(CDC* pDC)

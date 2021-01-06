@@ -25,20 +25,16 @@
 
 #include "stdafx.h"
 #include "ETViewer.h"
-
 #include "ETViewerDoc.h"
 #include "ETViewerView.h"
-#include ".\etviewerview.h"
 #include "HighLightPane.h"
 #include "HighLightFiltersEditor.h"
 #include "SaveAllTracesQuestionDialog.h"
 #include <algorithm>
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 
 // CETViewerView
 
@@ -113,7 +109,6 @@ CETViewerView::CETViewerView()
 
     m_SortColumn = eETViewerColumn_Index;
     m_SortDirection = eETViewerSortDirection_Ascending;
-
 }
 
 CETViewerView::~CETViewerView()
@@ -141,7 +136,7 @@ int CETViewerView::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (__super::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    Load(&theApp.m_ConfigFile);
+    Load();
 
     if (m_ColumnInfo.size() == 0)
     {
@@ -242,7 +237,6 @@ void CETViewerView::UpdateFont()
     m_pTraceFont->CreateFont(m_dwTraceFontSize, 0, 0, 0, 0, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, m_sTraceFont.c_str());
     GetListCtrl().SetFont(m_pTraceFont);
 }
-
 
 void CETViewerView::OnInitialUpdate()
 {
@@ -408,7 +402,10 @@ void CETViewerView::OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 void CETViewerView::GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush)
 {
     bool res = false;
-    if (theApp.m_SplittedHighLightFilters.size() == 0) { return; }
+    if (theApp.m_HighLightFilters.size() == 0)
+    {
+        return;
+    }
 
     unsigned textLen = (unsigned)pTrace->trace.sText.size();
     const TCHAR* text = pTrace->trace.sText.c_str();
@@ -424,36 +421,33 @@ void CETViewerView::GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor,
         if (tempText[x] >= 'a' && tempText[x] <= 'z') { tempText[x] += 'A' - 'a'; }
     }
 
-
     // Text Filters must always be ordered by relevance, the first filter that matches the criteria
     // is the effective filter 
 
-
-    for (x = 0; x < theApp.m_SplittedHighLightFilters.size(); x++)
+    for (auto& filter : theApp.m_HighLightFilters)
     {
-        CHightLightFilter* pFilter = &theApp.m_SplittedHighLightFilters[x];
-        const TCHAR* pFilterText = pFilter->GetText().c_str();
+        const TCHAR* pFilterText = filter.GetText().c_str();
 
-        int index = 0, maxTextSearchSize = textLen - pFilter->GetTextLen();
+        int index = 0, maxTextSearchSize = textLen - filter.GetTextLen();
         if (maxTextSearchSize > 0)
         {
             if (pFilterText[0] == '*')
             {
-                *pTextColor = pFilter->GetTextColor();
-                *pBkColor = pFilter->GetBkColor();
-                *phPen = pFilter->GetPen();
-                *phBrush = pFilter->GetBrush();
+                *pTextColor = filter.GetTextColor();
+                *pBkColor = filter.GetBkColor();
+                *phPen = filter.GetPen();
+                *phBrush = filter.GetBrush();
                 return;
             }
 
             while (index <= maxTextSearchSize)
             {
-                if (tempText[index] == pFilterText[0] && memcmp(tempText + index, pFilterText, pFilter->GetTextLen()) == 0)
+                if (tempText[index] == pFilterText[0] && memcmp(tempText + index, pFilterText, filter.GetTextLen()) == 0)
                 {
-                    *pTextColor = pFilter->GetTextColor();
-                    *pBkColor = pFilter->GetBkColor();
-                    *phPen = pFilter->GetPen();
-                    *phBrush = pFilter->GetBrush();
+                    *pTextColor = filter.GetTextColor();
+                    *pBkColor = filter.GetBkColor();
+                    *phPen = filter.GetPen();
+                    *phBrush = filter.GetBrush();
                     return;
                 }
                 index++;
@@ -1671,13 +1665,15 @@ void CETViewerView::OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
     *pResult = 0;
 }
 
-bool CETViewerView::Load(CConfigFile* pFile)
+bool CETViewerView::Load()
 {
-    bool bOk = LoadFrom(pFile, _T("TracePanel"));
-    return bOk;
+    //bool bOk = LoadFrom(pFile, _T("TracePanel"));
+    //return bOk;
+    return true;
 }
-bool CETViewerView::Save(CConfigFile* pFile)
+bool CETViewerView::Save()
 {
+    /*
     unsigned x = 0;
     for (x = 0; x < m_ColumnInfo.size(); x++)
     {
@@ -1688,11 +1684,22 @@ bool CETViewerView::Save(CConfigFile* pFile)
         }
     }
     return SaveTo(pFile, _T("TracePanel"));
+    */
+    return true;
 }
 
-void CETViewerView::OnAddProvider(CTraceProvider* pProvider) {}
-void CETViewerView::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider) {}
-void CETViewerView::OnRemoveProvider(CTraceProvider* pProvider) {}
+void CETViewerView::OnAddProvider(CTraceProvider* pProvider)
+{
+}
+
+void CETViewerView::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider)
+{
+}
+
+void CETViewerView::OnRemoveProvider(CTraceProvider* pProvider)
+{
+}
+
 void CETViewerView::OnProvidersModified()
 {
     WaitForSingleObject(m_hTracesMutex, INFINITE);

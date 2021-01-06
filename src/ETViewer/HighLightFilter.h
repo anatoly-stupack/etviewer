@@ -24,50 +24,47 @@
 
 #pragma once
 
-class CFilterDialogBar : public CDialogBar
+#include "stdafx.h"
+
+class CHighLightFilter
 {
-    DECLARE_DYNAMIC(CFilterDialogBar)
-
 public:
-    CFilterDialogBar();
-    virtual ~CFilterDialogBar();
+    CHighLightFilter();
+    CHighLightFilter(const CHighLightFilter& otherFilter);
+    CHighLightFilter& operator = (CHighLightFilter& otherFilter);
+    ~CHighLightFilter();
 
-    void InitDialogBar();
-    void OnOk();
-    void OnCancel();
-    void OnSessionTypeChanged();
+    HPEN GetPen() const;
+    HBRUSH GetBrush() const;
+    COLORREF GetTextColor() const;
+    const std::wstring& GetText() const;
+    DWORD GetTextLen() const;
+    COLORREF GetBkColor() const;
+    bool GetEnabled() const;
 
-private:
-    //{{AFX_DATA(CFilterDialogBar)
-    enum { IDD = IDD_FILTER_DIALOG_BAR };
-    //}}AFX_DATA
+    void SetBkColor(COLORREF bkColor);
+    void SetEnabled(bool bEnable);
+    void SetText(std::wstring sText);
+    void SetTextColor(COLORREF textColor);
 
-    DECLARE_MESSAGE_MAP()
-
-    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    afx_msg void OnDestroy();
-    afx_msg void OnCbnSelchangeCbIncludeFilter();
-    afx_msg void OnCbnSelchangeCbExcludeFilter();
-    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-
-    void OnChangedInstantFilters();
-
-    void UpdateInstantFilters();
+    void UpdateObjects();
 
 private:
-    std::wstring m_InstantIncludeFilters;
-    std::wstring m_InstantExcludeFilters;
+    std::wstring m_Text;
+    DWORD m_dwTextLen;
+    DWORD m_TextColor;
+    DWORD m_BkColor;
+    bool m_bEnabled;
+    HPEN m_hPen;
+    HBRUSH m_hBrush;
 
-    COLORREF	m_FilterChangedColor;
-    HBRUSH		m_hFilterChangedBrush;
-
-    CComboBox m_CBIncludeFilter;
-    CComboBox m_CBExcludeFilter;
-
-    CEdit	m_EDIncludeEdit;
-    CEdit	m_EDExcludeEdit;
-
-    WNDPROC		m_OldIncludeEditProc;
-    WNDPROC		m_OldExcludeEditProc;
+    /*
+        BEGIN_PERSIST_MAP(CHighLightFilter)
+            PERSIST(m_Text, _T("Text"))
+            PERSIST(m_dwTextLen, _T("TextLength"))
+            PERSIST(m_TextColor, _T("TextColor"))
+            PERSIST(m_BkColor, _T("BkColor"))
+            PERSIST(m_bEnabled, _T("Enabled"))
+        END_PERSIST_MAP()
+    */
 };

@@ -24,50 +24,28 @@
 
 #pragma once
 
-class CFilterDialogBar : public CDialogBar
+class PersistentSettings final
 {
-    DECLARE_DYNAMIC(CFilterDialogBar)
-
 public:
-    CFilterDialogBar();
-    virtual ~CFilterDialogBar();
+    PersistentSettings();
+    ~PersistentSettings();
 
-    void InitDialogBar();
-    void OnOk();
-    void OnCancel();
-    void OnSessionTypeChanged();
+    bool ReadBoolValue(const std::wstring& name, bool default);
 
-private:
-    //{{AFX_DATA(CFilterDialogBar)
-    enum { IDD = IDD_FILTER_DIALOG_BAR };
-    //}}AFX_DATA
+    DWORD ReadDwordValue(const std::wstring& name, DWORD default);
 
-    DECLARE_MESSAGE_MAP()
+    std::wstring ReadStringValue(const std::wstring& name, const std::wstring& default);
 
-    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    std::list<std::wstring> ReadMultiStringValue(const std::wstring& name, const std::list<std::wstring>& default);
 
-    afx_msg void OnDestroy();
-    afx_msg void OnCbnSelchangeCbIncludeFilter();
-    afx_msg void OnCbnSelchangeCbExcludeFilter();
-    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+    void WriteBoolValue(const std::wstring& name, bool value);
 
-    void OnChangedInstantFilters();
+    void WriteDwordValue(const std::wstring& name, DWORD value);
 
-    void UpdateInstantFilters();
+    void WriteStringValue(const std::wstring& name, const std::wstring& value);
+
+    void WriteMultiStringValue(const std::wstring& name, const std::list<std::wstring>& value);
 
 private:
-    std::wstring m_InstantIncludeFilters;
-    std::wstring m_InstantExcludeFilters;
-
-    COLORREF	m_FilterChangedColor;
-    HBRUSH		m_hFilterChangedBrush;
-
-    CComboBox m_CBIncludeFilter;
-    CComboBox m_CBExcludeFilter;
-
-    CEdit	m_EDIncludeEdit;
-    CEdit	m_EDExcludeEdit;
-
-    WNDPROC		m_OldIncludeEditProc;
-    WNDPROC		m_OldExcludeEditProc;
+    const std::wstring m_BasePath;
 };
