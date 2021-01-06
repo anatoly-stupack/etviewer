@@ -94,9 +94,7 @@ CETViewerApp::CETViewerApp()
     auto highlightFilters = settings.ReadMultiStringValue(L"HightlightFilter", {});
     for (auto& entry : highlightFilters)
     {
-        CHighLightFilter filter;
-        // TODO: HighLight Filters from String
-        m_HighLightFilters.push_back(filter);
+        m_HighLightFilters.emplace_back(entry);
     }
 
     UpdateHighLightFilters();
@@ -1176,8 +1174,7 @@ void CETViewerApp::OnClose()
     std::list<std::wstring> highLightFilters;
     for (auto& filter : m_HighLightFilters)
     {
-        // TODO: HighLight Filters from String
-        highLightFilters.push_back(filter.GetText());
+        highLightFilters.push_back(filter.ToString());
     }
     settings.WriteMultiStringValue(L"HightlightFilter", highLightFilters);
 

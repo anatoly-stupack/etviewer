@@ -35,6 +35,37 @@ CHighLightFilter::CHighLightFilter()
     SetBkColor(RGB(255, 255, 255));
 }
 
+CHighLightFilter::CHighLightFilter(const std::wstring& serializedObject)
+    : CHighLightFilter()
+{
+    std::wstring token;
+    std::vector<std::wstring> tokens;
+    std::wistringstream parser(serializedObject);
+
+    while (std::getline(parser, token, L';'))
+    {
+        tokens.emplace_back(token);
+    }
+
+    if (tokens.size() < 5)
+    {
+        return;
+    }
+
+    try
+    {
+        m_bEnabled = (tokens[0] == L"1");
+        m_BkColor = _wtoi(tokens[1].c_str());
+        m_TextColor = _wtoi(tokens[2].c_str());
+        m_dwTextLen = _wtoi(tokens[3].c_str());
+        m_Text = tokens[4];
+    }
+    catch (...)
+    {
+        return;
+    }
+}
+
 CHighLightFilter::CHighLightFilter(const CHighLightFilter& otherFilter)
 {
     m_Text = otherFilter.m_Text;
@@ -154,4 +185,17 @@ void CHighLightFilter::UpdateObjects()
 
     m_hBrush = CreateBrushIndirect(&LB);
     m_hPen = CreatePenIndirect(&LP);
+}
+
+std::wstring CHighLightFilter::ToString()
+{
+    std::wstringstream result;
+
+    result << m_bEnabled << L';';
+    result << m_BkColor << L';';
+    result << m_TextColor << L';';
+    result << m_dwTextLen << L';';
+    result << m_Text << L';';
+
+    return result.str();
 }

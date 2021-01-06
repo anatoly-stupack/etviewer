@@ -29,7 +29,8 @@
 class CHighLightFilter
 {
 public:
-    CHighLightFilter();
+    CHighLightFilter(); 
+    CHighLightFilter(const std::wstring& serializedObject);
     CHighLightFilter(const CHighLightFilter& otherFilter);
     CHighLightFilter& operator = (CHighLightFilter& otherFilter);
     ~CHighLightFilter();
@@ -48,6 +49,8 @@ public:
     void SetTextColor(COLORREF textColor);
 
     void UpdateObjects();
+
+    std::wstring ToString();
 
 private:
     std::wstring m_Text;
