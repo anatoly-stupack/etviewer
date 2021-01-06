@@ -58,7 +58,7 @@ std::wstring PersistentSettings::ReadStringValue(const std::wstring& name, const
     DWORD bufferSize = 0;
     std::wstring buffer;
 
-    auto result = RegGetValue(HKEY_CURRENT_USER, m_BasePath.c_str(), name.c_str(), REG_SZ, nullptr, nullptr, &bufferSize);
+    auto result = RegGetValue(HKEY_CURRENT_USER, m_BasePath.c_str(), name.c_str(), RRF_RT_REG_SZ, nullptr, nullptr, &bufferSize);
     if (result != ERROR_SUCCESS || bufferSize == 0)
     {
         return default;
@@ -70,7 +70,7 @@ std::wstring PersistentSettings::ReadStringValue(const std::wstring& name, const
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
         name.c_str(),
-        REG_SZ,
+        RRF_RT_REG_SZ,
         nullptr,
         const_cast<wchar_t*>(buffer.data()),
         &bufferSize);
@@ -79,6 +79,9 @@ std::wstring PersistentSettings::ReadStringValue(const std::wstring& name, const
     {
         return default;
     }
+
+    // Remove null terminator
+    buffer.resize(bufferSize / sizeof(wchar_t) - 1);
 
     return buffer;
 }
@@ -89,7 +92,15 @@ std::list<std::wstring> PersistentSettings::ReadMultiStringValue(const std::wstr
     std::wstring buffer;
     std::list<std::wstring> list;
 
-    auto result = RegGetValue(HKEY_CURRENT_USER, m_BasePath.c_str(), name.c_str(), REG_MULTI_SZ, nullptr, nullptr, &bufferSize);
+    auto result = RegGetValue(
+        HKEY_CURRENT_USER,
+        m_BasePath.c_str(),
+        name.c_str(),
+        RRF_RT_REG_MULTI_SZ,
+        nullptr,
+        nullptr,
+        &bufferSize);
+
     if (result != ERROR_SUCCESS || bufferSize == 0)
     {
         return default;
@@ -101,7 +112,7 @@ std::list<std::wstring> PersistentSettings::ReadMultiStringValue(const std::wstr
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
         name.c_str(),
-        REG_SZ,
+        RRF_RT_REG_MULTI_SZ,
         nullptr,
         &buffer[0],
         &bufferSize);
@@ -110,6 +121,8 @@ std::list<std::wstring> PersistentSettings::ReadMultiStringValue(const std::wstr
     {
         return default;
     }
+
+    buffer.resize(bufferSize / sizeof(wchar_t) - 1);
 
     std::wstring token;
     std::wistringstream parser(buffer);
@@ -162,7 +175,7 @@ void PersistentSettings::WriteStringValue(const std::wstring& name, const std::w
         name.c_str(),
         REG_SZ,
         value.c_str(),
-        value.size() * sizeof(wchar_t));
+        (value.size() + 1) * sizeof(wchar_t));
 
     if (result != ERROR_SUCCESS)
     {
@@ -197,7 +210,7 @@ void PersistentSettings::WriteMultiStringValue(const std::wstring& name, const s
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
         name.c_str(),
-        REG_SZ,
+        REG_MULTI_SZ,
         buffer.data(),
         buffer.size() * sizeof(wchar_t));
 
@@ -213,8 +226,13 @@ DWORD PersistentSettings::CreateBaseKey()
     auto result = RegCreateKeyEx(
         HKEY_CURRENT_USER,
         m_BasePath.c_str(),
-        0, nullptr, 0, 0,
-        nullptr, &key, nullptr);
+        0,
+        nullptr,
+        0,
+        KEY_QUERY_VALUE,
+        nullptr,
+        &key,
+        nullptr);
 
     if (result != ERROR_SUCCESS)
     {
