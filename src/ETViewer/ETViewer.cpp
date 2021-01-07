@@ -75,7 +75,7 @@ CETViewerApp::CETViewerApp()
     m_ePDBMonitoringMode = (eFileMonitoringMode)settings.ReadDwordValue(L"PDBMonitoringMode", eFileMonitoringMode_AutoReload);
     m_eSourceMonitoringMode = (eFileMonitoringMode)settings.ReadDwordValue(L"SourceMonitoringMode", eFileMonitoringMode_AutoReload);
 
-    auto highlightFilters = settings.ReadMultiStringValue(L"HightlightFilter", {});
+    auto highlightFilters = settings.ReadMultiStringValue(L"HighlightFilter", {});
     for (auto& entry : highlightFilters)
     {
         m_HighLightFilters.emplace_back(entry);
@@ -498,15 +498,17 @@ void CETViewerApp::AddRecentSourceFile(const TCHAR* file)
     auto existingFile = std::find(m_RecentSourceFiles.begin(), m_RecentSourceFiles.end(), file);
     if (existingFile != m_RecentSourceFiles.end())
     {
-        m_RecentSourceFiles.erase(existingFile);
+        return;
     }
 
     m_RecentSourceFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentSourceFiles.size() >= RECENT_SOURCE_FILE_MAX)
     {
         m_RecentSourceFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
 void CETViewerApp::AddRecentPDBFile(const TCHAR* file)
@@ -514,15 +516,17 @@ void CETViewerApp::AddRecentPDBFile(const TCHAR* file)
     auto existingFile = std::find(m_RecentPDBFiles.begin(), m_RecentPDBFiles.end(), file);
     if (existingFile != m_RecentPDBFiles.end())
     {
-        m_RecentPDBFiles.erase(existingFile);
+        return;
     }
 
     m_RecentPDBFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentPDBFiles.size() >= RECENT_PDB_FILE_MAX)
     {
         m_RecentPDBFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
 void CETViewerApp::AddRecentLogFile(const TCHAR* file)
@@ -530,15 +534,17 @@ void CETViewerApp::AddRecentLogFile(const TCHAR* file)
     auto existingFile = std::find(m_RecentLogFiles.begin(), m_RecentLogFiles.end(), file);
     if (existingFile != m_RecentLogFiles.end())
     {
-        m_RecentLogFiles.erase(existingFile);
+        return;
     }
 
     m_RecentLogFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentLogFiles.size() >= RECENT_LOG_FILE_MAX)
     {
         m_RecentLogFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
 bool CETViewerApp::OpenPDB(const TCHAR* pFile, bool bShowErrorIfFailed)
@@ -1132,7 +1138,7 @@ void CETViewerApp::OnClose()
     {
         highLightFilters.push_back(filter.ToString());
     }
-    settings.WriteMultiStringValue(L"HightlightFilter", highLightFilters);
+    settings.WriteMultiStringValue(L"HighlightFilter", highLightFilters);
 
     m_pFrame->GetTracePane()->Save();
 
