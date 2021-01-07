@@ -129,6 +129,7 @@
     </ManifestResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColumnInfo.cpp" />
     <ClCompile Include="ETViewer.cpp" />
     <ClCompile Include="ETViewerDoc.cpp" />
     <ClCompile Include="ETViewerView.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="TraceProvider.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColumnInfo.h" />
     <ClInclude Include="ETViewer.h" />
     <ClInclude Include="ETViewerDoc.h" />
     <ClInclude Include="ETViewerView.h" />

@@ -1134,6 +1134,8 @@ void CETViewerApp::OnClose()
     }
     settings.WriteMultiStringValue(L"HightlightFilter", highLightFilters);
 
+    m_pFrame->GetTracePane()->Save();
+
     if (m_hSingleInstanceMutex)
     {
         CloseHandle(m_hSingleInstanceMutex);

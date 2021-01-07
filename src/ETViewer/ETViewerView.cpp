@@ -22,21 +22,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "ETViewerDoc.h"
 #include "ETViewerView.h"
 #include "HighLightPane.h"
 #include "HighLightFiltersEditor.h"
+#include "PersistentSettings.h"
 #include "SaveAllTracesQuestionDialog.h"
-#include <algorithm>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-// CETViewerView
 
 IMPLEMENT_DYNCREATE(CETViewerView, CListView)
 
@@ -56,12 +53,8 @@ BEGIN_MESSAGE_MAP(CETViewerView, CListView)
     ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnLvnColumnclick)
 END_MESSAGE_MAP()
 
-// Construcción o destrucción de CETViewerView
-
 CETViewerView::CETViewerView()
 {
-    // TODO: agregar aquí el código de construcción
-
     m_nUnformattedTraces = 0;
     m_nLastFocusedSequenceIndex = 0;
     m_pEdit = NULL;
@@ -134,7 +127,9 @@ BOOL CETViewerView::PreCreateWindow(CREATESTRUCT& cs)
 int CETViewerView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
     if (__super::OnCreate(lpCreateStruct) == -1)
+    {
         return -1;
+    }
 
     Load();
 
@@ -243,32 +238,8 @@ void CETViewerView::OnInitialUpdate()
     CListView::OnInitialUpdate();
 }
 
-// Diagnósticos de CETViewerView
-
-#ifdef _DEBUG
-void CETViewerView::AssertValid() const
-{
-    CListView::AssertValid();
-}
-
-void CETViewerView::Dump(CDumpContext& dc) const
-{
-    CListView::Dump(dc);
-}
-
-CETViewerDoc* CETViewerView::GetDocument() const // La versión de no depuración es en línea
-{
-    ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CETViewerDoc)));
-    return (CETViewerDoc*)m_pDocument;
-}
-#endif //_DEBUG
-
-
-// Controladores de mensaje de CETViewerView
 void CETViewerView::OnStyleChanged(int /*nStyleType*/, LPSTYLESTRUCT /*lpStyleStruct*/)
 {
-    //TODO: agregar código para que el usuario cambie el estilo de vista de la ventana
-
     Default();
 }
 
@@ -1644,24 +1615,41 @@ void CETViewerView::OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
 
 bool CETViewerView::Load()
 {
-    //bool bOk = LoadFrom(pFile, _T("TracePanel"));
-    //return bOk;
+    PersistentSettings settings;
+
+    auto columnInfo = settings.ReadMultiStringValue(L"ColumnInfo", {});
+    for (auto& column : columnInfo)
+    {
+        m_ColumnInfo.emplace_back(column);
+    }
+
+    m_dwTraceFontSize = settings.ReadDwordValue(L"FontSize", m_dwTraceFontSize);
+    m_sTraceFont = settings.ReadStringValue(L"FontFamily", m_sTraceFont);
+    m_bShowLastTrace = settings.ReadBoolValue(L"ShowLastTrace", m_bShowLastTrace);
+
     return true;
 }
+
 bool CETViewerView::Save()
-{
-    /*
-    unsigned x = 0;
-    for (x = 0; x < m_ColumnInfo.size(); x++)
+{ 
+    PersistentSettings settings;
+
+    std::list<std::wstring> columnInfo;
+    for (auto& column : m_ColumnInfo)
     {
-        CColumnInfo* pColumn = &m_ColumnInfo[x];
-        if (pColumn->visible)
+        if (column.visible)
         {
-            pColumn->width = GetListCtrl().GetColumnWidth(pColumn->iSubItem);
+            column.width = GetListCtrl().GetColumnWidth(column.iSubItem);
         }
+
+        columnInfo.emplace_back(column.ToString());
     }
-    return SaveTo(pFile, _T("TracePanel"));
-    */
+
+    settings.WriteMultiStringValue(L"ColumnInfo", columnInfo);
+    settings.WriteDwordValue(L"FontSize", m_dwTraceFontSize);
+    settings.WriteStringValue(L"FontFamily", m_sTraceFont);
+    settings.WriteBoolValue(L"ShowLastTrace", m_bShowLastTrace);
+
     return true;
 }
 
