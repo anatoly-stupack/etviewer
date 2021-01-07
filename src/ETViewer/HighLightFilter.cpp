@@ -26,10 +26,9 @@
 #include "HighLightFilter.h"
 
 CHighLightFilter::CHighLightFilter()
-    : m_bEnabled(true)
-    , m_dwTextLen(0)
-    , m_hPen(nullptr)
-    , m_hBrush(nullptr)
+    : m_Enabled(true)
+    , m_Pen(nullptr)
+    , m_Brush(nullptr)
 {
     SetTextColor(RGB(0, 0, 0));
     SetBkColor(RGB(255, 255, 255));
@@ -47,18 +46,17 @@ CHighLightFilter::CHighLightFilter(const std::wstring& serializedObject)
         tokens.emplace_back(token);
     }
 
-    if (tokens.size() < 5)
+    if (tokens.size() < 4)
     {
         return;
     }
 
     try
     {
-        m_bEnabled = (tokens[0] == L"1");
+        m_Enabled = (tokens[0] == L"1");
         m_BkColor = _wtoi(tokens[1].c_str());
         m_TextColor = _wtoi(tokens[2].c_str());
-        m_dwTextLen = _wtoi(tokens[3].c_str());
-        m_Text = tokens[4];
+        m_Text = tokens[3];
     }
     catch (...)
     {
@@ -71,8 +69,7 @@ CHighLightFilter::CHighLightFilter(const CHighLightFilter& otherFilter)
     m_Text = otherFilter.m_Text;
     m_TextColor = otherFilter.m_TextColor;
     m_BkColor = otherFilter.m_BkColor;
-    m_bEnabled = otherFilter.m_bEnabled;
-    m_dwTextLen = otherFilter.m_dwTextLen;
+    m_Enabled = otherFilter.m_Enabled;
     UpdateObjects();
 }
 
@@ -81,35 +78,34 @@ CHighLightFilter& CHighLightFilter::operator = (CHighLightFilter& otherFilter)
     m_Text = otherFilter.m_Text;
     m_TextColor = otherFilter.m_TextColor;
     m_BkColor = otherFilter.m_BkColor;
-    m_bEnabled = otherFilter.m_bEnabled;
-    m_dwTextLen = otherFilter.m_dwTextLen;
+    m_Enabled = otherFilter.m_Enabled;
     UpdateObjects();
     return *this;
 }
 
 CHighLightFilter::~CHighLightFilter()
 {
-    if (m_hPen)
+    if (m_Pen)
     {
-        DeleteObject(m_hPen);
-        m_hPen = NULL;
+        DeleteObject(m_Pen);
+        m_Pen = NULL;
     }
 
-    if (m_hBrush)
+    if (m_Brush)
     {
-        DeleteObject(m_hBrush);
-        m_hBrush = NULL;
+        DeleteObject(m_Brush);
+        m_Brush = NULL;
     }
 }
 
 HPEN CHighLightFilter::GetPen() const
 {
-    return m_hPen;
+    return m_Pen;
 }
 
 HBRUSH CHighLightFilter::GetBrush() const
 {
-    return m_hBrush;
+    return m_Brush;
 }
 
 COLORREF CHighLightFilter::GetTextColor() const
@@ -124,17 +120,12 @@ COLORREF CHighLightFilter::GetBkColor() const
 
 bool CHighLightFilter::GetEnabled() const
 {
-    return m_bEnabled;
+    return m_Enabled;
 }
 
 const std::wstring& CHighLightFilter::GetText() const
 {
     return m_Text;
-}
-
-DWORD CHighLightFilter::GetTextLen() const
-{
-    return m_dwTextLen;
 }
 
 void CHighLightFilter::SetTextColor(COLORREF textColor)
@@ -150,27 +141,26 @@ void CHighLightFilter::SetBkColor(COLORREF bkColor)
 
 void CHighLightFilter::SetEnabled(bool bEnable)
 {
-    m_bEnabled = bEnable;
+    m_Enabled = bEnable;
 }
 
 void CHighLightFilter::SetText(std::wstring sText)
 {
     m_Text = sText;
-    m_dwTextLen = (DWORD)_tcslen(m_Text.c_str());
 }
 
 void CHighLightFilter::UpdateObjects()
 {
-    if (m_hPen)
+    if (m_Pen)
     {
-        DeleteObject(m_hPen);
-        m_hPen = nullptr;
+        DeleteObject(m_Pen);
+        m_Pen = nullptr;
     }
     
-    if (m_hBrush)
+    if (m_Brush)
     {
-        DeleteObject(m_hBrush);
-        m_hBrush = NULL;
+        DeleteObject(m_Brush);
+        m_Brush = NULL;
     }
 
     POINT P = { 1,1 };
@@ -183,18 +173,17 @@ void CHighLightFilter::UpdateObjects()
     LB.lbColor = m_BkColor;
     LB.lbStyle = BS_SOLID;
 
-    m_hBrush = CreateBrushIndirect(&LB);
-    m_hPen = CreatePenIndirect(&LP);
+    m_Brush = CreateBrushIndirect(&LB);
+    m_Pen = CreatePenIndirect(&LP);
 }
 
 std::wstring CHighLightFilter::ToString()
 {
     std::wstringstream result;
 
-    result << m_bEnabled << L';';
+    result << m_Enabled << L';';
     result << m_BkColor << L';';
     result << m_TextColor << L';';
-    result << m_dwTextLen << L';';
     result << m_Text << L';';
 
     return result.str();

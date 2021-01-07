@@ -39,7 +39,6 @@ public:
     HBRUSH GetBrush() const;
     COLORREF GetTextColor() const;
     const std::wstring& GetText() const;
-    DWORD GetTextLen() const;
     COLORREF GetBkColor() const;
     bool GetEnabled() const;
 
@@ -54,20 +53,9 @@ public:
 
 private:
     std::wstring m_Text;
-    DWORD m_dwTextLen;
     DWORD m_TextColor;
     DWORD m_BkColor;
-    bool m_bEnabled;
-    HPEN m_hPen;
-    HBRUSH m_hBrush;
-
-    /*
-        BEGIN_PERSIST_MAP(CHighLightFilter)
-            PERSIST(m_Text, _T("Text"))
-            PERSIST(m_dwTextLen, _T("TextLength"))
-            PERSIST(m_TextColor, _T("TextColor"))
-            PERSIST(m_BkColor, _T("BkColor"))
-            PERSIST(m_bEnabled, _T("Enabled"))
-        END_PERSIST_MAP()
-    */
+    bool m_Enabled;
+    HPEN m_Pen;
+    HBRUSH m_Brush;
 };

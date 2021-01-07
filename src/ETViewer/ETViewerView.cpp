@@ -401,57 +401,34 @@ void CETViewerView::OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CETViewerView::GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush)
 {
-    bool res = false;
     if (theApp.m_HighLightFilters.size() == 0)
     {
         return;
     }
 
-    unsigned textLen = (unsigned)pTrace->trace.sText.size();
-    const TCHAR* text = pTrace->trace.sText.c_str();
-
-    TCHAR tempText[1024];
-    textLen = textLen < (1024 - 1) ? textLen : 1024 - 1;
-    memcpy(tempText, text, textLen);
-    tempText[textLen] = 0;
-
-    unsigned x;
-    for (x = 0; x < textLen; x++)
-    {
-        if (tempText[x] >= 'a' && tempText[x] <= 'z') { tempText[x] += 'A' - 'a'; }
-    }
-
     // Text Filters must always be ordered by relevance, the first filter that matches the criteria
     // is the effective filter 
 
+    const std::wstring text = pTrace->trace.sText;
+
     for (auto& filter : theApp.m_HighLightFilters)
     {
-        const TCHAR* pFilterText = filter.GetText().c_str();
-
-        int index = 0, maxTextSearchSize = textLen - filter.GetTextLen();
-        if (maxTextSearchSize > 0)
+        if (filter.GetText() == L"*")
         {
-            if (pFilterText[0] == '*')
-            {
-                *pTextColor = filter.GetTextColor();
-                *pBkColor = filter.GetBkColor();
-                *phPen = filter.GetPen();
-                *phBrush = filter.GetBrush();
-                return;
-            }
+            *pTextColor = filter.GetTextColor();
+            *pBkColor = filter.GetBkColor();
+            *phPen = filter.GetPen();
+            *phBrush = filter.GetBrush();
+            break;
+        }
 
-            while (index <= maxTextSearchSize)
-            {
-                if (tempText[index] == pFilterText[0] && memcmp(tempText + index, pFilterText, filter.GetTextLen()) == 0)
-                {
-                    *pTextColor = filter.GetTextColor();
-                    *pBkColor = filter.GetBkColor();
-                    *phPen = filter.GetPen();
-                    *phBrush = filter.GetBrush();
-                    return;
-                }
-                index++;
-            }
+        if (text.find(filter.GetText()) != std::wstring::npos)
+        {
+            *pTextColor = filter.GetTextColor();
+            *pBkColor = filter.GetBkColor();
+            *phPen = filter.GetPen();
+            *phBrush = filter.GetBrush();
+            break;
         }
     }
 }
