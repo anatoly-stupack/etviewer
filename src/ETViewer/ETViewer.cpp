@@ -59,24 +59,8 @@ CETViewerApp::CETViewerApp()
 {
     PersistentSettings settings;
 
-    auto excludeFilters = settings.ReadMultiStringValue(L"ExcludeFilter", {});
-    auto includeFilters= settings.ReadMultiStringValue(L"IncludeFilter", {});
-    for (auto& entry : excludeFilters)
-    {
-        CFilter filter;
-        filter.m_Text = entry;
-        filter.m_dwTextLen = entry.size();
-        filter.m_bInclusionFilter = false;
-        m_InstantFilters.push_back(filter);
-    }
-    for (auto& entry : includeFilters)
-    {
-        CFilter filter;
-        filter.m_Text = entry;
-        filter.m_dwTextLen = entry.size();
-        filter.m_bInclusionFilter = true;
-        m_InstantFilters.push_back(filter);
-    }
+    m_ExcludeFilters = settings.ReadMultiStringValue(L"ExcludeFilter", {});
+    m_IncludeFilters = settings.ReadMultiStringValue(L"IncludeFilter", {L"*"});
 
     m_RecentLogFiles = settings.ReadMultiStringValue(L"RecentLogFiles", {});
     m_RecentSourceFiles = settings.ReadMultiStringValue(L"RecentSourceFiles", {});
@@ -973,54 +957,40 @@ bool CETViewerApp::ReloadPDBProviders(std::wstring sFileName)
 
 bool CETViewerApp::FilterTrace(const TCHAR* pText)
 {
+    std::wstring text = pText;
+
     WaitForSingleObject(m_hInstantTraceMutex, INFINITE);
-
-    bool res = false;
-
-    TCHAR tempText[2048];
-    tempText[0] = 0;
-    unsigned textLen = 0;
-    while (pText[textLen] != 0)
-    {
-        if (pText[textLen] >= _T('a') && pText[textLen] <= _T('z'))
-        {
-            tempText[textLen] = pText[textLen] - _T('a') + _T('A');
-        }
-        else
-        {
-            tempText[textLen] = pText[textLen];
-        }
-        textLen++;
-    }
-    tempText[textLen] = 0;
 
     // Text Filters must always be ordered by relevance, the first filter that matches the criteria
     // is the effective filter 
 
-    bool bPassed = true;
-    for (auto& filter : m_InstantFilters)
+    for (auto& filter : m_ExcludeFilters)
     {
-        int index = 0, maxTextSearchSize = textLen - filter.m_dwTextLen;
-        if (maxTextSearchSize > 0)
+        if (filter == L"*")
         {
-            if (filter.m_Text == L"*")
-            {
-                bPassed = (filter.m_bInclusionFilter) ? true : false;
-                ReleaseMutex(m_hInstantTraceMutex);
-                return bPassed;
-            }
+            ReleaseMutex(m_hInstantTraceMutex);
+            return false;
+        }
 
-            // TODO: use regexp for filters
-            while (index <= maxTextSearchSize)
-            {
-                if (memcmp(tempText + index, filter.m_Text.c_str(), filter.m_dwTextLen) == 0)
-                {
-                    bPassed = (filter.m_bInclusionFilter) ? true : false;
-                    ReleaseMutex(m_hInstantTraceMutex);
-                    return bPassed;
-                }
-                index++;
-            }
+        if (text.find(filter) != std::wstring::npos)
+        {
+            ReleaseMutex(m_hInstantTraceMutex);
+            return false;
+        }
+    }
+
+    for (auto& filter : m_IncludeFilters)
+    {
+        if (filter == L"*")
+        {
+            ReleaseMutex(m_hInstantTraceMutex);
+            return true;
+        }
+
+        if (text.find(filter) != std::wstring::npos)
+        {
+            ReleaseMutex(m_hInstantTraceMutex);
+            return true;
         }
     }
 
@@ -1142,22 +1112,8 @@ void CETViewerApp::OnClose()
 {
     PersistentSettings settings;
 
-    std::list<std::wstring> excludeFilters;
-    std::list<std::wstring> includeFilters;
-    for (auto& filter : m_InstantFilters)
-    {
-        if (filter.m_bInclusionFilter)
-        {
-            includeFilters.emplace_back(filter.m_Text);
-        }
-        else
-        {
-            excludeFilters.emplace_back(filter.m_Text);
-        }
-    }
-
-    settings.WriteMultiStringValue(L"ExcludeFilter", excludeFilters);
-    settings.WriteMultiStringValue(L"IncludeFilter", includeFilters);
+    settings.WriteMultiStringValue(L"ExcludeFilter", m_ExcludeFilters);
+    settings.WriteMultiStringValue(L"IncludeFilter", m_IncludeFilters);
 
     settings.WriteMultiStringValue(L"RecentLogFiles", m_RecentLogFiles);
     settings.WriteMultiStringValue(L"RecentSourceFiles", m_RecentSourceFiles);

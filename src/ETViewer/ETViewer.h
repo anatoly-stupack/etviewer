@@ -67,23 +67,6 @@ enum
     eETViewerSortDirection_Descending,
 };
 
-class CFilter
-{
-public:
-
-    std::wstring		m_Text;
-    DWORD       		m_dwTextLen; // TODO: remove
-    bool		        m_bInclusionFilter;
-
-    CFilter() // TODO: constructor with parameters
-    {
-        m_Text[0] = 0;
-        m_bInclusionFilter = true;
-        m_dwTextLen = 0;
-    }
-    ~CFilter() {}
-};
-
 enum eFileMonitoringMode
 {
     eFileMonitoringMode_None,
@@ -172,7 +155,9 @@ public:
     std::list<std::wstring> m_RecentLogFiles;
     std::list<std::wstring> m_SourceDirectories;
 
-    std::list<CFilter>	m_InstantFilters;
+    std::list<std::wstring>	m_IncludeFilters;
+    std::list<std::wstring>	m_ExcludeFilters;
+
     std::list<CHighLightFilter> m_HighLightFilters;
 
     bool m_bAssociateETL;

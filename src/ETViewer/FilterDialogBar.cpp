@@ -58,16 +58,14 @@ void CFilterDialogBar::InitDialogBar()
     m_EDIncludeEdit.Attach(m_CBIncludeFilter.GetWindow(GW_CHILD)->m_hWnd);
     m_EDExcludeEdit.Attach(m_CBExcludeFilter.GetWindow(GW_CHILD)->m_hWnd);
 
-    for (auto& filter : theApp.m_InstantFilters)
+    for (auto& filter : theApp.m_IncludeFilters)
     {
-        if (filter.m_bInclusionFilter)
-        {
-            m_CBIncludeFilter.AddString(filter.m_Text.c_str());
-        }
-        else
-        {
-            m_CBExcludeFilter.AddString(filter.m_Text.c_str());
-        }
+        m_CBIncludeFilter.AddString(filter.c_str());
+    }
+
+    for (auto& filter : theApp.m_ExcludeFilters)
+    {
+        m_CBExcludeFilter.AddString(filter.c_str());
     }
 
     m_OldIncludeEditProc = (WNDPROC)GetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_WNDPROC);
@@ -78,24 +76,22 @@ void CFilterDialogBar::InitDialogBar()
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_USERDATA, (DWORD)this);
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC, (DWORD)InstantEditProc);
 
-    for (auto& filter : theApp.m_InstantFilters)
+    for (auto& filter : theApp.m_IncludeFilters)
     {
-        if (filter.m_bInclusionFilter)
+        if (!m_InstantIncludeFilters.empty())
         {
-            if (!m_InstantIncludeFilters.empty())
-            {
-                m_InstantIncludeFilters += L";";
-            }
-            m_InstantIncludeFilters += filter.m_Text;
+            m_InstantIncludeFilters += L";";
         }
-        else
+        m_InstantIncludeFilters += filter;
+    }
+
+    for (auto& filter : theApp.m_ExcludeFilters)
+    {
+        if (!m_InstantExcludeFilters.empty())
         {
-            if (!m_InstantExcludeFilters.empty())
-            {
-                m_InstantExcludeFilters += L";";
-            }
-            m_InstantExcludeFilters += filter.m_Text;
+            m_InstantExcludeFilters += L";";
         }
+        m_InstantExcludeFilters += filter;
     }
 
     m_EDIncludeEdit.SetWindowText(m_InstantIncludeFilters.c_str());
@@ -145,30 +141,19 @@ void CFilterDialogBar::OnDestroy()
 {
     TCHAR sTempText[1024] = { 0 };
 
-    theApp.m_InstantFilters.clear();
+    theApp.m_IncludeFilters.clear();
+    theApp.m_ExcludeFilters.clear();
 
     for (auto x = 0; x < m_CBExcludeFilter.GetCount(); x++)
     {
         m_CBExcludeFilter.GetLBText(x, sTempText);
-
-        CFilter filter;
-        filter.m_Text = sTempText;
-        filter.m_dwTextLen = filter.m_Text.size();
-        filter.m_bInclusionFilter = false;
-
-        theApp.m_InstantFilters.push_back(filter);
+        theApp.m_ExcludeFilters.emplace_back(sTempText);
     }
 
     for (auto x = 0; x < m_CBIncludeFilter.GetCount(); x++)
     {
         m_CBIncludeFilter.GetLBText(x, sTempText);
-
-        CFilter filter;
-        filter.m_Text = sTempText;
-        filter.m_dwTextLen = filter.m_Text.size();
-        filter.m_bInclusionFilter = true;
-
-        theApp.m_InstantFilters.push_back(filter);
+        theApp.m_IncludeFilters.push_back(sTempText);
     }
 
     m_CBIncludeFilter.Detach();
@@ -331,27 +316,20 @@ void CFilterDialogBar::OnSessionTypeChanged()
 void CFilterDialogBar::UpdateInstantFilters()
 {
     std::wstring token;
-    std::list<CFilter> instantFilters;
 
+    std::list<std::wstring> excludeFilters;
     std::wistringstream excludeStream(m_InstantExcludeFilters);
     while (std::getline(excludeStream, token, L';'))
     {
-        CFilter filter;
-        filter.m_Text = token;
-        filter.m_dwTextLen = token.size();
-        filter.m_bInclusionFilter = false;
-        instantFilters.push_back(filter);
+        excludeFilters.push_back(token);
     }
+    theApp.m_ExcludeFilters.swap(excludeFilters);
 
+    std::list<std::wstring> includeFilters;
     std::wistringstream includeStream(m_InstantIncludeFilters);
     while (std::getline(includeStream, token, L';'))
     {
-        CFilter filter;
-        filter.m_Text = token;
-        filter.m_dwTextLen = token.size();
-        filter.m_bInclusionFilter = true;
-        instantFilters.push_back(filter);
+        includeFilters.push_back(token);
     }
-
-    theApp.m_InstantFilters.swap(instantFilters);
+    theApp.m_IncludeFilters.swap(includeFilters);
 }
