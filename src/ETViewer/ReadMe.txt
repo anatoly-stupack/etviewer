@@ -6,11 +6,21 @@ VERSION HISTORY
 ----------------------
 ----------------------
 
-Version 1.2:
+Version 1.2 (1.2.2011.4):
 - Converted project to VS2019 with v142 toolset
 - Fix version information in About dialog and Resources
 - Fix contact information in About dialog
 - Fix test tool build
+- Remove legacy OS support (XP, Vista)
+- Fix crash on tracing long lines
+- Support tracing counted strings
+- Fix logging to file
+- Fix traces copy to clipboard
+- Fix resources
+- Fix code formatting
+- Improve test application
+- Remove thirdparty code and binaries from repository
+- Integrate to Azure Pipelines
 
 -----------------------------------------
 Forked from ETViewer v1.1 7/4/2020

@@ -1,4 +1,4 @@
-name: 1.2.$(date:yyMM).$(rev:r)
+name: 1.3.$(date:yyMM).$(rev:r)
 
 trigger:
 - master
