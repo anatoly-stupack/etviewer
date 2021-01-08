@@ -25,8 +25,6 @@
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "HighLightPane.h"
-#include ".\highlightpane.h"
-
 
 // CHighLightPane
 
@@ -155,7 +153,7 @@ void CHighLightPane::OnDestroy()
     int x;
     for (x = 0; x < GetListCtrl().GetItemCount(); x++)
     {
-        CHightLightFilter* pFilter = (CHightLightFilter*)GetListCtrl().GetItemData(x);
+        CHighLightFilter* pFilter = (CHighLightFilter*)GetListCtrl().GetItemData(x);
         delete pFilter;
     }
     GetListCtrl().DeleteAllItems();
@@ -203,7 +201,7 @@ LRESULT CALLBACK CHighLightPane::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wPara
 
 void CHighLightPane::OnNew()
 {
-    CHightLightFilter* pFilter = new CHightLightFilter;
+    CHighLightFilter* pFilter = new CHighLightFilter;
     pFilter->SetText(_T("<New Filter>"));
     int sel = GetListCtrl().GetNextItem(-1, LVNI_SELECTED);
     int index = GetListCtrl().InsertItem(sel == -1 ? GetListCtrl().GetItemCount() : sel, pFilter->GetText().c_str(), 0);
@@ -219,7 +217,7 @@ void CHighLightPane::OnRemove()
     int sel = GetListCtrl().GetNextItem(-1, LVNI_SELECTED);
     if (sel != -1)
     {
-        CHightLightFilter* pFilter = (CHightLightFilter*)GetListCtrl().GetItemData(sel);
+        CHighLightFilter* pFilter = (CHighLightFilter*)GetListCtrl().GetItemData(sel);
         GetListCtrl().DeleteItem(sel);
         delete pFilter;
     }
@@ -233,28 +231,31 @@ void CHighLightPane::LoadFilters()
     unsigned x;
     for (x = 0; x < (unsigned)GetListCtrl().GetItemCount(); x++)
     {
-        CHightLightFilter* pFilter = (CHightLightFilter*)GetListCtrl().GetItemData(x);
+        CHighLightFilter* pFilter = (CHighLightFilter*)GetListCtrl().GetItemData(x);
         delete pFilter;
     }
     GetListCtrl().DeleteAllItems();
 
-    for (x = 0; x < theApp.m_HighLightFilters.size(); x++)
+    auto itemIndex = 0;
+    auto filters = theApp.GetHighLightFilters();
+    for (auto& filter : filters)
     {
-        CHightLightFilter* pFilter = new CHightLightFilter;
-        *pFilter = theApp.m_HighLightFilters[x];
-        int index = GetListCtrl().InsertItem(x, pFilter->GetText().c_str(), 0);
+        CHighLightFilter* pFilter = new CHighLightFilter;
+        *pFilter = filter;
+        int index = GetListCtrl().InsertItem(itemIndex, pFilter->GetText().c_str(), 0);
         GetListCtrl().SetItemData(index, (DWORD)pFilter);
         GetListCtrl().SetCheck(index, pFilter->GetEnabled());
+        itemIndex++;
     }
 }
 
 void CHighLightPane::SaveFilters()
 {
-    theApp.m_HighLightFilters.clear();
-    int x;
-    for (x = 0; x < GetListCtrl().GetItemCount(); x++)
+    std::list<CHighLightFilter> filters;
+
+    for (auto x = 0; x < GetListCtrl().GetItemCount(); x++)
     {
-        CHightLightFilter filter;
+        CHighLightFilter filter;
         filter.SetEnabled(GetListCtrl().GetCheck(x) ? true : false);
 
         TCHAR sTempText[1024] = { 0 };
@@ -265,12 +266,13 @@ void CHighLightPane::SaveFilters()
         item.cchTextMax = _countof(sTempText);
         GetListCtrl().GetItem(&item);
         filter.SetText(sTempText);
-        CHightLightFilter* pFilter = (CHightLightFilter*)item.lParam;
+        CHighLightFilter* pFilter = (CHighLightFilter*)item.lParam;
         filter.SetBkColor(pFilter->GetBkColor());
         filter.SetTextColor(pFilter->GetTextColor());
-        theApp.m_HighLightFilters.push_back(filter);
+        filters.push_back(filter);
     }
 
+    theApp.SetHighLightFilters(std::move(filters));
     theApp.UpdateHighLightFilters();
 }
 
@@ -292,7 +294,7 @@ void CHighLightPane::OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult)
     }
     if (index != -1 && flags == LVHT_ONITEMICON)
     {
-        CHightLightFilter* pFilter = ((CHightLightFilter*)GetListCtrl().GetItemData(index));
+        CHighLightFilter* pFilter = ((CHighLightFilter*)GetListCtrl().GetItemData(index));
 
         RECT R1 = { 0 }, R2 = { 0 };
         GetItemColorRects(index, &R1, &R2);
@@ -333,7 +335,7 @@ void CHighLightPane::OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult)
         return;
     }
 
-    CHightLightFilter* pFilter = new CHightLightFilter;
+    CHighLightFilter* pFilter = new CHighLightFilter;
     pFilter->SetText(_T("<New Filter>"));
     int sel = pActivate->iItem;
     if (sel != -1) { GetListCtrl().EditLabel(sel); return; }
@@ -386,7 +388,7 @@ void CHighLightPane::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
     {
         if (pDraw->nmcd.lItemlParam != 0)
         {
-            CHightLightFilter* pFilter = ((CHightLightFilter*)pDraw->nmcd.lItemlParam);
+            CHighLightFilter* pFilter = ((CHighLightFilter*)pDraw->nmcd.lItemlParam);
             pDraw->clrText = pFilter->GetTextColor();
             pDraw->clrTextBk = pFilter->GetBkColor();
             *pResult = CDRF_NOTIFYSUBITEMDRAW;
@@ -397,7 +399,7 @@ void CHighLightPane::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
     {
         if (pDraw->iSubItem == 0)
         {
-            CHightLightFilter* pFilter = ((CHightLightFilter*)pDraw->nmcd.lItemlParam);
+            CHighLightFilter* pFilter = ((CHighLightFilter*)pDraw->nmcd.lItemlParam);
             if (pFilter)
             {
                 RECT R = { 0,0,0,0 }, R1 = { 0 }, R2 = { 0 };

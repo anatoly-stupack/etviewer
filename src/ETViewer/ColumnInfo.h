@@ -24,50 +24,20 @@
 
 #pragma once
 
-class CFilterDialogBar : public CDialogBar
+#include "stdafx.h"
+
+struct CColumnInfo
 {
-    DECLARE_DYNAMIC(CFilterDialogBar)
+    int					width;
+    bool				visible;
+    std::wstring        name;
+    DWORD				format;
+    int					id;
+    int					iSubItem;
+    int					iOrder;
 
-public:
-    CFilterDialogBar();
-    virtual ~CFilterDialogBar();
+    CColumnInfo(int _id, TCHAR* n, int fmt, int w, bool v, int o);
+    CColumnInfo(const std::wstring& serialized);
 
-    void InitDialogBar();
-    void OnOk();
-    void OnCancel();
-    void OnSessionTypeChanged();
-
-private:
-    //{{AFX_DATA(CFilterDialogBar)
-    enum { IDD = IDD_FILTER_DIALOG_BAR };
-    //}}AFX_DATA
-
-    DECLARE_MESSAGE_MAP()
-
-    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    afx_msg void OnDestroy();
-    afx_msg void OnCbnSelchangeCbIncludeFilter();
-    afx_msg void OnCbnSelchangeCbExcludeFilter();
-    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-
-    void OnChangedInstantFilters();
-
-    void UpdateInstantFilters();
-
-private:
-    std::wstring m_InstantIncludeFilters;
-    std::wstring m_InstantExcludeFilters;
-
-    COLORREF	m_FilterChangedColor;
-    HBRUSH		m_hFilterChangedBrush;
-
-    CComboBox m_CBIncludeFilter;
-    CComboBox m_CBExcludeFilter;
-
-    CEdit	m_EDIncludeEdit;
-    CEdit	m_EDExcludeEdit;
-
-    WNDPROC		m_OldIncludeEditProc;
-    WNDPROC		m_OldExcludeEditProc;
+    std::wstring ToString() const;
 };

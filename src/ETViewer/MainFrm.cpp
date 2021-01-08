@@ -145,7 +145,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/,
         return FALSE;
     }
 
-    if (S_OK != theApp.m_Controller.StartRealTime(_T("ETVIEWER_SESSION"), GetTracePane()))
+    if (S_OK != theApp.GetTraceController()->StartRealTime(_T("ETVIEWER_SESSION"), GetTracePane()))
     {
         MessageBox(_T("Could not initialize RealTime Trace Session"), _T("ETVIEWER"));
     }
@@ -374,7 +374,7 @@ void CMainFrame::OnDropFiles(HDROP hDropInfo)
 
 void CMainFrame::OnStartStop()
 {
-    theApp.m_Controller.Pause(!theApp.m_Controller.IsPaused());
+    theApp.GetTraceController()->Pause(!theApp.GetTraceController()->IsPaused());
     m_MainDialogBar.UpdateBitmaps();
 }
 
@@ -411,19 +411,19 @@ void CMainFrame::OnOpenFile()
 
 void CMainFrame::OnShowSourceContainer()
 {
-    theApp.m_SourceFileContainer.ShowWindow(SW_SHOW);
+    theApp.GetSourceFileContainer()->ShowWindow(SW_SHOW);
 }
 
 void CMainFrame::OnCloseLog()
 {
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_ReadLog)
     {
         theApp.CloseETL();
     }
 }
 void CMainFrame::OnUpdateFileCloselog(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog);
+    pCmdUI->Enable(theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_ReadLog);
 }
 
 void CMainFrame::OnFileLogtofile()
@@ -440,12 +440,12 @@ void CMainFrame::OnFileLogtofile()
 
 void CMainFrame::OnUpdateFileLogtofile(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType() != eTraceControllerSessionType_CreateLog);
+    pCmdUI->Enable(theApp.GetTraceController()->GetSessionType() != eTraceControllerSessionType_CreateLog);
 }
 
 void CMainFrame::OnFileStoploggintofile()
 {
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_CreateLog)
     {
         theApp.CloseETL();
     }
@@ -453,13 +453,13 @@ void CMainFrame::OnFileStoploggintofile()
 
 void CMainFrame::OnUpdateFileStoploggintofile(CCmdUI* pCmdUI)
 {
-    pCmdUI->Enable(theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog);
+    pCmdUI->Enable(theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_CreateLog);
 }
 
 void CMainFrame::OnSessionTypeChanged()
 {
     std::wstring sCaption;
-    switch (theApp.m_Controller.GetSessionType())
+    switch (theApp.GetTraceController()->GetSessionType())
     {
     case eTraceControllerSessionType_None:
         sCaption = _T("ETViewer - No session");
@@ -469,13 +469,13 @@ void CMainFrame::OnSessionTypeChanged()
         break;
     case eTraceControllerSessionType_ReadLog:
         sCaption = _T("ETViewer - Open Log File '");
-        sCaption += theApp.m_Controller.GetFileName();
+        sCaption += theApp.GetTraceController()->GetFileName();
         sCaption += _T("'");
         break;
 
     case eTraceControllerSessionType_CreateLog:
         sCaption = _T("ETViewer - Logging to File '");
-        sCaption += theApp.m_Controller.GetFileName();
+        sCaption += theApp.GetTraceController()->GetFileName();
         sCaption += _T("'");
         break;
     }

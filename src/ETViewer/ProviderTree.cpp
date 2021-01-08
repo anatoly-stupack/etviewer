@@ -138,7 +138,7 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
     while (hChild);
 
 
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_ReadLog)
     {
         return;
     }
@@ -214,17 +214,17 @@ void CProviderTree::UpdateProviderIcons(HTREEITEM hItem)
 
     int iIcon = -1;
 
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_ReadLog)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_ReadLog)
     {
         iIcon = m_iPlayBlockedIcon;
     }
-    else if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog)
+    else if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_CreateLog)
     {
-        iIcon = theApp.m_Controller.IsProviderEnabled(pProvider) ? m_iRecordIcon : m_iPauseIcon;
+        iIcon = theApp.GetTraceController()->IsProviderEnabled(pProvider) ? m_iRecordIcon : m_iPauseIcon;
     }
     else
     {
-        iIcon = theApp.m_Controller.IsProviderEnabled(pProvider) ? m_iPlayIcon : m_iPauseIcon;
+        iIcon = theApp.GetTraceController()->IsProviderEnabled(pProvider) ? m_iPlayIcon : m_iPauseIcon;
     }
     treeCtrl.SetItemImage(hItem, iIcon, iIcon);
 
@@ -237,7 +237,7 @@ void CProviderTree::UpdateProviderIcons(HTREEITEM hItem)
             HTREEITEM hLevelItem = treeCtrl.GetChildItem(hChild);
             while (hLevelItem)
             {
-                bool bChecked = treeCtrl.GetItemData(hLevelItem) == theApp.m_Controller.GetProviderLevel(pProvider);
+                bool bChecked = treeCtrl.GetItemData(hLevelItem) == theApp.GetTraceController()->GetProviderLevel(pProvider);
                 treeCtrl.SetItemImage(hLevelItem, bChecked ? m_iCheckedIcon : m_iUncheckedIcon, bChecked ? m_iCheckedIcon : m_iUncheckedIcon);
 
                 hLevelItem = treeCtrl.GetNextSiblingItem(hLevelItem);
@@ -248,7 +248,7 @@ void CProviderTree::UpdateProviderIcons(HTREEITEM hItem)
             HTREEITEM hFlagItem = treeCtrl.GetChildItem(hChild);
             while (hFlagItem)
             {
-                bool bChecked = (treeCtrl.GetItemData(hFlagItem) & theApp.m_Controller.GetProviderFlags(pProvider)) ? true : false;
+                bool bChecked = (treeCtrl.GetItemData(hFlagItem) & theApp.GetTraceController()->GetProviderFlags(pProvider)) ? true : false;
                 treeCtrl.SetItemImage(hFlagItem, bChecked ? m_iCheckedIcon : m_iUncheckedIcon, bChecked ? m_iCheckedIcon : m_iUncheckedIcon);
 
                 hFlagItem = treeCtrl.GetNextSiblingItem(hFlagItem);
@@ -356,7 +356,7 @@ void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
     GetCursorPos(&hitTestInfo.pt);
     ScreenToClient(&hitTestInfo.pt);
     HTREEITEM hItem = GetTreeCtrl().HitTest(&hitTestInfo);
-    if (hitTestInfo.flags & TVHT_ONITEMICON && theApp.m_Controller.GetSessionType() != eTraceControllerSessionType_ReadLog)
+    if (hitTestInfo.flags & TVHT_ONITEMICON && theApp.GetTraceController()->GetSessionType() != eTraceControllerSessionType_ReadLog)
     {
         HTREEITEM hParentItem = GetTreeCtrl().GetParentItem(hItem);
         CString sText = GetTreeCtrl().GetItemText(hParentItem);
@@ -364,14 +364,14 @@ void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
         {
             HTREEITEM hProviderItem = GetTreeCtrl().GetParentItem(hParentItem);
             CTraceProvider* pProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hProviderItem);
-            theApp.m_Controller.SetProviderLevel(pProvider, GetTreeCtrl().GetItemData(hItem));
+            theApp.GetTraceController()->SetProviderLevel(pProvider, GetTreeCtrl().GetItemData(hItem));
             UpdateProviderIcons(hProviderItem);
         }
         else if (sText == "Flags")
         {
             HTREEITEM hProviderItem = GetTreeCtrl().GetParentItem(hParentItem);
             CTraceProvider* pProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hProviderItem);
-            DWORD dwFlags = theApp.m_Controller.GetProviderFlags(pProvider);
+            DWORD dwFlags = theApp.GetTraceController()->GetProviderFlags(pProvider);
             DWORD dwSelectedFlag = GetTreeCtrl().GetItemData(hItem);
             if (dwSelectedFlag & dwFlags)
             {
@@ -381,14 +381,14 @@ void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
             {
                 dwFlags |= dwSelectedFlag;
             }
-            theApp.m_Controller.SetProviderFlags(pProvider, dwFlags);
+            theApp.GetTraceController()->SetProviderFlags(pProvider, dwFlags);
             UpdateProviderIcons(hProviderItem);
         }
         else if (hParentItem == NULL)
         {
             CTraceProvider* pProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hItem);
-            bool bEnabled = theApp.m_Controller.IsProviderEnabled(pProvider);
-            theApp.m_Controller.EnableProvider(pProvider, !bEnabled);
+            bool bEnabled = theApp.GetTraceController()->IsProviderEnabled(pProvider);
+            theApp.GetTraceController()->EnableProvider(pProvider, !bEnabled);
             UpdateProviderIcons(hItem);
         }
     }
@@ -398,7 +398,7 @@ void CProviderTree::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (nChar == VK_INSERT)
     {
-        theApp.m_pFrame->OnOpenFile();
+        theApp.GetMainFrame()->OnOpenFile();
     }
 
     if (nChar == VK_DELETE)
@@ -413,7 +413,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
     NMITEMACTIVATE* pActivate = (NMITEMACTIVATE*)pNMHDR;
 
-    bool bOpenLogSession = (theApp.m_Controller.GetSessionType() != eTraceControllerSessionType_ReadLog);
+    bool bOpenLogSession = (theApp.GetTraceController()->GetSessionType() != eTraceControllerSessionType_ReadLog);
 
     POINT pos;
     GetCursorPos(&pos);
@@ -448,8 +448,8 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
     HMENU hMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDM_PROVIDER_TREE)), 0);
     CMenu* pMenu = new CMenu;
     pMenu->Attach(hMenu);
-    pMenu->EnableMenuItem(ID_PROVIDER_TREE_START, pProvider && bOpenLogSession && !theApp.m_Controller.IsProviderEnabled(pProvider) ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
-    pMenu->EnableMenuItem(ID_PROVIDER_TREE_STOP, pProvider && bOpenLogSession && theApp.m_Controller.IsProviderEnabled(pProvider) ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+    pMenu->EnableMenuItem(ID_PROVIDER_TREE_START, pProvider && bOpenLogSession && !theApp.GetTraceController()->IsProviderEnabled(pProvider) ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
+    pMenu->EnableMenuItem(ID_PROVIDER_TREE_STOP, pProvider && bOpenLogSession && theApp.GetTraceController()->IsProviderEnabled(pProvider) ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
     pMenu->EnableMenuItem(ID_PROVIDER_TREE_RELOAD_PROVIDER, pProvider ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
     pMenu->EnableMenuItem(ID_PROVIDER_TREE_SET_ALL_FLAGS, pProvider && bOpenLogSession ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
     pMenu->EnableMenuItem(ID_PROVIDER_TREE_CLEAR_ALL_FLAGS, pProvider && bOpenLogSession ? MF_ENABLED : MF_DISABLED | MF_GRAYED);
@@ -474,7 +474,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
     switch (res)
     {
     case ID_PROVIDER_TREE_ADD_PROVIDER:
-        theApp.m_pFrame->OnOpenFile();
+        theApp.GetMainFrame()->OnOpenFile();
         break;
     case ID_PROVIDER_TREE_RELOAD_PROVIDER:
         theApp.ReloadProvider(pProvider);
@@ -489,19 +489,19 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         theApp.RemoveAllProviders();
         break;
     case ID_PROVIDER_TREE_START:
-        theApp.m_Controller.EnableProvider(pProvider, TRUE);
+        theApp.GetTraceController()->EnableProvider(pProvider, TRUE);
         UpdateProviderIcons(hProviderItem);
         break;
     case ID_PROVIDER_TREE_STOP:
-        theApp.m_Controller.EnableProvider(pProvider, FALSE);
+        theApp.GetTraceController()->EnableProvider(pProvider, FALSE);
         UpdateProviderIcons(hProviderItem);
         break;
     case ID_PROVIDER_TREE_SET_ALL_FLAGS:
-        theApp.m_Controller.SetProviderFlags(pProvider, pProvider->GetAllSupportedFlagsMask());
+        theApp.GetTraceController()->SetProviderFlags(pProvider, pProvider->GetAllSupportedFlagsMask());
         UpdateProviderIcons(hProviderItem);
         break;
     case ID_PROVIDER_TREE_CLEAR_ALL_FLAGS:
-        theApp.m_Controller.SetProviderFlags(pProvider, 0);
+        theApp.GetTraceController()->SetProviderFlags(pProvider, 0);
         UpdateProviderIcons(hProviderItem);
         break;
     case ID_PROVIDER_TREE_START_ALL:
@@ -509,7 +509,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         while (hChild)
         {
             CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
-            theApp.m_Controller.EnableProvider(pTempProvider, TRUE);
+            theApp.GetTraceController()->EnableProvider(pTempProvider, TRUE);
             UpdateProviderIcons(hChild);
             hChild = treeCtrl.GetNextSiblingItem(hChild);
         }
@@ -519,7 +519,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         while (hChild)
         {
             CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
-            theApp.m_Controller.EnableProvider(pTempProvider, FALSE);
+            theApp.GetTraceController()->EnableProvider(pTempProvider, FALSE);
             UpdateProviderIcons(hChild);
             hChild = treeCtrl.GetNextSiblingItem(hChild);
         }
@@ -529,7 +529,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         while (hChild)
         {
             CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
-            theApp.m_Controller.SetProviderFlags(pTempProvider, pTempProvider->GetAllSupportedFlagsMask());
+            theApp.GetTraceController()->SetProviderFlags(pTempProvider, pTempProvider->GetAllSupportedFlagsMask());
             UpdateProviderIcons(hChild);
             hChild = treeCtrl.GetNextSiblingItem(hChild);
         }
@@ -539,7 +539,7 @@ void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
         while (hChild)
         {
             CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
-            theApp.m_Controller.SetProviderFlags(pTempProvider, 0);
+            theApp.GetTraceController()->SetProviderFlags(pTempProvider, 0);
             UpdateProviderIcons(hChild);
             hChild = treeCtrl.GetNextSiblingItem(hChild);
         }
@@ -575,7 +575,7 @@ void CProviderTree::SetAllProviderLevel(DWORD dwLevel)
     while (hChild)
     {
         CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
-        theApp.m_Controller.SetProviderLevel(pTempProvider, dwLevel);
+        theApp.GetTraceController()->SetProviderLevel(pTempProvider, dwLevel);
         UpdateProviderIcons(hChild);
         hChild = treeCtrl.GetNextSiblingItem(hChild);
     }

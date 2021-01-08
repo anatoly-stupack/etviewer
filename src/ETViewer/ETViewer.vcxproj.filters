@@ -19,9 +19,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
     </Filter>
-    <Filter Include="Persistency">
-      <UniqueIdentifier>{3dd1ba1d-cf8b-4e3f-8678-ebd826b6cfa1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ETViewer.cpp">
@@ -81,14 +78,14 @@
     <ClCompile Include="TraceProvider.cpp">
       <Filter>Source Files\TraceAPI</Filter>
     </ClCompile>
-    <ClCompile Include="Persistency\ConfigFile.cpp">
-      <Filter>Persistency</Filter>
+    <ClCompile Include="PersistentSettings.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Persistency\Persistency.cpp">
-      <Filter>Persistency</Filter>
+    <ClCompile Include="HighLightFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Persistency\PersistentTypes.cpp">
-      <Filter>Persistency</Filter>
+    <ClCompile Include="ColumnInfo.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,14 +149,14 @@
     <ClInclude Include="TraceProvider.h">
       <Filter>Header Files\TraceAPI</Filter>
     </ClInclude>
-    <ClInclude Include="Persistency\ConfigFile.h">
-      <Filter>Persistency</Filter>
+    <ClInclude Include="PersistentSettings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Persistency\Persistency.h">
-      <Filter>Persistency</Filter>
+    <ClInclude Include="HighLightFilter.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Persistency\PersistentTypes.h">
-      <Filter>Persistency</Filter>
+    <ClInclude Include="ColumnInfo.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

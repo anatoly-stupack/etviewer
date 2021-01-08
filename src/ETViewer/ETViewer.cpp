@@ -23,18 +23,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include  <io.h>
-#include  <stdio.h>
-#include  <stdlib.h>
 #include "ETViewer.h"
 #include "MainFrm.h"
-
 #include "ETViewerDoc.h"
 #include "ETViewerView.h"
 #include "ProviderTree.h"
-#include ".\etviewer.h"
 #include "FileMonitor.h"
-
+#include "PersistentSettings.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,11 +39,8 @@
 
 extern DWORD g_dwRegisteredMessage;
 
-// CETViewerApp
-
 BEGIN_MESSAGE_MAP(CETViewerApp, CWinApp)
     ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-    // Comandos de documento estándar basados en archivo
     ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)
     ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
     ON_COMMAND_RANGE(RECENT_PDB_FILE_BASE_INDEX, RECENT_PDB_FILE_BASE_INDEX + RECENT_PDB_FILE_MAX, OnRecentPDBFile)
@@ -56,35 +48,40 @@ BEGIN_MESSAGE_MAP(CETViewerApp, CWinApp)
     ON_COMMAND_RANGE(RECENT_LOG_FILE_BASE_INDEX, RECENT_LOG_FILE_BASE_INDEX + RECENT_LOG_FILE_MAX, OnRecentLogFile)
 END_MESSAGE_MAP()
 
-
-// Construcción de CETViewerApp
-
 CETViewerApp::CETViewerApp()
+    : m_bCheckingFileChangeOperations(false)
+    , m_hPendingFileChangesMutex(CreateMutex(nullptr, false, nullptr))
+    , m_hInstantTraceMutex(CreateMutex(nullptr, false, nullptr))
+    , m_hSingleInstanceMutex(nullptr)
+    , m_eSourceMonitoringMode(eFileMonitoringMode_AutoReload)
+    , m_ePDBMonitoringMode(eFileMonitoringMode_AutoReload)
+    , m_pFileMonitor(new CFileMonitor(this))
 {
-    TCHAR tempDrive[MAX_PATH] = { 0 }, tempPath[MAX_PATH] = { 0 };
-    TCHAR currentModule[MAX_PATH] = { 0 };
-    GetModuleFileName(NULL, currentModule, _countof(currentModule));
-    _tsplitpath_s(currentModule, tempDrive, MAX_PATH, tempPath, MAX_PATH, NULL, 0, NULL, 0);
+    PersistentSettings settings;
 
-    m_sConfigFile = tempDrive;
-    m_sConfigFile += tempPath;
-    m_sConfigFile += _T("\\ETViewer.cfg");
+    m_ExcludeFilters = settings.ReadMultiStringValue(L"ExcludeFilter", {});
+    m_IncludeFilters = settings.ReadMultiStringValue(L"IncludeFilter", {L"*"});
 
-    m_bCheckingFileChangeOperations = false;
-    m_hPendingFileChangesMutex = CreateMutex(NULL, FALSE, NULL);
-    m_hInstantTraceMutex = CreateMutex(NULL, FALSE, NULL);
-    m_InstantIncludeFilter = _T("*");
-    m_eSourceMonitoringMode = eFileMonitoringMode_AutoReload;
-    m_ePDBMonitoringMode = eFileMonitoringMode_AutoReload;
+    m_RecentLogFiles = settings.ReadMultiStringValue(L"RecentLogFiles", {});
+    m_RecentSourceFiles = settings.ReadMultiStringValue(L"RecentSourceFiles", {});
+    m_RecentPDBFiles = settings.ReadMultiStringValue(L"RecentPDBFiles", {});
 
-    m_ConfigFile.Open(m_sConfigFile.c_str());
+    m_SourceDirectories = settings.ReadMultiStringValue(L"SourceDirectories", {});
 
-    m_pFileMonitor = new CFileMonitor(this);
+    m_bAssociateETL = settings.ReadBoolValue(L"AssociateETL", false);
+    m_bAssociatePDB = settings.ReadBoolValue(L"AssociatePDB", false);
+    m_bAssociateSources = settings.ReadBoolValue(L"AssociateSources", false);
 
-    LoadFrom(&m_ConfigFile, _T("Application"));
+    m_ePDBMonitoringMode = (eFileMonitoringMode)settings.ReadDwordValue(L"PDBMonitoringMode", eFileMonitoringMode_AutoReload);
+    m_eSourceMonitoringMode = (eFileMonitoringMode)settings.ReadDwordValue(L"SourceMonitoringMode", eFileMonitoringMode_AutoReload);
+
+    auto highlightFilters = settings.ReadMultiStringValue(L"HighlightFilter", {});
+    for (auto& entry : highlightFilters)
+    {
+        m_HighLightFilters.emplace_back(entry);
+    }
+
     UpdateHighLightFilters();
-    UpdateInstantFilters();
-
 }
 
 CETViewerApp::~CETViewerApp()
@@ -95,20 +92,143 @@ CETViewerApp::~CETViewerApp()
         CTraceProvider* pProvider = *i;
         delete pProvider;
     }
+
     m_sProviders.clear();
-    if (m_hInstantTraceMutex) { CloseHandle(m_hInstantTraceMutex); m_hInstantTraceMutex = NULL; }
-    if (m_hPendingFileChangesMutex) { CloseHandle(m_hPendingFileChangesMutex); m_hPendingFileChangesMutex = NULL; }
+
+    if (m_hInstantTraceMutex)
+    {
+        CloseHandle(m_hInstantTraceMutex);
+        m_hInstantTraceMutex = NULL;
+    }
+
+    if (m_hPendingFileChangesMutex)
+    {
+        CloseHandle(m_hPendingFileChangesMutex);
+        m_hPendingFileChangesMutex = NULL;
+    }
 
     m_pFileMonitor->Stop();
     delete m_pFileMonitor;
     m_pFileMonitor = NULL;
 }
 
-// El único objeto CETViewerApp
+CSourceFileContainer* CETViewerApp::GetSourceFileContainer()
+{
+    return &m_SourceFileContainer;
+}
+
+CTraceController* CETViewerApp::GetTraceController()
+{
+    return &m_Controller;
+}
+
+CMainFrame* CETViewerApp::GetMainFrame()
+{
+    return m_pFrame;
+}
+
+eFileMonitoringMode CETViewerApp::GetSourceMonitoringMode() const
+{
+    return m_eSourceMonitoringMode;
+}
+
+eFileMonitoringMode CETViewerApp::GetPdbMonitoringMode() const
+{
+    return m_ePDBMonitoringMode;
+}
+
+void CETViewerApp::SetSourceMonitoringMode(eFileMonitoringMode mode)
+{
+    m_eSourceMonitoringMode = mode;
+}
+
+void CETViewerApp::SetPdbMonitoringMode(eFileMonitoringMode mode)
+{
+    m_ePDBMonitoringMode = mode;
+}
+
+bool CETViewerApp::GetAssociatePdb() const
+{
+    return m_bAssociatePDB;
+}
+
+bool CETViewerApp::GetAssociateSources() const
+{
+    return m_bAssociateSources;
+}
+
+bool CETViewerApp::GetAssociateEtl() const
+{
+    return m_bAssociateETL;
+}
+
+void CETViewerApp::SetAssociatePdb(bool enable)
+{
+    m_bAssociatePDB = enable;
+}
+
+void CETViewerApp::SetAssociateSources(bool enable)
+{
+    m_bAssociateSources = enable;
+}
+
+void CETViewerApp::SetAssociateEtl(bool enable)
+{
+    m_bAssociateETL = enable;
+}
+
+std::list<std::wstring> CETViewerApp::GetRecentSourceFiles() const
+{
+    return m_RecentSourceFiles;
+}
+
+std::list<std::wstring> CETViewerApp::GetSourceDirectories() const
+{
+    return m_SourceDirectories;
+}
+
+std::list<std::wstring> CETViewerApp::GetExcludeFilters() const
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    return m_ExcludeFilters;
+}
+
+std::list<std::wstring> CETViewerApp::GetIncludeFilters() const
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    return m_IncludeFilters;
+}
+
+std::list<CHighLightFilter> CETViewerApp::GetHighLightFilters() const
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    return m_HighLightFilters;
+}
+
+void CETViewerApp::SetSourceDirectories(std::list<std::wstring>&& list)
+{
+    m_SourceDirectories.swap(list);
+}
+
+void CETViewerApp::SetExcludeFilters(std::list<std::wstring>&& list)
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    m_ExcludeFilters.swap(list);
+}
+
+void CETViewerApp::SetIncludeFilters(std::list<std::wstring>&& list)
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    m_IncludeFilters.swap(list);
+}
+
+void CETViewerApp::SetHighLightFilters(std::list<CHighLightFilter>&& list)
+{
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+    m_HighLightFilters.swap(list);
+}
 
 CETViewerApp theApp;
-
-// Inicialización de CETViewerApp
 
 BOOL CETViewerApp::InitInstance()
 {
@@ -440,21 +560,16 @@ BOOL CETViewerApp::ProcessCommandLine(int argc, TCHAR** argw)
     return TRUE;
 }
 
-
-// Cuadro de diálogo CAboutDlg utilizado para el comando Acerca de
-
 class CAboutDlg : public CDialog
 {
 public:
     CAboutDlg();
 
-    // Datos del cuadro de diálogo
     enum { IDD = IDD_ABOUTBOX };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // Compatibilidad con DDX/DDV
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-// Implementación
 protected:
     DECLARE_MESSAGE_MAP()
 };
@@ -471,86 +586,24 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-// Comando de la aplicación para ejecutar el cuadro de diálogo
 void CETViewerApp::OnAppAbout()
 {
     CAboutDlg aboutDlg;
     aboutDlg.DoModal();
 }
 
-
-// Controladores de mensaje de CETViewerApp
-
-
 void CETViewerApp::UpdateHighLightFilters()
 {
-    m_SplittedHighLightFilters.clear();
-    for (DWORD x = 0; x < m_HighLightFilters.size(); x++)
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+
+    for (auto& entry : m_HighLightFilters)
     {
-        m_HighLightFilters[x].UpdateObjects();
-
-        if (m_HighLightFilters[x].GetEnabled())
-        {
-            TCHAR temp[1024];
-            _tcscpy_s(temp, m_HighLightFilters[x].GetText().c_str());
-            _tcsupr_s(temp);
-
-            TCHAR* nextToken = NULL;
-            TCHAR* token = _tcstok_s(temp, _T(";"), &nextToken);
-            while (token != NULL)
-            {
-                CHightLightFilter filter = m_HighLightFilters[x];
-                filter.SetText(token);
-                m_SplittedHighLightFilters.push_back(filter);
-                token = _tcstok_s(NULL, _T(";"), &nextToken);
-            }
-        }
+        entry.UpdateObjects();
     }
     if (m_pFrame && m_pFrame->GetTracePane())
     {
-        m_pFrame->GetTracePane()->InvalidateRect(NULL);
+        m_pFrame->GetTracePane()->InvalidateRect(nullptr);
     }
-
-}
-void CETViewerApp::UpdateInstantFilters()
-{
-    TCHAR temp[2048] = { 0 };
-    TCHAR* nextToken = NULL;
-    TCHAR* token = NULL;
-
-    WaitForSingleObject(m_hInstantTraceMutex, INFINITE);
-
-    m_dSplittedInstantFilters.clear();
-
-    _tcscpy_s(temp, m_InstantExcludeFilter.c_str());
-    _tcsupr_s(temp);
-
-    token = _tcstok_s(temp, _T(";"), &nextToken);
-    while (token != NULL)
-    {
-        CFilter filter;
-        filter.m_Text = token;
-        filter.m_bInclusionFilter = false;
-        filter.m_dwTextLen = (DWORD)_tcslen(token);
-        m_dSplittedInstantFilters.push_back(filter);
-        token = _tcstok_s(NULL, _T(";"), &nextToken);
-    }
-
-    _tcscpy_s(temp, m_InstantIncludeFilter.c_str());
-    _tcsupr_s(temp);
-    nextToken = NULL;
-    token = _tcstok_s(temp, _T(";"), &nextToken);
-    while (token != NULL)
-    {
-        CFilter filter;
-        filter.m_Text = token;
-        filter.m_bInclusionFilter = true;
-        filter.m_dwTextLen = (DWORD)_tcslen(token);
-        m_dSplittedInstantFilters.push_back(filter);
-        token = _tcstok_s(NULL, _T(";"), &nextToken);
-    }
-
-    ReleaseMutex(m_hInstantTraceMutex);
 }
 
 void CETViewerApp::LookupError(const TCHAR* pText)
@@ -558,68 +611,58 @@ void CETViewerApp::LookupError(const TCHAR* pText)
     m_pFrame->LookupError(pText);
 }
 
-
-void CETViewerApp::AddRecentSourceFile(const TCHAR* pFile)
+void CETViewerApp::AddRecentSourceFile(const TCHAR* file)
 {
-    std::wstring file;
-    file = pFile;
-    std::deque<std::wstring>::iterator i;
-    for (i = m_RecentSourceFiles.begin(); i != m_RecentSourceFiles.end(); i++)
+    auto existingFile = std::find(m_RecentSourceFiles.begin(), m_RecentSourceFiles.end(), file);
+    if (existingFile != m_RecentSourceFiles.end())
     {
-        if (_tcscmp(i->c_str(), pFile) == 0)
-        {
-            m_RecentSourceFiles.erase(i);
-            break;
-        }
+        return;
     }
+
     m_RecentSourceFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentSourceFiles.size() >= RECENT_SOURCE_FILE_MAX)
     {
         m_RecentSourceFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
-void CETViewerApp::AddRecentPDBFile(const TCHAR* pFile)
+void CETViewerApp::AddRecentPDBFile(const TCHAR* file)
 {
-    std::wstring file;
-    file = pFile;
-    std::deque<std::wstring>::iterator i;
-    for (i = m_RecentPDBFiles.begin(); i != m_RecentPDBFiles.end(); i++)
+    auto existingFile = std::find(m_RecentPDBFiles.begin(), m_RecentPDBFiles.end(), file);
+    if (existingFile != m_RecentPDBFiles.end())
     {
-        if (_tcscmp(i->c_str(), pFile) == 0)
-        {
-            m_RecentPDBFiles.erase(i);
-            break;
-        }
+        return;
     }
+
     m_RecentPDBFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentPDBFiles.size() >= RECENT_PDB_FILE_MAX)
     {
         m_RecentPDBFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
-void CETViewerApp::AddRecentLogFile(const TCHAR* pFile)
+void CETViewerApp::AddRecentLogFile(const TCHAR* file)
 {
-    std::wstring file;
-    file = pFile;
-    std::deque<std::wstring>::iterator i;
-    for (i = m_RecentLogFiles.begin(); i != m_RecentLogFiles.end(); i++)
+    auto existingFile = std::find(m_RecentLogFiles.begin(), m_RecentLogFiles.end(), file);
+    if (existingFile != m_RecentLogFiles.end())
     {
-        if (_tcscmp(i->c_str(), pFile) == 0)
-        {
-            m_RecentLogFiles.erase(i);
-            break;
-        }
+        return;
     }
+
     m_RecentLogFiles.push_front(file);
-    RefreshRecentFilesMenus();
+
     if (m_RecentLogFiles.size() >= RECENT_LOG_FILE_MAX)
     {
         m_RecentLogFiles.pop_back();
     }
+
+    RefreshRecentFilesMenus();
 }
 
 bool CETViewerApp::OpenPDB(const TCHAR* pFile, bool bShowErrorIfFailed)
@@ -699,15 +742,13 @@ bool CETViewerApp::OpenPDB(const TCHAR* pFile, bool bShowErrorIfFailed)
 bool CETViewerApp::OpenCodeAddress(const TCHAR* pFile, DWORD dwLine, bool bShowErrorIfFailed)
 {
     bool result = false;
-
-    if (_tcscmp(pFile, _T("")) == 0) { return false; }
-
     std::wstring sFile = pFile;
 
     bool bAccesible = false;
+
     if (_taccess(sFile.c_str(), 0))
     {
-        for (unsigned x = 0; x < theApp.m_SourceDirectories.size(); x++)
+        for (auto& directory : m_SourceDirectories)
         {
             const TCHAR* pRemainder = pFile;
 
@@ -716,7 +757,7 @@ bool CETViewerApp::OpenCodeAddress(const TCHAR* pFile, DWORD dwLine, bool bShowE
                 pRemainder = _tcschr(pRemainder, _T('\\'));
                 if (pRemainder)
                 {
-                    std::wstring sTempFile = theApp.m_SourceDirectories[x];
+                    std::wstring sTempFile = directory;
                     sTempFile += pRemainder;
 
                     if (_taccess(sTempFile.c_str(), 0) == 0)
@@ -731,14 +772,22 @@ bool CETViewerApp::OpenCodeAddress(const TCHAR* pFile, DWORD dwLine, bool bShowE
             }
             while (pRemainder);
 
-            if (bAccesible) { break; }
+            if (bAccesible)
+            {
+                break;
+            }
         }
     }
     else
     {
         bAccesible = true;
     }
-    if (!bAccesible) { return false; }
+
+    if (!bAccesible)
+    {
+        return false;
+    }
+
     result = m_SourceFileContainer.ShowFile(sFile.c_str(), dwLine, bShowErrorIfFailed);
     m_SourceFileContainer.BringWindowToTop();
     UpdateFileMonitor();
@@ -1032,60 +1081,38 @@ bool CETViewerApp::ReloadPDBProviders(std::wstring sFileName)
 
 bool CETViewerApp::FilterTrace(const TCHAR* pText)
 {
-    WaitForSingleObject(m_hInstantTraceMutex, INFINITE);
+    std::wstring text = pText;
 
-    bool res = false;
-
-    TCHAR tempText[2048];
-    tempText[0] = 0;
-    unsigned textLen = 0;
-    while (pText[textLen] != 0)
-    {
-        if (pText[textLen] >= _T('a') && pText[textLen] <= _T('z'))
-        {
-            tempText[textLen] = pText[textLen] - _T('a') + _T('A');
-        }
-        else
-        {
-            tempText[textLen] = pText[textLen];
-        }
-        textLen++;
-    }
-    tempText[textLen] = 0;
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
 
     // Text Filters must always be ordered by relevance, the first filter that matches the criteria
     // is the effective filter 
 
-    bool bPassed = true;
-    unsigned x;
-    for (x = 0; x < m_dSplittedInstantFilters.size(); x++)
+    for (auto& filter : m_ExcludeFilters)
     {
-        int index = 0, maxTextSearchSize = textLen - m_dSplittedInstantFilters[x].m_dwTextLen;
-        if (maxTextSearchSize > 0)
+        if (filter == L"*")
         {
-            CFilter* pFilter = &m_dSplittedInstantFilters[x];
-            const TCHAR* pFilterText = m_dSplittedInstantFilters[x].m_Text.c_str();
-            if (pFilterText[0] == _T('*'))
-            {
-                bPassed = (pFilter->m_bInclusionFilter) ? true : false;
-                ReleaseMutex(m_hInstantTraceMutex);
-                return bPassed;
-            }
+            return false;
+        }
 
-            while (index <= maxTextSearchSize)
-            {
-                if (memcmp(tempText + index, pFilterText, pFilter->m_dwTextLen) == 0)
-                {
-                    bPassed = (pFilter->m_bInclusionFilter) ? true : false;
-                    ReleaseMutex(m_hInstantTraceMutex);
-                    return bPassed;
-                }
-                index++;
-            }
+        if (text.find(filter) != std::wstring::npos)
+        {
+            return false;
         }
     }
 
-    ReleaseMutex(m_hInstantTraceMutex);
+    for (auto& filter : m_IncludeFilters)
+    {
+        if (filter == L"*")
+        {
+            return true;
+        }
+
+        if (text.find(filter) != std::wstring::npos)
+        {
+            return true;
+        }
+    }
 
     return false;
 }
@@ -1096,60 +1123,142 @@ void CETViewerApp::RefreshRecentFilesMenus()
     CMenu* pSourceFilesMenu = m_pFrame->GetMenu()->GetSubMenu(0)->GetSubMenu(8);
     CMenu* pPDBFilesMenu = m_pFrame->GetMenu()->GetSubMenu(0)->GetSubMenu(7);
 
-    if (pSourceFilesMenu == NULL || pPDBFilesMenu == NULL || pLogFilesMenu == NULL) { return; }
-    unsigned x;
-    while (pPDBFilesMenu->GetMenuItemCount()) { pPDBFilesMenu->RemoveMenu(0, MF_BYPOSITION); }
-    while (pSourceFilesMenu->GetMenuItemCount()) { pSourceFilesMenu->RemoveMenu(0, MF_BYPOSITION); }
-    while (pLogFilesMenu->GetMenuItemCount()) { pLogFilesMenu->RemoveMenu(0, MF_BYPOSITION); }
-
-    for (x = 0; x < m_RecentPDBFiles.size(); x++)
+    if (pSourceFilesMenu == NULL || pPDBFilesMenu == NULL || pLogFilesMenu == NULL)
     {
-        TCHAR* pText = (TCHAR*)m_RecentPDBFiles[x].c_str();
-        pPDBFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_PDB_FILE_BASE_INDEX + x, pText);
+        return;
     }
-    for (x = 0; x < m_RecentSourceFiles.size(); x++)
+    
+    while (pPDBFilesMenu->GetMenuItemCount())
     {
-        TCHAR* pText = (TCHAR*)m_RecentSourceFiles[x].c_str();
-        pSourceFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX + x, pText);
+        pPDBFilesMenu->RemoveMenu(0, MF_BYPOSITION);
     }
-    for (x = 0; x < m_RecentLogFiles.size(); x++)
+    
+    while (pSourceFilesMenu->GetMenuItemCount())
     {
-        TCHAR* pText = (TCHAR*)m_RecentLogFiles[x].c_str();
-        pLogFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_LOG_FILE_BASE_INDEX + x, pText);
+        pSourceFilesMenu->RemoveMenu(0, MF_BYPOSITION);
+    }
+    
+    while (pLogFilesMenu->GetMenuItemCount())
+    {
+        pLogFilesMenu->RemoveMenu(0, MF_BYPOSITION);
     }
 
-    if (m_RecentPDBFiles.size() == 0) { pPDBFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_PDB_FILE_BASE_INDEX, _T("<No Recent File>")); }
-    if (m_RecentSourceFiles.size() == 0) { pSourceFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX, _T("<No Recent File>")); }
-    if (m_RecentLogFiles.size() == 0) { pLogFilesMenu->InsertMenu(x, MF_BYPOSITION, RECENT_LOG_FILE_BASE_INDEX, _T("<No Recent File>")); }
+    auto menuIndex = 0;
+    for (auto& file : m_RecentPDBFiles)
+    {
+        pPDBFilesMenu->InsertMenu(menuIndex, MF_BYPOSITION, RECENT_PDB_FILE_BASE_INDEX + menuIndex, file.c_str());
+        menuIndex++;
+    }
+
+    menuIndex = 0;
+    for (auto& file : m_RecentSourceFiles)
+    {
+        pSourceFilesMenu->InsertMenu(menuIndex, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX + menuIndex, file.c_str());
+        menuIndex++;
+    }
+
+    menuIndex = 0;
+    for (auto& file : m_RecentLogFiles)
+    {
+        pLogFilesMenu->InsertMenu(menuIndex, MF_BYPOSITION, RECENT_LOG_FILE_BASE_INDEX + menuIndex, file.c_str());
+        menuIndex++;
+    }
+
+    if (m_RecentPDBFiles.size() == 0)
+    {
+        pPDBFilesMenu->InsertMenu(0, MF_BYPOSITION, RECENT_PDB_FILE_BASE_INDEX, _T("<No Recent File>"));
+    }
+    if (m_RecentSourceFiles.size() == 0)
+    {
+        pSourceFilesMenu->InsertMenu(0, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX, _T("<No Recent File>"));
+    }
+    if (m_RecentLogFiles.size() == 0)
+    {
+        pLogFilesMenu->InsertMenu(0, MF_BYPOSITION, RECENT_LOG_FILE_BASE_INDEX, _T("<No Recent File>"));
+    }
 }
 
 void CETViewerApp::OnRecentPDBFile(UINT nID)
 {
-    if (m_RecentPDBFiles.size() == 0) { return; }
-    std::wstring file = m_RecentPDBFiles[nID - RECENT_PDB_FILE_BASE_INDEX];
-    m_pFrame->OpenFile(file.c_str(), NULL);
+    auto fileId = nID - RECENT_PDB_FILE_BASE_INDEX;
+    if (m_RecentPDBFiles.size() < fileId)
+    {
+        return;
+    }
+
+    auto file = m_RecentPDBFiles.begin();
+
+    // TODO: use random access container
+    std::advance(file, fileId);
+
+    m_pFrame->OpenFile(file->c_str(), NULL);
 }
 
 void CETViewerApp::OnRecentSourceFile(UINT nID)
 {
-    if (m_RecentSourceFiles.size() == 0) { return; }
-    std::wstring file = m_RecentSourceFiles[nID - RECENT_SOURCE_FILE_BASE_INDEX];
-    OpenCodeAddress(file.c_str(), 0, true);
+    auto fileId = nID - RECENT_SOURCE_FILE_BASE_INDEX;
+    if (m_RecentSourceFiles.size() < fileId)
+    {
+        return;
+    }
+
+    auto file = m_RecentSourceFiles.begin();
+
+    // TODO: use random access container
+    std::advance(file, fileId);
+
+    OpenCodeAddress(file->c_str(), 0, true);
 }
 
 void CETViewerApp::OnRecentLogFile(UINT nID)
 {
-    if (m_RecentLogFiles.size() == 0) { return; }
-    std::wstring file = m_RecentLogFiles[nID - RECENT_LOG_FILE_BASE_INDEX];
-    m_pFrame->OpenFile(file.c_str(), NULL);
+    auto fileId = nID - RECENT_LOG_FILE_BASE_INDEX;
+    if (m_RecentLogFiles.size() < fileId)
+    {
+        return;
+    }
+
+    auto file = m_RecentLogFiles.begin();
+    
+    // TODO: use random access container
+    std::advance(file, fileId);
+
+    m_pFrame->OpenFile(file->c_str(), NULL);
 }
 
 void CETViewerApp::OnClose()
 {
-    SaveTo(&m_ConfigFile, _T("Application"));
-    m_pFrame->GetTracePane()->Save(&theApp.m_ConfigFile);
-    m_ConfigFile.Save(m_sConfigFile.c_str());
-    if (m_hSingleInstanceMutex) { CloseHandle(m_hSingleInstanceMutex); m_hSingleInstanceMutex = NULL; }
+    PersistentSettings settings;
+
+    settings.WriteMultiStringValue(L"ExcludeFilter", m_ExcludeFilters);
+    settings.WriteMultiStringValue(L"IncludeFilter", m_IncludeFilters);
+
+    settings.WriteMultiStringValue(L"RecentLogFiles", m_RecentLogFiles);
+    settings.WriteMultiStringValue(L"RecentSourceFiles", m_RecentSourceFiles);
+    settings.WriteMultiStringValue(L"RecentPDBFiles", m_RecentPDBFiles);
+    settings.WriteMultiStringValue(L"SourceDirectories", m_SourceDirectories);
+
+    settings.WriteBoolValue(L"AssociateETL", m_bAssociateETL);
+    settings.WriteBoolValue(L"AssociatePDB", m_bAssociatePDB);
+    settings.WriteBoolValue(L"AssociateSources", m_bAssociateSources);
+
+    settings.WriteDwordValue(L"PDBMonitoringMode", m_ePDBMonitoringMode);
+    settings.WriteDwordValue(L"SourceMonitoringMode", m_eSourceMonitoringMode);
+
+    std::list<std::wstring> highLightFilters;
+    for (auto& filter : m_HighLightFilters)
+    {
+        highLightFilters.push_back(filter.ToString());
+    }
+    settings.WriteMultiStringValue(L"HighlightFilter", highLightFilters);
+
+    m_pFrame->GetTracePane()->Save();
+
+    if (m_hSingleInstanceMutex)
+    {
+        CloseHandle(m_hSingleInstanceMutex);
+        m_hSingleInstanceMutex = NULL;
+    }
 
     CloseSession();
 }
@@ -1163,14 +1272,22 @@ int CETViewerApp::ExitInstance()
 
 void CETViewerApp::UpdateFileAssociations()
 {
-    if (m_bAssociatePDB) { SetFileAssociation(_T(".pdb"), _T("pdbfile"), _T("Program Database"), _T("-pdb:\"%1\"")); }
-    if (m_bAssociateETL) { SetFileAssociation(_T(".etl"), _T("etlfile"), _T("Event Tracing for Windows (ETW) Log"), _T("-etl:\"%1\"")); }
+    if (m_bAssociatePDB)
+    {
+        SetFileAssociation(L".pdb", L"pdbfile", L"Program Database", L"-pdb:\"%1\"");
+    }
+
+    if (m_bAssociateETL)
+    {
+        SetFileAssociation(L".etl", L"etlfile", L"Event Tracing for Windows (ETW) Log", L"-etl:\"%1\"");
+    }
+    
     if (m_bAssociateSources)
     {
-        SetFileAssociation(_T(".cpp"), _T("cppfile"), _T("C++ Source File"), _T("-src:\"%1\""));
-        SetFileAssociation(_T(".c"), _T("cfile"), _T("C Source File"), _T("-src:\"%1\""));
-        SetFileAssociation(_T(".h"), _T("hfile"), _T("Header File"), _T("-src:\"%1\""));
-        SetFileAssociation(_T(".inl"), _T("inlfile"), _T("Inline File"), _T("-src:\"%1\""));
+        SetFileAssociation(L".cpp", L"cppfile", L"C++ Source File", L"-src:\"%1\"");
+        SetFileAssociation(L".c", L"cfile", L"C Source File", L"-src:\"%1\"");
+        SetFileAssociation(L".h", L"hfile", L"Header File", L"-src:\"%1\"");
+        SetFileAssociation(L".inl", L"inlfile", L"Inline File", L"-src:\"%1\"");
     }
 }
 
