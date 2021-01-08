@@ -189,16 +189,19 @@ std::list<std::wstring> CETViewerApp::GetSourceDirectories() const
 
 std::list<std::wstring> CETViewerApp::GetExcludeFilters() const
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     return m_ExcludeFilters;
 }
 
 std::list<std::wstring> CETViewerApp::GetIncludeFilters() const
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     return m_IncludeFilters;
 }
 
 std::list<CHighLightFilter> CETViewerApp::GetHighLightFilters() const
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     return m_HighLightFilters;
 }
 
@@ -209,16 +212,19 @@ void CETViewerApp::SetSourceDirectories(std::list<std::wstring>&& list)
 
 void CETViewerApp::SetExcludeFilters(std::list<std::wstring>&& list)
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     m_ExcludeFilters.swap(list);
 }
 
 void CETViewerApp::SetIncludeFilters(std::list<std::wstring>&& list)
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     m_IncludeFilters.swap(list);
 }
 
 void CETViewerApp::SetHighLightFilters(std::list<CHighLightFilter>&& list)
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
     m_HighLightFilters.swap(list);
 }
 
@@ -588,6 +594,8 @@ void CETViewerApp::OnAppAbout()
 
 void CETViewerApp::UpdateHighLightFilters()
 {
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
+
     for (auto& entry : m_HighLightFilters)
     {
         entry.UpdateObjects();
@@ -1075,7 +1083,7 @@ bool CETViewerApp::FilterTrace(const TCHAR* pText)
 {
     std::wstring text = pText;
 
-    WaitForSingleObject(m_hInstantTraceMutex, INFINITE);
+    std::lock_guard<std::mutex> lock(m_FiltersGuard);
 
     // Text Filters must always be ordered by relevance, the first filter that matches the criteria
     // is the effective filter 
@@ -1084,13 +1092,11 @@ bool CETViewerApp::FilterTrace(const TCHAR* pText)
     {
         if (filter == L"*")
         {
-            ReleaseMutex(m_hInstantTraceMutex);
             return false;
         }
 
         if (text.find(filter) != std::wstring::npos)
         {
-            ReleaseMutex(m_hInstantTraceMutex);
             return false;
         }
     }
@@ -1099,18 +1105,14 @@ bool CETViewerApp::FilterTrace(const TCHAR* pText)
     {
         if (filter == L"*")
         {
-            ReleaseMutex(m_hInstantTraceMutex);
             return true;
         }
 
         if (text.find(filter) != std::wstring::npos)
         {
-            ReleaseMutex(m_hInstantTraceMutex);
             return true;
         }
     }
-
-    ReleaseMutex(m_hInstantTraceMutex);
 
     return false;
 }

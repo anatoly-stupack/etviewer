@@ -182,9 +182,9 @@ private:
     std::list<std::wstring> m_RecentLogFiles;
     std::list<std::wstring> m_SourceDirectories;
 
+    mutable std::mutex m_FiltersGuard;
     std::list<std::wstring>	m_IncludeFilters;
     std::list<std::wstring>	m_ExcludeFilters;
-
     std::list<CHighLightFilter> m_HighLightFilters;
 
     bool m_bAssociateETL;
