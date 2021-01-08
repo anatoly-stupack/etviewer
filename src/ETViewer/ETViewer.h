@@ -87,6 +87,35 @@ public:
     CETViewerApp();
     ~CETViewerApp();
 
+    CSourceFileContainer* GetSourceFileContainer();
+    CTraceController* GetTraceController();
+    CMainFrame* GetMainFrame();
+
+    eFileMonitoringMode GetSourceMonitoringMode() const;
+    eFileMonitoringMode GetPdbMonitoringMode() const;
+
+    void SetSourceMonitoringMode(eFileMonitoringMode mode);
+    void SetPdbMonitoringMode(eFileMonitoringMode mode);
+
+    bool GetAssociatePdb() const;
+    bool GetAssociateSources() const;
+    bool GetAssociateEtl() const;
+
+    void SetAssociatePdb(bool enable);
+    void SetAssociateSources(bool enable);
+    void SetAssociateEtl(bool enable);
+
+    std::list<std::wstring> GetRecentSourceFiles() const;
+    std::list<std::wstring> GetSourceDirectories() const;
+    std::list<std::wstring> GetExcludeFilters() const;
+    std::list<std::wstring> GetIncludeFilters() const;
+    std::list<CHighLightFilter> GetHighLightFilters() const;
+
+    void SetSourceDirectories(std::list<std::wstring>&& list);
+    void SetExcludeFilters(std::list<std::wstring>&& list);
+    void SetIncludeFilters(std::list<std::wstring>&& list);
+    void SetHighLightFilters(std::list<CHighLightFilter>&& list);
+
     void OnClose();
 
     void AddFileChangeOperation(std::wstring sFileName);
@@ -97,6 +126,7 @@ public:
     void SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, TCHAR* pFileDescription, TCHAR* pCommandLineTag);
 
     virtual BOOL InitInstance();
+    virtual int ExitInstance();
 
     void RefreshRecentFilesMenus();
 
@@ -136,10 +166,7 @@ public:
 
     DECLARE_MESSAGE_MAP()
 
-    virtual int ExitInstance();
-
-    // TODO: make private
-public:
+private:
     std::set<CTraceProvider*> m_sProviders;
     CTracePDBReader m_PDBReader;
 

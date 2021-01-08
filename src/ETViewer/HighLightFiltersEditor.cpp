@@ -274,8 +274,10 @@ void CHighLightFiltersEditor::LoadFilters()
 {
     m_LWFilters.DeleteAllItems();
 
+    auto filters = theApp.GetHighLightFilters();
+
     auto itemIndex = 0;
-    for (auto& filter : theApp.m_HighLightFilters)
+    for (auto& filter : filters)
     {
         CHighLightFilter* pFilter = new CHighLightFilter;
         *pFilter = filter;
@@ -288,9 +290,9 @@ void CHighLightFiltersEditor::LoadFilters()
 
 void CHighLightFiltersEditor::SaveFilters()
 {
-    theApp.m_HighLightFilters.clear();
-    int x;
-    for (x = 0; x < m_LWFilters.GetItemCount(); x++)
+    std::list<CHighLightFilter> filters;
+
+    for (auto x = 0; x < m_LWFilters.GetItemCount(); x++)
     {
         CHighLightFilter filter;
         filter.SetEnabled(m_LWFilters.GetCheck(x) ? true : false);
@@ -306,9 +308,10 @@ void CHighLightFiltersEditor::SaveFilters()
         CHighLightFilter* pFilter = (CHighLightFilter*)item.lParam;
         filter.SetBkColor(pFilter->GetBkColor());
         filter.SetTextColor(pFilter->GetTextColor());
-        theApp.m_HighLightFilters.push_back(filter);
+        filters.push_back(filter);
     }
 
+    theApp.SetHighLightFilters(std::move(filters));
     theApp.UpdateHighLightFilters();
 }
 

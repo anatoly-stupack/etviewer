@@ -310,7 +310,8 @@ void CSourceFileContainer::OnFind()
 
 void CSourceFileContainer::OnRecentFile()
 {
-    if (theApp.m_RecentSourceFiles.size() == 0)
+    auto recentSourceFiles = theApp.GetRecentSourceFiles();
+    if (recentSourceFiles.size() == 0)
     {
         return;
     }
@@ -319,7 +320,7 @@ void CSourceFileContainer::OnRecentFile()
     pMenu->CreatePopupMenu();
 
     auto menuIndex = 0;
-    for (auto& file : theApp.m_RecentSourceFiles)
+    for (auto& file : recentSourceFiles)
     {
         pMenu->InsertMenu(menuIndex, MF_BYPOSITION, RECENT_SOURCE_FILE_BASE_INDEX + menuIndex, file.c_str());
         menuIndex++;
@@ -331,9 +332,9 @@ void CSourceFileContainer::OnRecentFile()
     if (res)
     {
         unsigned fileIndex = res - RECENT_SOURCE_FILE_BASE_INDEX;
-        if (fileIndex <= theApp.m_RecentSourceFiles.size())
+        if (fileIndex <= recentSourceFiles.size())
         {
-            auto file = theApp.m_RecentSourceFiles.begin();
+            auto file = recentSourceFiles.begin();
 
             std::advance(file, res - RECENT_SOURCE_FILE_BASE_INDEX);
 

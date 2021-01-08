@@ -370,40 +370,6 @@ void CETViewerView::OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 }
 
-void CETViewerView::GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush)
-{
-    if (theApp.m_HighLightFilters.size() == 0)
-    {
-        return;
-    }
-
-    // Text Filters must always be ordered by relevance, the first filter that matches the criteria
-    // is the effective filter 
-
-    const std::wstring text = pTrace->trace.sText;
-
-    for (auto& filter : theApp.m_HighLightFilters)
-    {
-        if (filter.GetText() == L"*")
-        {
-            *pTextColor = filter.GetTextColor();
-            *pBkColor = filter.GetBkColor();
-            *phPen = filter.GetPen();
-            *phBrush = filter.GetBrush();
-            break;
-        }
-
-        if (text.find(filter.GetText()) != std::wstring::npos)
-        {
-            *pTextColor = filter.GetTextColor();
-            *pBkColor = filter.GetBkColor();
-            *phPen = filter.GetPen();
-            *phBrush = filter.GetBrush();
-            break;
-        }
-    }
-}
-
 void CETViewerView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
     LPNMLVCUSTOMDRAW  pDraw = (LPNMLVCUSTOMDRAW)pNMHDR;
@@ -447,7 +413,20 @@ void CETViewerView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
         HPEN hPen = m_hNormalPen;
         HBRUSH hBrush = m_hNormalBrush;
 
-        GetTraceColors(pTrace, &pDraw->clrText, &pDraw->clrTextBk, &hPen, &hBrush);
+        // Check for highlight filters
+        auto highLightFilters = theApp.GetHighLightFilters();
+        for (auto& filter : highLightFilters)
+        {
+            if (filter.GetText() == L"*" || pTrace->trace.sText.find(filter.GetText()) != std::wstring::npos)
+            {
+                pDraw->clrText = filter.GetTextColor();
+                pDraw->clrTextBk = filter.GetBkColor();
+                hPen = filter.GetPen();
+                hBrush = filter.GetBrush();
+                break;
+            }
+        }
+
         DWORD state = GetListCtrl().GetItemState(pDraw->nmcd.dwItemSpec, LVIS_SELECTED | LVIS_FOCUSED);
         if (state & LVIS_SELECTED)
         {
@@ -1159,9 +1138,8 @@ void CETViewerView::OnHighLightFilters()
     CHighLightFiltersEditor dialog;
     dialog.DoModal();
     GetListCtrl().RedrawItems(0, GetListCtrl().GetItemCount());
-    theApp.m_pFrame->GetHighLightPane()->LoadFilters();
+    theApp.GetMainFrame()->GetHighLightPane()->LoadFilters();
 }
-
 
 void CETViewerView::ProcessTrace(STraceEvenTracingNormalizedData* pTraceData)
 {
@@ -1208,7 +1186,7 @@ void CETViewerView::OnTimer(UINT nIDEvent)
 {
     if (nIDEvent == CAPTURE_TIMER)
     {
-        theApp.m_Controller.FlushTraces();
+        theApp.GetTraceController()->FlushTraces();
 
         KillTimer(CAPTURE_TIMER);
 
@@ -1675,7 +1653,7 @@ void CETViewerView::OnProvidersModified()
             SETViewerTrace* pTrace = m_lTraces[x];
             if (!pTrace->trace.bFormatted)
             {
-                if (theApp.m_Controller.FormatTrace(&pTrace->trace))
+                if (theApp.GetTraceController()->FormatTrace(&pTrace->trace))
                 {
                     m_nUnformattedTraces--;
                 }
@@ -1688,7 +1666,7 @@ void CETViewerView::OnProvidersModified()
 
 void CETViewerView::OnSessionTypeChanged()
 {
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_None)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_None)
     {
         Clear();
     }

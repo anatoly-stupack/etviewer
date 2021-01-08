@@ -237,7 +237,8 @@ void CHighLightPane::LoadFilters()
     GetListCtrl().DeleteAllItems();
 
     auto itemIndex = 0;
-    for (auto& filter : theApp.m_HighLightFilters)
+    auto filters = theApp.GetHighLightFilters();
+    for (auto& filter : filters)
     {
         CHighLightFilter* pFilter = new CHighLightFilter;
         *pFilter = filter;
@@ -250,9 +251,9 @@ void CHighLightPane::LoadFilters()
 
 void CHighLightPane::SaveFilters()
 {
-    theApp.m_HighLightFilters.clear();
-    int x;
-    for (x = 0; x < GetListCtrl().GetItemCount(); x++)
+    std::list<CHighLightFilter> filters;
+
+    for (auto x = 0; x < GetListCtrl().GetItemCount(); x++)
     {
         CHighLightFilter filter;
         filter.SetEnabled(GetListCtrl().GetCheck(x) ? true : false);
@@ -268,9 +269,10 @@ void CHighLightPane::SaveFilters()
         CHighLightFilter* pFilter = (CHighLightFilter*)item.lParam;
         filter.SetBkColor(pFilter->GetBkColor());
         filter.SetTextColor(pFilter->GetTextColor());
-        theApp.m_HighLightFilters.push_back(filter);
+        filters.push_back(filter);
     }
 
+    theApp.SetHighLightFilters(std::move(filters));
     theApp.UpdateHighLightFilters();
 }
 

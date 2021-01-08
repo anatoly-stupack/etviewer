@@ -480,7 +480,8 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                 temp1 += path;
                 if (_tcscmp(temp1.c_str(), _T("")) != 0) { dirs.push_back(temp1); }
 
-                for (auto& directory : theApp.m_SourceDirectories)
+                auto directories = theApp.GetSourceDirectories();
+                for (auto& directory : directories)
                 {
                     dirs.push_back(directory.c_str());
                 }

@@ -105,16 +105,34 @@ void CSettingsDialog::OnSelectFont()
 
 void CSettingsDialog::OnPDBReloadChanged()
 {
-    if (m_RBPDBReloadAuto.GetCheck() == BST_CHECKED) { theApp.m_ePDBMonitoringMode = eFileMonitoringMode_AutoReload; }
-    else if (m_RBPDBReloadAsk.GetCheck() == BST_CHECKED) { theApp.m_ePDBMonitoringMode = eFileMonitoringMode_Ask; }
-    else { theApp.m_ePDBMonitoringMode = eFileMonitoringMode_Ignore; }
+    if (m_RBPDBReloadAuto.GetCheck() == BST_CHECKED)
+    {
+        theApp.SetPdbMonitoringMode(eFileMonitoringMode_AutoReload);
+    }
+    else if (m_RBPDBReloadAsk.GetCheck() == BST_CHECKED)
+    {
+        theApp.SetPdbMonitoringMode(eFileMonitoringMode_Ask);
+    }
+    else
+    {
+        theApp.SetPdbMonitoringMode(eFileMonitoringMode_Ignore);
+    }
 }
 
 void CSettingsDialog::OnSourceReloadChanged()
 {
-    if (m_RBSourceReloadAuto.GetCheck() == BST_CHECKED) { theApp.m_eSourceMonitoringMode = eFileMonitoringMode_AutoReload; }
-    else if (m_RBSourceReloadAsk.GetCheck() == BST_CHECKED) { theApp.m_eSourceMonitoringMode = eFileMonitoringMode_Ask; }
-    else { theApp.m_eSourceMonitoringMode = eFileMonitoringMode_Ignore; }
+    if (m_RBSourceReloadAuto.GetCheck() == BST_CHECKED)
+    {
+        theApp.SetSourceMonitoringMode(eFileMonitoringMode_AutoReload);
+    }
+    else if (m_RBSourceReloadAsk.GetCheck() == BST_CHECKED)
+    {
+        theApp.SetSourceMonitoringMode(eFileMonitoringMode_Ask);
+    }
+    else
+    {
+        theApp.SetSourceMonitoringMode(eFileMonitoringMode_Ignore);
+    }
 }
 
 BOOL CSettingsDialog::OnInitDialog()
@@ -131,23 +149,24 @@ BOOL CSettingsDialog::OnInitDialog()
     SetWindowLong(m_LWSourcePaths.m_hWnd, GWL_USERDATA, (DWORD)this);
     SetWindowLong(m_LWSourcePaths.m_hWnd, GWL_WNDPROC, (DWORD)ListViewProc);
 
-    m_CBAssociateETL.SetCheck(theApp.m_bAssociateETL ? BST_CHECKED : BST_UNCHECKED);
-    m_CBAssociatePDB.SetCheck(theApp.m_bAssociatePDB ? BST_CHECKED : BST_UNCHECKED);
-    m_CBAssociateSources.SetCheck(theApp.m_bAssociateSources ? BST_CHECKED : BST_UNCHECKED);
+    m_CBAssociateETL.SetCheck(theApp.GetAssociateEtl() ? BST_CHECKED : BST_UNCHECKED);
+    m_CBAssociatePDB.SetCheck(theApp.GetAssociatePdb() ? BST_CHECKED : BST_UNCHECKED);
+    m_CBAssociateSources.SetCheck(theApp.GetAssociateSources() ? BST_CHECKED : BST_UNCHECKED);
 
-    m_RBPDBReloadAuto.SetCheck(theApp.m_ePDBMonitoringMode == eFileMonitoringMode_AutoReload ? BST_CHECKED : BST_UNCHECKED);
-    m_RBPDBReloadAsk.SetCheck(theApp.m_ePDBMonitoringMode == eFileMonitoringMode_Ask ? BST_CHECKED : BST_UNCHECKED);
-    m_RBPDBReloadDisabled.SetCheck(theApp.m_ePDBMonitoringMode == eFileMonitoringMode_Ignore || theApp.m_ePDBMonitoringMode == eFileMonitoringMode_None ? BST_CHECKED : BST_UNCHECKED);
+    m_RBPDBReloadAuto.SetCheck(theApp.GetPdbMonitoringMode() == eFileMonitoringMode_AutoReload ? BST_CHECKED : BST_UNCHECKED);
+    m_RBPDBReloadAsk.SetCheck(theApp.GetPdbMonitoringMode() == eFileMonitoringMode_Ask ? BST_CHECKED : BST_UNCHECKED);
+    m_RBPDBReloadDisabled.SetCheck(theApp.GetPdbMonitoringMode() == eFileMonitoringMode_Ignore || theApp.GetPdbMonitoringMode() == eFileMonitoringMode_None ? BST_CHECKED : BST_UNCHECKED);
 
-    m_RBSourceReloadAuto.SetCheck(theApp.m_eSourceMonitoringMode == eFileMonitoringMode_AutoReload ? BST_CHECKED : BST_UNCHECKED);
-    m_RBSourceReloadAsk.SetCheck(theApp.m_eSourceMonitoringMode == eFileMonitoringMode_Ask ? BST_CHECKED : BST_UNCHECKED);
-    m_RBSourceReloadDisabled.SetCheck(theApp.m_eSourceMonitoringMode == eFileMonitoringMode_Ignore || theApp.m_eSourceMonitoringMode == eFileMonitoringMode_None ? BST_CHECKED : BST_UNCHECKED);
+    m_RBSourceReloadAuto.SetCheck(theApp.GetSourceMonitoringMode() == eFileMonitoringMode_AutoReload ? BST_CHECKED : BST_UNCHECKED);
+    m_RBSourceReloadAsk.SetCheck(theApp.GetSourceMonitoringMode() == eFileMonitoringMode_Ask ? BST_CHECKED : BST_UNCHECKED);
+    m_RBSourceReloadDisabled.SetCheck(theApp.GetSourceMonitoringMode() == eFileMonitoringMode_Ignore || theApp.GetSourceMonitoringMode() == eFileMonitoringMode_None ? BST_CHECKED : BST_UNCHECKED);
 
-    theApp.m_pFrame->GetTracePane()->GetTraceFont(&m_sTraceFont, &m_dwTraceFontSize);
+    theApp.GetMainFrame()->GetTracePane()->GetTraceFont(&m_sTraceFont, &m_dwTraceFontSize);
     UpdateFont();
 
     auto menuIndex = 0;
-    for (auto& directory : theApp.m_SourceDirectories)
+    auto directories = theApp.GetSourceDirectories();
+    for (auto& directory : directories)
     {
         m_LWSourcePaths.InsertItem(menuIndex, directory.c_str());
         menuIndex++;
@@ -173,9 +192,8 @@ LRESULT CALLBACK CSettingsDialog::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wPar
 
 void CSettingsDialog::OnOk()
 {
-    theApp.m_SourceDirectories.clear();
-    int x;
-    for (x = 0; x < m_LWSourcePaths.GetItemCount(); x++)
+    std::list<std::wstring> directories;
+    for (auto x = 0; x < m_LWSourcePaths.GetItemCount(); x++)
     {
         TCHAR sTempText[1024] = { 0 };
         LVITEM item = { 0 };
@@ -184,27 +202,28 @@ void CSettingsDialog::OnOk()
         item.pszText = sTempText;
         item.cchTextMax = _countof(sTempText);
         m_LWSourcePaths.GetItem(&item);
-        theApp.m_SourceDirectories.push_back(sTempText);
+        directories.push_back(sTempText);
     }
+    theApp.SetSourceDirectories(std::move(directories));
 
-    theApp.m_bAssociateETL = (m_CBAssociateETL.GetCheck() == BST_CHECKED);
-    theApp.m_bAssociatePDB = (m_CBAssociatePDB.GetCheck() == BST_CHECKED);
+    theApp.SetAssociateEtl(m_CBAssociateETL.GetCheck() == BST_CHECKED);
+    theApp.SetAssociatePdb(m_CBAssociatePDB.GetCheck() == BST_CHECKED);
     bool bSources = (m_CBAssociateSources.GetCheck() == BST_CHECKED);
 
-    if (!theApp.m_bAssociateSources && bSources)
+    if (!theApp.GetAssociateSources() && bSources)
     {
         if (MessageBox(_T("Do you really want to associate Source Files with ETViewer?"), _T("ETViewer"), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
         {
-            theApp.m_bAssociateSources = bSources;
+            theApp.SetAssociateSources(bSources);
         }
     }
     else
     {
-        theApp.m_bAssociateSources = bSources;
+        theApp.SetAssociateSources(bSources);
     }
     theApp.UpdateFileAssociations();
 
-    theApp.m_pFrame->GetTracePane()->SetTraceFont(m_sTraceFont, m_dwTraceFontSize);
+    theApp.GetMainFrame()->GetTracePane()->SetTraceFont(m_sTraceFont, m_dwTraceFontSize);
 
     OnOK();
 }

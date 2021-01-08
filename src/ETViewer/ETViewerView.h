@@ -94,7 +94,6 @@ public:
     void ClearSelected();
 
     void GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTraces);
-    void GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush);
 
     // ITraceEvents
     void ProcessTrace(STraceEvenTracingNormalizedData* pTraceData);

@@ -58,14 +58,30 @@ void CFilterDialogBar::InitDialogBar()
     m_EDIncludeEdit.Attach(m_CBIncludeFilter.GetWindow(GW_CHILD)->m_hWnd);
     m_EDExcludeEdit.Attach(m_CBExcludeFilter.GetWindow(GW_CHILD)->m_hWnd);
 
-    for (auto& filter : theApp.m_IncludeFilters)
+    auto includeFilters = theApp.GetIncludeFilters();
+    for (auto& filter : includeFilters)
     {
         m_CBIncludeFilter.AddString(filter.c_str());
+
+        if (!m_InstantIncludeFilters.empty())
+        {
+            m_InstantIncludeFilters += L";";
+        }
+
+        m_InstantIncludeFilters += filter;
     }
 
-    for (auto& filter : theApp.m_ExcludeFilters)
+    auto excludeFilters = theApp.GetExcludeFilters();
+    for (auto& filter : excludeFilters)
     {
         m_CBExcludeFilter.AddString(filter.c_str());
+
+        if (!m_InstantExcludeFilters.empty())
+        {
+            m_InstantExcludeFilters += L";";
+        }
+
+        m_InstantExcludeFilters += filter;
     }
 
     m_OldIncludeEditProc = (WNDPROC)GetWindowLong(m_EDIncludeEdit.m_hWnd, GWL_WNDPROC);
@@ -75,24 +91,6 @@ void CFilterDialogBar::InitDialogBar()
     m_OldExcludeEditProc = (WNDPROC)GetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC);
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_USERDATA, (DWORD)this);
     SetWindowLong(m_EDExcludeEdit.m_hWnd, GWL_WNDPROC, (DWORD)InstantEditProc);
-
-    for (auto& filter : theApp.m_IncludeFilters)
-    {
-        if (!m_InstantIncludeFilters.empty())
-        {
-            m_InstantIncludeFilters += L";";
-        }
-        m_InstantIncludeFilters += filter;
-    }
-
-    for (auto& filter : theApp.m_ExcludeFilters)
-    {
-        if (!m_InstantExcludeFilters.empty())
-        {
-            m_InstantExcludeFilters += L";";
-        }
-        m_InstantExcludeFilters += filter;
-    }
 
     m_EDIncludeEdit.SetWindowText(m_InstantIncludeFilters.c_str());
     m_EDExcludeEdit.SetWindowText(m_InstantExcludeFilters.c_str());
@@ -141,20 +139,21 @@ void CFilterDialogBar::OnDestroy()
 {
     TCHAR sTempText[1024] = { 0 };
 
-    theApp.m_IncludeFilters.clear();
-    theApp.m_ExcludeFilters.clear();
-
+    std::list<std::wstring> excludeFilters;
     for (auto x = 0; x < m_CBExcludeFilter.GetCount(); x++)
     {
         m_CBExcludeFilter.GetLBText(x, sTempText);
-        theApp.m_ExcludeFilters.emplace_back(sTempText);
+        excludeFilters.emplace_back(sTempText);
     }
+    theApp.SetExcludeFilters(std::move(excludeFilters));
 
+    std::list<std::wstring> includeFilters;
     for (auto x = 0; x < m_CBIncludeFilter.GetCount(); x++)
     {
         m_CBIncludeFilter.GetLBText(x, sTempText);
-        theApp.m_IncludeFilters.push_back(sTempText);
+        includeFilters.push_back(sTempText);
     }
+    theApp.SetIncludeFilters(std::move(includeFilters));
 
     m_CBIncludeFilter.Detach();
     m_CBExcludeFilter.Detach();
@@ -300,8 +299,8 @@ void CFilterDialogBar::OnChangedInstantFilters()
 
 void CFilterDialogBar::OnSessionTypeChanged()
 {
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_RealTime ||
-        theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_CreateLog)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_RealTime ||
+        theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_CreateLog)
     {
         m_CBIncludeFilter.EnableWindow(TRUE);
         m_CBExcludeFilter.EnableWindow(TRUE);
@@ -323,7 +322,7 @@ void CFilterDialogBar::UpdateInstantFilters()
     {
         excludeFilters.push_back(token);
     }
-    theApp.m_ExcludeFilters.swap(excludeFilters);
+    theApp.SetExcludeFilters(std::move(excludeFilters));
 
     std::list<std::wstring> includeFilters;
     std::wistringstream includeStream(m_InstantIncludeFilters);
@@ -331,5 +330,5 @@ void CFilterDialogBar::UpdateInstantFilters()
     {
         includeFilters.push_back(token);
     }
-    theApp.m_IncludeFilters.swap(includeFilters);
+    theApp.SetIncludeFilters(std::move(includeFilters));
 }

@@ -112,6 +112,116 @@ CETViewerApp::~CETViewerApp()
     m_pFileMonitor = NULL;
 }
 
+CSourceFileContainer* CETViewerApp::GetSourceFileContainer()
+{
+    return &m_SourceFileContainer;
+}
+
+CTraceController* CETViewerApp::GetTraceController()
+{
+    return &m_Controller;
+}
+
+CMainFrame* CETViewerApp::GetMainFrame()
+{
+    return m_pFrame;
+}
+
+eFileMonitoringMode CETViewerApp::GetSourceMonitoringMode() const
+{
+    return m_eSourceMonitoringMode;
+}
+
+eFileMonitoringMode CETViewerApp::GetPdbMonitoringMode() const
+{
+    return m_ePDBMonitoringMode;
+}
+
+void CETViewerApp::SetSourceMonitoringMode(eFileMonitoringMode mode)
+{
+    m_eSourceMonitoringMode = mode;
+}
+
+void CETViewerApp::SetPdbMonitoringMode(eFileMonitoringMode mode)
+{
+    m_ePDBMonitoringMode = mode;
+}
+
+bool CETViewerApp::GetAssociatePdb() const
+{
+    return m_bAssociatePDB;
+}
+
+bool CETViewerApp::GetAssociateSources() const
+{
+    return m_bAssociateSources;
+}
+
+bool CETViewerApp::GetAssociateEtl() const
+{
+    return m_bAssociateETL;
+}
+
+void CETViewerApp::SetAssociatePdb(bool enable)
+{
+    m_bAssociatePDB = enable;
+}
+
+void CETViewerApp::SetAssociateSources(bool enable)
+{
+    m_bAssociateSources = enable;
+}
+
+void CETViewerApp::SetAssociateEtl(bool enable)
+{
+    m_bAssociateETL = enable;
+}
+
+std::list<std::wstring> CETViewerApp::GetRecentSourceFiles() const
+{
+    return m_RecentSourceFiles;
+}
+
+std::list<std::wstring> CETViewerApp::GetSourceDirectories() const
+{
+    return m_SourceDirectories;
+}
+
+std::list<std::wstring> CETViewerApp::GetExcludeFilters() const
+{
+    return m_ExcludeFilters;
+}
+
+std::list<std::wstring> CETViewerApp::GetIncludeFilters() const
+{
+    return m_IncludeFilters;
+}
+
+std::list<CHighLightFilter> CETViewerApp::GetHighLightFilters() const
+{
+    return m_HighLightFilters;
+}
+
+void CETViewerApp::SetSourceDirectories(std::list<std::wstring>&& list)
+{
+    m_SourceDirectories.swap(list);
+}
+
+void CETViewerApp::SetExcludeFilters(std::list<std::wstring>&& list)
+{
+    m_ExcludeFilters.swap(list);
+}
+
+void CETViewerApp::SetIncludeFilters(std::list<std::wstring>&& list)
+{
+    m_IncludeFilters.swap(list);
+}
+
+void CETViewerApp::SetHighLightFilters(std::list<CHighLightFilter>&& list)
+{
+    m_HighLightFilters.swap(list);
+}
+
 CETViewerApp theApp;
 
 BOOL CETViewerApp::InitInstance()

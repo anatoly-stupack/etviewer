@@ -29,13 +29,20 @@ CHighLightFilter::CHighLightFilter()
     : m_Enabled(true)
     , m_Pen(nullptr)
     , m_Brush(nullptr)
+    , m_TextColor(0)
+    , m_BkColor(0)
 {
     SetTextColor(RGB(0, 0, 0));
     SetBkColor(RGB(255, 255, 255));
+    UpdateObjects();
 }
 
 CHighLightFilter::CHighLightFilter(const std::wstring& serializedObject)
-    : CHighLightFilter()
+    : m_Enabled(true)
+    , m_Pen(nullptr)
+    , m_Brush(nullptr)
+    , m_TextColor(0)
+    , m_BkColor(0)
 {
     std::wstring token;
     std::vector<std::wstring> tokens;
@@ -62,19 +69,25 @@ CHighLightFilter::CHighLightFilter(const std::wstring& serializedObject)
     {
         return;
     }
+
+    UpdateObjects();
 }
 
 CHighLightFilter::CHighLightFilter(const CHighLightFilter& otherFilter)
+    : m_Enabled(otherFilter.m_Enabled)
+    , m_Text(otherFilter.m_Text)
+    , m_TextColor(otherFilter.m_TextColor)
+    , m_BkColor(otherFilter.m_BkColor)
+    , m_Pen(nullptr)
+    , m_Brush(nullptr)
 {
-    m_Text = otherFilter.m_Text;
-    m_TextColor = otherFilter.m_TextColor;
-    m_BkColor = otherFilter.m_BkColor;
-    m_Enabled = otherFilter.m_Enabled;
     UpdateObjects();
 }
 
 CHighLightFilter& CHighLightFilter::operator = (CHighLightFilter& otherFilter)
 {
+    m_Pen = nullptr;
+    m_Brush = nullptr;
     m_Text = otherFilter.m_Text;
     m_TextColor = otherFilter.m_TextColor;
     m_BkColor = otherFilter.m_BkColor;
@@ -136,7 +149,8 @@ void CHighLightFilter::SetTextColor(COLORREF textColor)
 
 void CHighLightFilter::SetBkColor(COLORREF bkColor)
 {
-    m_BkColor = bkColor; UpdateObjects();
+    m_BkColor = bkColor;
+    UpdateObjects();
 }
 
 void CHighLightFilter::SetEnabled(bool bEnable)
