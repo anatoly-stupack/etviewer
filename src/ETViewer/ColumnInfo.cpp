@@ -22,52 +22,53 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include "stdafx.h"
+#include "ColumnInfo.h"
 
-class CFilterDialogBar : public CDialogBar
+CColumnInfo::CColumnInfo(int _id, TCHAR* n, int fmt, int w, bool v, int o)
 {
-    DECLARE_DYNAMIC(CFilterDialogBar)
+    id = _id;
+    format = fmt;
+    width = w;
+    visible = v;
+    name = n;
+    iSubItem = -1;
+    iOrder = o;
+}
 
-public:
-    CFilterDialogBar();
-    virtual ~CFilterDialogBar();
+CColumnInfo::CColumnInfo(const std::wstring& serialized)
+{
+    std::wstring token;
+    std::wistringstream parser(serialized);
+    std::vector<std::wstring> tokens;
 
-    void InitDialogBar();
-    void OnOk();
-    void OnCancel();
-    void OnSessionTypeChanged();
+    while (std::getline(parser, token, L';'))
+    {
+        tokens.emplace_back(token);
+    }
 
-private:
-    //{{AFX_DATA(CFilterDialogBar)
-    enum { IDD = IDD_FILTER_DIALOG_BAR };
-    //}}AFX_DATA
+    if (tokens.size() != 6)
+    {
+        return;
+    }
 
-    DECLARE_MESSAGE_MAP()
+    width = _wtoi(tokens[0].c_str());
+    visible = _wtoi(tokens[1].c_str());
+    name = tokens[2];
+    format = _wtoi(tokens[3].c_str());
+    id = _wtoi(tokens[4].c_str());
+    iOrder = _wtoi(tokens[5].c_str());
+}
 
-    static LRESULT CALLBACK InstantEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+std::wstring CColumnInfo::ToString() const
+{
+    std::wstringstream serializer;
+    serializer << width << L";";
+    serializer << visible << L";";
+    serializer << name << L";";
+    serializer << format << L";";
+    serializer << id << L";";
+    serializer << iOrder << L";";
 
-    afx_msg void OnDestroy();
-    afx_msg void OnCbnSelchangeCbIncludeFilter();
-    afx_msg void OnCbnSelchangeCbExcludeFilter();
-    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
-
-    void OnChangedInstantFilters();
-
-    void UpdateInstantFilters();
-
-private:
-    std::wstring m_InstantIncludeFilters;
-    std::wstring m_InstantExcludeFilters;
-
-    COLORREF	m_FilterChangedColor;
-    HBRUSH		m_hFilterChangedBrush;
-
-    CComboBox m_CBIncludeFilter;
-    CComboBox m_CBExcludeFilter;
-
-    CEdit	m_EDIncludeEdit;
-    CEdit	m_EDExcludeEdit;
-
-    WNDPROC		m_OldIncludeEditProc;
-    WNDPROC		m_OldExcludeEditProc;
-};
+    return serializer.str();
+}

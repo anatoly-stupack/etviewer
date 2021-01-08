@@ -86,7 +86,7 @@ void CMainDialogBar::UpdateBitmaps()
     CMainFrame* pFrame = dynamic_cast<CMainFrame*>(GetParent()->GetParent());
     if (!pFrame) { return; }
 
-    m_BTStartStop.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(theApp.m_Controller.IsPaused() ? IDI_CAPTURE_STOP : IDI_CAPTURE_START)));
+    m_BTStartStop.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(theApp.GetTraceController()->IsPaused() ? IDI_CAPTURE_STOP : IDI_CAPTURE_START)));
     m_BTOpenFile.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_OPEN_FILE)));
     m_BTShowSourceContainer.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_SOURCE_FILE)));
     m_BTEnsureVisible.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(pFrame->GetTracePane()->IsShowLastTraceEnabled() ? IDI_SCROLL_ENABLED : IDI_SCROLL_DISABLED)));

@@ -22,25 +22,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include "stdafx.h"
 #include "ETViewer.h"
-
 #include "ETViewerDoc.h"
 #include "ETViewerView.h"
-#include ".\etviewerview.h"
 #include "HighLightPane.h"
 #include "HighLightFiltersEditor.h"
+#include "PersistentSettings.h"
 #include "SaveAllTracesQuestionDialog.h"
-#include <algorithm>
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-
-// CETViewerView
 
 IMPLEMENT_DYNCREATE(CETViewerView, CListView)
 
@@ -60,12 +53,8 @@ BEGIN_MESSAGE_MAP(CETViewerView, CListView)
     ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, OnLvnColumnclick)
 END_MESSAGE_MAP()
 
-// Construcción o destrucción de CETViewerView
-
 CETViewerView::CETViewerView()
 {
-    // TODO: agregar aquí el código de construcción
-
     m_nUnformattedTraces = 0;
     m_nLastFocusedSequenceIndex = 0;
     m_pEdit = NULL;
@@ -113,7 +102,6 @@ CETViewerView::CETViewerView()
 
     m_SortColumn = eETViewerColumn_Index;
     m_SortDirection = eETViewerSortDirection_Ascending;
-
 }
 
 CETViewerView::~CETViewerView()
@@ -139,9 +127,11 @@ BOOL CETViewerView::PreCreateWindow(CREATESTRUCT& cs)
 int CETViewerView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
     if (__super::OnCreate(lpCreateStruct) == -1)
+    {
         return -1;
+    }
 
-    Load(&theApp.m_ConfigFile);
+    Load();
 
     if (m_ColumnInfo.size() == 0)
     {
@@ -243,38 +233,13 @@ void CETViewerView::UpdateFont()
     GetListCtrl().SetFont(m_pTraceFont);
 }
 
-
 void CETViewerView::OnInitialUpdate()
 {
     CListView::OnInitialUpdate();
 }
 
-// Diagnósticos de CETViewerView
-
-#ifdef _DEBUG
-void CETViewerView::AssertValid() const
-{
-    CListView::AssertValid();
-}
-
-void CETViewerView::Dump(CDumpContext& dc) const
-{
-    CListView::Dump(dc);
-}
-
-CETViewerDoc* CETViewerView::GetDocument() const // La versión de no depuración es en línea
-{
-    ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CETViewerDoc)));
-    return (CETViewerDoc*)m_pDocument;
-}
-#endif //_DEBUG
-
-
-// Controladores de mensaje de CETViewerView
 void CETViewerView::OnStyleChanged(int /*nStyleType*/, LPSTYLESTRUCT /*lpStyleStruct*/)
 {
-    //TODO: agregar código para que el usuario cambie el estilo de vista de la ventana
-
     Default();
 }
 
@@ -405,63 +370,6 @@ void CETViewerView::OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult)
 
 }
 
-void CETViewerView::GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush)
-{
-    bool res = false;
-    if (theApp.m_SplittedHighLightFilters.size() == 0) { return; }
-
-    unsigned textLen = (unsigned)pTrace->trace.sText.size();
-    const TCHAR* text = pTrace->trace.sText.c_str();
-
-    TCHAR tempText[1024];
-    textLen = textLen < (1024 - 1) ? textLen : 1024 - 1;
-    memcpy(tempText, text, textLen);
-    tempText[textLen] = 0;
-
-    unsigned x;
-    for (x = 0; x < textLen; x++)
-    {
-        if (tempText[x] >= 'a' && tempText[x] <= 'z') { tempText[x] += 'A' - 'a'; }
-    }
-
-
-    // Text Filters must always be ordered by relevance, the first filter that matches the criteria
-    // is the effective filter 
-
-
-    for (x = 0; x < theApp.m_SplittedHighLightFilters.size(); x++)
-    {
-        CHightLightFilter* pFilter = &theApp.m_SplittedHighLightFilters[x];
-        const TCHAR* pFilterText = pFilter->GetText().c_str();
-
-        int index = 0, maxTextSearchSize = textLen - pFilter->GetTextLen();
-        if (maxTextSearchSize > 0)
-        {
-            if (pFilterText[0] == '*')
-            {
-                *pTextColor = pFilter->GetTextColor();
-                *pBkColor = pFilter->GetBkColor();
-                *phPen = pFilter->GetPen();
-                *phBrush = pFilter->GetBrush();
-                return;
-            }
-
-            while (index <= maxTextSearchSize)
-            {
-                if (tempText[index] == pFilterText[0] && memcmp(tempText + index, pFilterText, pFilter->GetTextLen()) == 0)
-                {
-                    *pTextColor = pFilter->GetTextColor();
-                    *pBkColor = pFilter->GetBkColor();
-                    *phPen = pFilter->GetPen();
-                    *phBrush = pFilter->GetBrush();
-                    return;
-                }
-                index++;
-            }
-        }
-    }
-}
-
 void CETViewerView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
     LPNMLVCUSTOMDRAW  pDraw = (LPNMLVCUSTOMDRAW)pNMHDR;
@@ -505,7 +413,20 @@ void CETViewerView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
         HPEN hPen = m_hNormalPen;
         HBRUSH hBrush = m_hNormalBrush;
 
-        GetTraceColors(pTrace, &pDraw->clrText, &pDraw->clrTextBk, &hPen, &hBrush);
+        // Check for highlight filters
+        auto highLightFilters = theApp.GetHighLightFilters();
+        for (auto& filter : highLightFilters)
+        {
+            if (filter.GetText() == L"*" || pTrace->trace.sText.find(filter.GetText()) != std::wstring::npos)
+            {
+                pDraw->clrText = filter.GetTextColor();
+                pDraw->clrTextBk = filter.GetBkColor();
+                hPen = filter.GetPen();
+                hBrush = filter.GetBrush();
+                break;
+            }
+        }
+
         DWORD state = GetListCtrl().GetItemState(pDraw->nmcd.dwItemSpec, LVIS_SELECTED | LVIS_FOCUSED);
         if (state & LVIS_SELECTED)
         {
@@ -1217,9 +1138,8 @@ void CETViewerView::OnHighLightFilters()
     CHighLightFiltersEditor dialog;
     dialog.DoModal();
     GetListCtrl().RedrawItems(0, GetListCtrl().GetItemCount());
-    theApp.m_pFrame->GetHighLightPane()->LoadFilters();
+    theApp.GetMainFrame()->GetHighLightPane()->LoadFilters();
 }
-
 
 void CETViewerView::ProcessTrace(STraceEvenTracingNormalizedData* pTraceData)
 {
@@ -1266,7 +1186,7 @@ void CETViewerView::OnTimer(UINT nIDEvent)
 {
     if (nIDEvent == CAPTURE_TIMER)
     {
-        theApp.m_Controller.FlushTraces();
+        theApp.GetTraceController()->FlushTraces();
 
         KillTimer(CAPTURE_TIMER);
 
@@ -1671,28 +1591,58 @@ void CETViewerView::OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
     *pResult = 0;
 }
 
-bool CETViewerView::Load(CConfigFile* pFile)
+bool CETViewerView::Load()
 {
-    bool bOk = LoadFrom(pFile, _T("TracePanel"));
-    return bOk;
-}
-bool CETViewerView::Save(CConfigFile* pFile)
-{
-    unsigned x = 0;
-    for (x = 0; x < m_ColumnInfo.size(); x++)
+    PersistentSettings settings;
+
+    auto columnInfo = settings.ReadMultiStringValue(L"ColumnInfo", {});
+    for (auto& column : columnInfo)
     {
-        CColumnInfo* pColumn = &m_ColumnInfo[x];
-        if (pColumn->visible)
-        {
-            pColumn->width = GetListCtrl().GetColumnWidth(pColumn->iSubItem);
-        }
+        m_ColumnInfo.emplace_back(column);
     }
-    return SaveTo(pFile, _T("TracePanel"));
+
+    m_dwTraceFontSize = settings.ReadDwordValue(L"FontSize", m_dwTraceFontSize);
+    m_sTraceFont = settings.ReadStringValue(L"FontFamily", m_sTraceFont);
+    m_bShowLastTrace = settings.ReadBoolValue(L"ShowLastTrace", m_bShowLastTrace);
+
+    return true;
 }
 
-void CETViewerView::OnAddProvider(CTraceProvider* pProvider) {}
-void CETViewerView::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider) {}
-void CETViewerView::OnRemoveProvider(CTraceProvider* pProvider) {}
+bool CETViewerView::Save()
+{ 
+    PersistentSettings settings;
+
+    std::list<std::wstring> columnInfo;
+    for (auto& column : m_ColumnInfo)
+    {
+        if (column.visible)
+        {
+            column.width = GetListCtrl().GetColumnWidth(column.iSubItem);
+        }
+
+        columnInfo.emplace_back(column.ToString());
+    }
+
+    settings.WriteMultiStringValue(L"ColumnInfo", columnInfo);
+    settings.WriteDwordValue(L"FontSize", m_dwTraceFontSize);
+    settings.WriteStringValue(L"FontFamily", m_sTraceFont);
+    settings.WriteBoolValue(L"ShowLastTrace", m_bShowLastTrace);
+
+    return true;
+}
+
+void CETViewerView::OnAddProvider(CTraceProvider* pProvider)
+{
+}
+
+void CETViewerView::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider)
+{
+}
+
+void CETViewerView::OnRemoveProvider(CTraceProvider* pProvider)
+{
+}
+
 void CETViewerView::OnProvidersModified()
 {
     WaitForSingleObject(m_hTracesMutex, INFINITE);
@@ -1703,7 +1653,7 @@ void CETViewerView::OnProvidersModified()
             SETViewerTrace* pTrace = m_lTraces[x];
             if (!pTrace->trace.bFormatted)
             {
-                if (theApp.m_Controller.FormatTrace(&pTrace->trace))
+                if (theApp.GetTraceController()->FormatTrace(&pTrace->trace))
                 {
                     m_nUnformattedTraces--;
                 }
@@ -1716,7 +1666,7 @@ void CETViewerView::OnProvidersModified()
 
 void CETViewerView::OnSessionTypeChanged()
 {
-    if (theApp.m_Controller.GetSessionType() == eTraceControllerSessionType_None)
+    if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_None)
     {
         Clear();
     }

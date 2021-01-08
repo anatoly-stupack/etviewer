@@ -24,36 +24,12 @@
 
 #pragma once
 
+#include "ColumnInfo.h"
 #include "FindDialog.h"
 #include "TraceController.h"
 
 #define CAPTURE_TIMER			1
 #define SHOW_LAST_TRACE_TIMER	2
-
-struct CColumnInfo
-{
-    int					width;
-    bool				visible;
-    std::wstring        name;
-    DWORD				format;
-    int					id;
-    int					iSubItem;
-    int					iOrder;
-
-    BEGIN_PERSIST_MAP(CColumnInfo)
-        PERSIST(width, _T("Width"))
-        PERSIST(visible, _T("Visible"))
-        PERSIST(name, _T("Name"))
-        PERSIST(format, _T("Format"))
-        PERSIST(id, _T("Id"))
-        PERSIST(iOrder, _T("Order"))
-    END_PERSIST_MAP();
-
-    CColumnInfo() { width = 100; visible = false; }
-    CColumnInfo(int _id, TCHAR* n, int fmt, int w, bool v, int o) { id = _id; format = fmt; width = w; visible = v; name = n; iSubItem = -1; iOrder = o; }
-};
-
-DECLARE_SERIALIZABLE(CColumnInfo);
 
 struct SETViewerTrace
 {
@@ -67,51 +43,112 @@ struct SETViewerTrace
     }
 };
 
-class CETViewerView : public CListView, public CFindDialogClient, public ITraceEvents
+class CETViewerView
+    : public CListView
+    , public CFindDialogClient
+    , public ITraceEvents
 {
-protected: // Crear sólo a partir de serialización
-    CETViewerView();
+public:
     DECLARE_DYNCREATE(CETViewerView)
-
-    // Atributos
-public:
-    CETViewerDoc* GetDocument() const;
-
-    // Operaciones
-public:
-
-    // Reemplazos
-public:
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-protected:
-    virtual void OnInitialUpdate(); // Se llama la primera vez después de la construcción
-
-// Implementación
-public:
+    CETViewerView();
     virtual ~CETViewerView();
-#ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
-#endif
 
-protected:
+private:
+    virtual void OnInitialUpdate();
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-    std::wstring		m_LastTextToFind;
-    bool				m_bFindDirectionUp;
+    void UpdateFont();
+    void UpdateColumns();
+    void AddColumn(int id);
+    void RemoveColumn(int id);
 
-    std::deque<CColumnInfo>		m_ColumnInfo;
+    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+    void ProcessSpecialKeyStroke(WORD key);
+
+    int FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bool stopAtEnd = false);
+
+    void SetFocusOnOwnerWindow();
+
+    TCHAR* GetTraceText(SETViewerTrace* pTrace, CColumnInfo* pColumn, TCHAR* pAuxBuffer, unsigned nAuxLen);
+
+public:
+    bool Load();
+    bool Save();
+
+    void OnFontBigger();
+    void OnFontSmaller();
+
+    bool IsShowLastTraceEnabled();
+    void EnableShowLastTrace(bool bEnable);
+    void ResetShowLastTrace();
+
+    bool FindNext();
+    bool FindNext(const TCHAR* pText);
+    bool FindAndMarkAll(const TCHAR* pText);
+    bool FindAndDeleteAll(const TCHAR* pText);
+
+    void Copy(bool bAllTraces);
+    void Clear();
+    void ClearSelected();
+
+    void GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTraces);
+
+    // ITraceEvents
+    void ProcessTrace(STraceEvenTracingNormalizedData* pTraceData);
+    void ProcessUnknownTrace(STraceEvenTracingNormalizedData* pTraceData);
+
+    void OnAddProvider(CTraceProvider* pProvider);
+    void OnRemoveProvider(CTraceProvider* pProvider);
+    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
+    void OnProvidersModified();
+    void OnSessionTypeChanged();
+
+    void SetTraceFont(std::wstring sTraceFont, DWORD dwFontSize);
+    void GetTraceFont(std::wstring* psTraceFont, DWORD* pdwFontSize);
+
+    void SortItems(CColumnInfo* pColumn);
+
+    DECLARE_MESSAGE_MAP()
+
+public:
+    afx_msg void OnStyleChanged(int nStyleType, LPSTYLESTRUCT lpStyleStruct);
+    afx_msg void OnDestroy();
+    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnEditFind();
+    afx_msg void OnFind();
+    afx_msg void OnHighLightFilters();
+    afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnTimer(UINT nIDEvent);
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnClear();
+    afx_msg void OnCut();
+    afx_msg void OnCopy();
+    afx_msg void OnSave();
+    afx_msg void OnBeginEdit(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnEndEdit(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnGetItemInfo(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
+
+private:
+    std::wstring m_LastTextToFind;
+    bool m_bFindDirectionUp;
+
+    std::deque<CColumnInfo> m_ColumnInfo;
     std::map<int, CColumnInfo*>	m_mVisibleColumns;
 
-    WNDPROC		m_OldListEditProc;
-    WNDPROC		m_OldListViewProc;
+    WNDPROC	m_OldListEditProc;
+    WNDPROC	m_OldListViewProc;
 
-    HIMAGELIST	m_hImageList;
-    HICON		m_hHollowIcon;
-    HICON		m_hMarkerIcon;
+    HIMAGELIST m_hImageList;
+    HICON m_hHollowIcon;
+    HICON m_hMarkerIcon;
 
     std::deque<SETViewerTrace*>	m_lTraces;
-    HANDLE					        m_hTracesMutex;
-    bool					        m_bShowLastTrace;
+    HANDLE m_hTracesMutex;
+    bool m_bShowLastTrace;
 
     int m_iHollowImage;
     int m_iMarkerImage;
@@ -142,100 +179,4 @@ protected:
 
     int m_nLastFocusedSequenceIndex;
     int m_nUnformattedTraces;
-
-    void UpdateFont();
-    void UpdateColumns();
-    void AddColumn(int id);
-    void RemoveColumn(int id);
-
-    static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    static LRESULT CALLBACK ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    void ProcessSpecialKeyStroke(WORD key);
-
-    int FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bool stopAtEnd = false);
-
-    void SetFocusOnOwnerWindow();
-
-    TCHAR* GetTraceText(SETViewerTrace* pTrace, CColumnInfo* pColumn, TCHAR* pAuxBuffer, unsigned nAuxLen);
-
-    BEGIN_PERSIST_MAP(CETViewerView)
-        PERSIST(m_ColumnInfo, _T("Columns"))
-        PERSIST(m_dwTraceFontSize, _T("FontSize"));
-    PERSIST(m_sTraceFont, _T("FontFamily"));
-    PERSIST(m_bShowLastTrace, _T("ShowLastTrace"));
-    END_PERSIST_MAP();
-
-    DECLARE_CONFIG_FILE_MEDIA();
-
-
-public:
-
-    bool Load(CConfigFile* pFile);
-    bool Save(CConfigFile* pFile);
-
-    void OnFontBigger();
-    void OnFontSmaller();
-
-    bool IsShowLastTraceEnabled();
-    void EnableShowLastTrace(bool bEnable);
-    void ResetShowLastTrace();
-
-    bool FindNext();
-    bool FindNext(const TCHAR* pText);
-    bool FindAndMarkAll(const TCHAR* pText);
-    bool FindAndDeleteAll(const TCHAR* pText);
-
-    void Copy(bool bAllTraces);
-    void Clear();
-    void ClearSelected();
-
-    void GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTraces);
-    void GetTraceColors(SETViewerTrace* pTrace, COLORREF* pTextColor, COLORREF* pBkColor, HPEN* phPen, HBRUSH* phBrush);
-
-    // ITraceEvents
-    void ProcessTrace(STraceEvenTracingNormalizedData* pTraceData);
-    void ProcessUnknownTrace(STraceEvenTracingNormalizedData* pTraceData);
-
-    void OnAddProvider(CTraceProvider* pProvider);
-    void OnRemoveProvider(CTraceProvider* pProvider);
-    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
-    void OnProvidersModified();
-    void OnSessionTypeChanged();
-
-    void SetTraceFont(std::wstring sTraceFont, DWORD dwFontSize);
-    void GetTraceFont(std::wstring* psTraceFont, DWORD* pdwFontSize);
-
-    void SortItems(CColumnInfo* pColumn);
-
-    // Funciones de asignación de mensajes generadas
-protected:
-    afx_msg void OnStyleChanged(int nStyleType, LPSTYLESTRUCT lpStyleStruct);
-    DECLARE_MESSAGE_MAP()
-public:
-    afx_msg void OnDestroy();
-    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnEditFind();
-    afx_msg void OnFind();
-    afx_msg void OnHighLightFilters();
-    afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnTimer(UINT nIDEvent);
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnClear();
-    afx_msg void OnCut();
-    afx_msg void OnCopy();
-    afx_msg void OnSave();
-    afx_msg void OnBeginEdit(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnEndEdit(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnGetItemInfo(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
 };
-
-#ifndef _DEBUG  // Versión de depuración en ETViewerView.cpp
-inline CETViewerDoc* CETViewerView::GetDocument() const
-{
-    return reinterpret_cast<CETViewerDoc*>(m_pDocument);
-}
-#endif
-

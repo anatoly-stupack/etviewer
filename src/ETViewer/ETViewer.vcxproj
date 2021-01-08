@@ -129,17 +129,20 @@
     </ManifestResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColumnInfo.cpp" />
     <ClCompile Include="ETViewer.cpp" />
     <ClCompile Include="ETViewerDoc.cpp" />
     <ClCompile Include="ETViewerView.cpp" />
     <ClCompile Include="FileMonitor.cpp" />
     <ClCompile Include="FilterDialogBar.cpp" />
     <ClCompile Include="FindDialog.cpp" />
+    <ClCompile Include="HighLightFilter.cpp" />
     <ClCompile Include="HighLightFiltersEditor.cpp" />
     <ClCompile Include="HighLightPane.cpp" />
     <ClCompile Include="LeftPane.cpp" />
     <ClCompile Include="MainDialogBar.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="PersistentSettings.cpp" />
     <ClCompile Include="ProviderTree.cpp" />
     <ClCompile Include="SaveAllTracesQuestionDialog.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
@@ -150,22 +153,22 @@
     </ClCompile>
     <ClCompile Include="TraceController.cpp" />
     <ClCompile Include="TraceProvider.cpp" />
-    <ClCompile Include="Persistency\ConfigFile.cpp" />
-    <ClCompile Include="Persistency\Persistency.cpp" />
-    <ClCompile Include="Persistency\PersistentTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColumnInfo.h" />
     <ClInclude Include="ETViewer.h" />
     <ClInclude Include="ETViewerDoc.h" />
     <ClInclude Include="ETViewerView.h" />
     <ClInclude Include="FileMonitor.h" />
     <ClInclude Include="FilterDialogBar.h" />
     <ClInclude Include="FindDialog.h" />
+    <ClInclude Include="HighLightFilter.h" />
     <ClInclude Include="HighLightFiltersEditor.h" />
     <ClInclude Include="HighLightPane.h" />
     <ClInclude Include="LeftPane.h" />
     <ClInclude Include="MainDialogBar.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="PersistentSettings.h" />
     <ClInclude Include="ProviderTree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SaveAllTracesQuestionDialog.h" />
@@ -175,9 +178,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraceController.h" />
     <ClInclude Include="TraceProvider.h" />
-    <ClInclude Include="Persistency\ConfigFile.h" />
-    <ClInclude Include="Persistency\Persistency.h" />
-    <ClInclude Include="Persistency\PersistentTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\add_prov.ico" />

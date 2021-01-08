@@ -51,17 +51,19 @@
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
+#include <algorithm>
 #include <deque>
 #include <vector>
 #include <map>
+#include <mutex>
 #include <set>
 #include <list>
+#include <string>
+#include <sstream>
 #include <afxdhtml.h>
 #include <afxcview.h>
 
-#include "persistency\persistency.h"
-#include "persistency\persistentTypes.h"
-#include "persistency\configfile.h"
+#include <strsafe.h>
 
 SIZE  GetRectSize(RECT& rect);
 POINT GetRectPos(RECT& rect);
