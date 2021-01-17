@@ -138,17 +138,6 @@ BEGIN
     ID_VIEW_BYNAME          "Arrange items by name"
 END
 
-#endif    // English resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Spanish (Spain, Traditional Sort) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESP)
-LANGUAGE LANG_SPANISH, SUBLANG_SPANISH
-#pragma code_page(1252)
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -403,17 +392,6 @@ BEGIN
     32822                   "Move &Up"
 END
 
-#endif    // Spanish (Spain, Traditional Sort) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Spanish (Spain, International Sort) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
-LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
-#pragma code_page(1252)
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -424,7 +402,7 @@ LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
 IDR_MAINFRAME           ICON                    "res\\ETViewer.ico"
 IDI_ETL_ICON            ICON                    "res\\idr_main.ico"
 IDR_ETViewerTYPE        ICON                    "res\\ETViewerDoc.ico"
-IDI_CLEAR_SELECTED_EVENTS ICON                    "res\\icon6.ico"
+IDI_CLEAR_SELECTED_EVENTS ICON                  "res\\icon6.ico"
 IDI_CLEAR_EVENTS        ICON                    "res\\icon5.ico"
 IDI_CAPTURE_STOP        ICON                    "res\\icon4.ico"
 IDI_CAPTURE_START       ICON                    "res\\icon3.ico"
@@ -446,9 +424,9 @@ IDI_MODULE              ICON                    "res\\modules.ico"
 IDI_LEVEL               ICON                    "res\\level.ico"
 IDI_SELECTED            ICON                    "res\\selected.ico"
 IDI_SAVE                ICON                    "res\\icon7.ico"
-IDI_SHOW_HIGHLIGHT_PANEL ICON                    "res\\ShowHighLightPanel.ico"
-IDI_SHOW_HIGHLIGHT_PANEL1 ICON                    "res\\show_hig.ico"
-IDI_SHOW_HIGHLIGHT_PANEL2 ICON                    "res\\ico00005.ico"
+IDI_SHOW_HIGHLIGHT_PANEL ICON                   "res\\ShowHighLightPanel.ico"
+IDI_SHOW_HIGHLIGHT_PANEL1 ICON                  "res\\show_hig.ico"
+IDI_SHOW_HIGHLIGHT_PANEL2 ICON                  "res\\ico00005.ico"
 IDI_PLAY_BLOCKED        ICON                    "res\\playblocked.ico"
 IDI_RECORD              ICON                    "res\\record.ico"
 
@@ -639,7 +617,6 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)\r\n"
     "LANGUAGE 10, 3\r\n"
     "#pragma code_page(1252)\r\n"
-    "#include ""res\\ETViewer.rc2""  // recursos editados que no son de Microsoft Visual C++\r\n"
     "#include ""afxres.rc""         // Componentes estándar\r\n"
     "#endif\r\n"
     "\0"
@@ -724,129 +701,8 @@ BEGIN
     END
 END
 
-
+#endif
 /////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDR_MAINFRAME           "ETViewer\n\nETViewer\n\n\nETViewer.Document\nETViewer.Document"
-END
-
-STRINGTABLE
-BEGIN
-    AFX_IDS_APP_TITLE       "ETViewer"
-    AFX_IDS_IDLEMESSAGE     "Listo"
-END
-
-STRINGTABLE
-BEGIN
-    ID_INDICATOR_EXT        "EXT"
-    ID_INDICATOR_CAPS       "MAY"
-    ID_INDICATOR_NUM        "NUM"
-    ID_INDICATOR_SCRL       "DESP"
-    ID_INDICATOR_OVR        "SOB"
-    ID_INDICATOR_REC        "GRB"
-END
-
-STRINGTABLE
-BEGIN
-    ID_FILE_NEW             "Crear un documento nuevo\nNuevo"
-    ID_FILE_OPEN            "Open any supported file\nOpen"
-    ID_FILE_CLOSE           "Cerrar el documento activo\nCerrar"
-    ID_FILE_SAVE            "Save all or selected traces to file\nSave"
-    ID_FILE_SAVE_AS         "Guardar el documento activo con un nombre nuevo\nGuardar como"
-END
-
-STRINGTABLE
-BEGIN
-    ID_APP_EXIT             "Salir de la aplicación; permite guardar documentos\nSalir"
-END
-
-STRINGTABLE
-BEGIN
-    ID_FILE_MRU_FILE1       "Open file"
-    ID_FILE_MRU_FILE2       "Abrir este documento"
-    ID_FILE_MRU_FILE3       "Abrir este documento"
-    ID_FILE_MRU_FILE4       "Abrir este documento"
-    ID_FILE_MRU_FILE5       "Abrir este documento"
-    ID_FILE_MRU_FILE6       "Abrir este documento"
-    ID_FILE_MRU_FILE7       "Abrir este documento"
-    ID_FILE_MRU_FILE8       "Abrir este documento"
-    ID_FILE_MRU_FILE9       "Abrir este documento"
-    ID_FILE_MRU_FILE10      "Abrir este documento"
-    ID_FILE_MRU_FILE11      "Abrir este documento"
-    ID_FILE_MRU_FILE12      "Abrir este documento"
-    ID_FILE_MRU_FILE13      "Abrir este documento"
-    ID_FILE_MRU_FILE14      "Abrir este documento"
-    ID_FILE_MRU_FILE15      "Abrir este documento"
-    ID_FILE_MRU_FILE16      "Abrir este documento"
-END
-
-STRINGTABLE
-BEGIN
-    ID_NEXT_PANE            "Cambiar al siguiente panel de la ventana\nPanel siguiente"
-    ID_PREV_PANE            "Cambiar al panel anterior de la ventana\nPanel anterior"
-END
-
-STRINGTABLE
-BEGIN
-    ID_WINDOW_SPLIT         "Dividir la ventana activa en paneles\nDividir"
-END
-
-STRINGTABLE
-BEGIN
-    ID_EDIT_CLEAR           "Borrar la selección\nBorrar"
-    ID_EDIT_CLEAR_ALL       "Borrar todo\nBorrar todo"
-    ID_EDIT_CUT             "Cortar la selección y la coloca en el Portapapeles\nCortar"
-    ID_EDIT_PASTE           "Insertar el contenido del Portapapeles\nPegar"
-    ID_EDIT_REPEAT          "Repetir la última acción\nRepetir"
-    ID_EDIT_REPLACE         "Reemplazar el texto específico con texto diferente\nReemplazar"
-    ID_EDIT_SELECT_ALL      "Seleccionar todo el documento\nSeleccionar todo"
-    ID_EDIT_UNDO            "Deshacer la última acción\nDeshacer"
-    ID_EDIT_REDO            "Rehacer la acción previamente deshecha\nRehacer"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_TOOLBAR         "Mostrar u ocultar la barra de herramientas\nAlternar barra de herramientas"
-    ID_VIEW_STATUS_BAR      "Mostrar u ocultar la barra de estado\nAlternar barra de estado"
-    ID_VIEW_AUTOARRANGE     "Organizar los iconos en una cuadrícula."
-END
-
-STRINGTABLE
-BEGIN
-    AFX_IDS_SCSIZE          "Cambiar el tamaño de la ventana"
-    AFX_IDS_SCMOVE          "Cambiar la posición de la ventana"
-    AFX_IDS_SCMINIMIZE      "Reducir la ventana a un icono"
-    AFX_IDS_SCMAXIMIZE      "Aumentar la ventana al tamaño máximo"
-    AFX_IDS_SCNEXTWINDOW    "Cambiar a la ventana siguiente del documento"
-    AFX_IDS_SCPREVWINDOW    "Cambiar a la ventana anterior del documento"
-    AFX_IDS_SCCLOSE         "Cerrar la ventana activa y preguntar si desea guardar los documentos"
-END
-
-STRINGTABLE
-BEGIN
-    AFX_IDS_SCRESTORE       "Restaurar la ventana a su tamaño normal"
-    AFX_IDS_SCTASKLIST      "Activar la Lista de tareas"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_SMALLICON       "Mostrar elementos usando iconos pequeños.\nIconos pequeños"
-    ID_VIEW_LARGEICON       "Mostrar elementos usando iconos grandes.\nIconos grandes"
-    ID_VIEW_LIST            "Mostrar elementos en forma de lista.\nLista"
-    ID_VIEW_DETAILS         "Mostrar información detallada sobre cada elemento de la ventana.\nDetalles"
-    ID_VIEW_LINEUP          "Organizar los iconos en una cuadrícula."
-    ID_VIEW_BYNAME          "Ordenar los iconos alfabéticamente."
-END
-
-#endif    // Spanish (Spain, International Sort) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -860,7 +716,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ESN)
 LANGUAGE 10, 3
 #pragma code_page(1252)
-#include "res\ETViewer.rc2"  // recursos editados que no son de Microsoft Visual C++
 #include "afxres.rc"         // Componentes estándar
 #endif
 
