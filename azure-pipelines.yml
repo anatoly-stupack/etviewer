@@ -1,8 +1,4 @@
-variables:
-- name: revision
-  value: $[counter('revision', 30)]
-
-name: 1.3.$(date:yyMM).$(revision)
+name: 1.3.$(date:yyMM).$[counter('revision', 30)]
 
 trigger:
 - master
