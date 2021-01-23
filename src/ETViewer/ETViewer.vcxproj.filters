@@ -5,158 +5,182 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source Files\TraceAPI">
-      <UniqueIdentifier>{7d368369-70a0-45b1-a8b5-48a47a4beef8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\TraceAPI">
-      <UniqueIdentifier>{e40ec318-42d7-4d0d-8943-f6dfbcf061ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{e40ec318-42d7-4d0d-8943-f6dfbcf061ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{7d368369-70a0-45b1-a8b5-48a47a4beef8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Settings">
+      <UniqueIdentifier>{606100a9-c945-4204-b274-e0f823cfcfec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs and Controls">
+      <UniqueIdentifier>{c48ece87-3093-487e-bbed-f708f25fa72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Main View">
+      <UniqueIdentifier>{061b44df-39eb-40d3-9434-7ad76be66aaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Resources">
+      <UniqueIdentifier>{cf064dd4-83a9-46a4-98c1-c7dd8c99c7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs and Controls">
+      <UniqueIdentifier>{906b2c09-f3f2-4985-93c7-b8d5092b82d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Main View">
+      <UniqueIdentifier>{f72defd4-451f-416d-9567-6300eb57fc24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resources">
+      <UniqueIdentifier>{fe22ff66-d668-4e07-97e6-c8c1cd0a375e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Settings">
+      <UniqueIdentifier>{432d5507-3c58-40c3-a63a-de8bbedca494}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ETViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ETViewerDoc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ETViewerView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FileMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FilterDialogBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FindDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HighLightFiltersEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HighLightPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LeftPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainDialogBar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainFrm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProviderTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SaveAllTracesQuestionDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFileContainer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFileViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TraceController.cpp">
-      <Filter>Source Files\TraceAPI</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="TraceProvider.cpp">
-      <Filter>Source Files\TraceAPI</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ETViewerDoc.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FindDialog.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FilterDialogBar.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsDialog.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveAllTracesQuestionDialog.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files\Main View</Filter>
     </ClCompile>
     <ClCompile Include="PersistentSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HighLightFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Settings</Filter>
     </ClCompile>
     <ClCompile Include="ColumnInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="HighLightFilter.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDialogBar.cpp">
+      <Filter>Source Files\Main View</Filter>
+    </ClCompile>
+    <ClCompile Include="LeftPane.cpp">
+      <Filter>Source Files\Main View</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceFileContainer.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="HighLightPane.cpp">
+      <Filter>Source Files\Main View</Filter>
+    </ClCompile>
+    <ClCompile Include="HighLightFiltersEditor.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ProviderTree.cpp">
+      <Filter>Source Files\Main View</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceFileViewer.cpp">
+      <Filter>Source Files\Dialogs and Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FileMonitor.cpp">
+      <Filter>Source Files\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="ETViewerView.cpp">
+      <Filter>Source Files\Main View</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ETViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ETViewerDoc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ETViewerView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FileMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FilterDialogBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FindDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HighLightFiltersEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HighLightPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LeftPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainDialogBar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainFrm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProviderTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SaveAllTracesQuestionDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFileContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFileViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TraceController.h">
-      <Filter>Header Files\TraceAPI</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="TraceProvider.h">
-      <Filter>Header Files\TraceAPI</Filter>
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="PersistentSettings.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="HighLightFilter.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ETViewerView.h">
+      <Filter>Header Files\Main View</Filter>
     </ClInclude>
     <ClInclude Include="ColumnInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="HighLightFilter.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files\Main View</Filter>
+    </ClInclude>
+    <ClInclude Include="FindDialog.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FilterDialogBar.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="HighLightFiltersEditor.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ETViewerDoc.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FileMonitor.h">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDialogBar.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveAllTracesQuestionDialog.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="LeftPane.h">
+      <Filter>Header Files\Main View</Filter>
+    </ClInclude>
+    <ClInclude Include="HighLightPane.h">
+      <Filter>Header Files\Main View</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDialog.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ProviderTree.h">
+      <Filter>Header Files\Main View</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceFileContainer.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceFileViewer.h">
+      <Filter>Header Files\Dialogs and Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
