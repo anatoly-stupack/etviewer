@@ -408,9 +408,6 @@ VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
 
     eventData.timeStamp = traceTimeStamp;
 
-    CTraceSourceFile* pSourceFile = NULL;
-    STraceFormatEntry* pFormatEntry = NULL;
-
     if (!pController->Format(&eventData))
     {
         WCHAR CLSID[100] = { 0 };

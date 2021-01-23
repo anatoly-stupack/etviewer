@@ -181,7 +181,7 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR* pFile, int line, bool bShowErrorI
                 _strupr_s(m_pFileBufferUpper, m_FileBufferLength * TAB_SIZE + 100);
                 MultiByteToWideChar(CP_ACP, 0, m_pFileBuffer, m_FileBufferLength, m_pFileBufferWide, m_FileBufferLength);
                 m_EDFile.SetWindowText(m_pFileBufferWide);
-                SetRichEditTextColor(&m_EDFile, 0, -1, RGB(0, 0, 0));
+                SetRichEditTextColor(&m_EDFile, 0, (DWORD)-1, RGB(0, 0, 0));
 
                 for (x = 0; x < m_FileBufferLength; x++)
                 {
@@ -208,7 +208,6 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR* pFile, int line, bool bShowErrorI
                     }
                     else if (m_pFileBuffer[x] == '"')
                     {
-                        CHAR* pBase = m_pFileBuffer + x;
                         x++;
                         while (x < m_FileBufferLength)
                         {
@@ -398,7 +397,7 @@ void CSourceFileViewer::OnFind()
 
 void CSourceFileViewer::ShowFindDialog()
 {
-    long selBegin = 0, selEnd = 0, line = 0, col = 0;
+    long selBegin = 0, selEnd = 0;
     m_EDFile.GetSel(selBegin, selEnd);
     CString sSelText = m_EDFile.GetSelText();
     m_LastTextToFind = sSelText.GetBuffer();
@@ -429,7 +428,6 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                 pThis->m_EDFile.GetLine(line, A, _countof(A) - 1);
                 if (TCHARIndex >= (long)_tcslen(A)) { TCHARIndex = 0; }
 
-                bool includebegin = 0, includeend = 0;
                 TCHAR beginCharToFind = _T('"');
                 TCHAR* pBegin = NULL, * pEnd = _tcschr(A + TCHARIndex, _T('"'));
                 if (pEnd == NULL) { pEnd = _tcschr(A + TCHARIndex, _T('>')); beginCharToFind = _T('<'); }
@@ -458,12 +456,11 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
             ::GetCursorPos(&p);
             HMENU hMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDM_FILE_VIEWER)), 0);
 
-            TCHAR A[2000];
-            _stprintf_s(A, 2000, _T("Open '%s'"), fileToOpen);
+            std::wstring menuItemName = std::wstring(L"Open '") + fileToOpen + L"'";
             MENUITEMINFO itemInfo = { 0 };
             itemInfo.cbSize = sizeof(itemInfo);
-            itemInfo.cch = (unsigned)_tcslen(A);
-            itemInfo.dwTypeData = A;
+            itemInfo.cch = menuItemName.size();
+            itemInfo.dwTypeData = const_cast<LPWSTR>(menuItemName.c_str());
             itemInfo.fMask = MIIM_STRING;
 
             SetMenuItemInfo(hMenu, ID_OPEN_AS_SOURCE_FILE, MF_BYCOMMAND, &itemInfo);
@@ -492,7 +489,6 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                     for (x = 0; x < (int)dirs.size(); x++)
                     {
                         TCHAR fullPath[MAX_PATH] = { 0 };
-                        bool noFinalSlash = true;
                         _tcsncpy_s(fullPath, MAX_PATH, dirs[x].c_str(), _countof(fullPath) - 2); //-2 for the additional slash
                         DWORD len = (DWORD)_tcslen(fullPath);
                         if (len)
@@ -566,11 +562,13 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
 
 bool CSourceFileViewer::FindAndDeleteAll(const TCHAR* pText)
 {
+    UNREFERENCED_PARAMETER(pText);
     return false;
 }
 
 bool CSourceFileViewer::FindAndMarkAll(const TCHAR* pText)
 {
+    UNREFERENCED_PARAMETER(pText);
     return false;
 }
 
@@ -590,10 +588,11 @@ CHAR* strrstr(CHAR* pBuffer, DWORD offset, CHAR* pTextToFind)
 
 bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
 {
+    UNREFERENCED_PARAMETER(pTextToFind);
+
     if (m_pFileBuffer == NULL) { return false; }
 
     long begin = 0, end = 0;
-    int res = -1;
     m_EDFile.GetSel(begin, end);
     if (begin < 0) { begin = 0; }
 
@@ -603,7 +602,6 @@ bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
     if (!m_bMatchCaseInFind) { _strupr_s(textToFind, 1024); }
     unsigned textToFindLength = (unsigned)strlen(textToFind);
 
-    TCHAR* pTextFound = NULL;
     if (m_bFindDirectionUp)
     {
         pText = strrstr(pBufferToSearchIn, begin, textToFind);

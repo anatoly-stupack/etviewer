@@ -302,7 +302,7 @@ void CMainFrame::LookupError(const TCHAR* pErrorString)
 void CMainFrame::OnErrorLookup()
 {
     TCHAR temp[1024] = { 0 };
-    int count = m_MainDialogBar.m_EDErrorLookup.GetWindowText(temp, _countof(temp));
+    m_MainDialogBar.m_EDErrorLookup.GetWindowText(temp, _countof(temp));
     LookupError(temp);
     m_MainDialogBar.m_EDErrorLookup.SetFocus();
 }
@@ -487,10 +487,12 @@ void CMainFrame::OnSessionTypeChanged()
 
 LRESULT CMainFrame::OnIPCCommand(WPARAM wParam, LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(lParam);
+
     TCHAR sCommandLine[1024 * 10] = { 0 };
     SetForegroundWindow();
     BringToTop(SW_SHOW);
-    GlobalGetAtomName(wParam, sCommandLine, _countof(sCommandLine));
+    GlobalGetAtomName((ATOM)wParam, sCommandLine, _countof(sCommandLine));
     TCHAR* pArgs[] = { sCommandLine };
     theApp.ProcessCommandLine(1, pArgs);
     return 0L;

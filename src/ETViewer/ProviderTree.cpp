@@ -348,7 +348,8 @@ int CProviderTree::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    // TODO: Add your control notification handler code here
+    UNREFERENCED_PARAMETER(pNMHDR);
+
     *pResult = 0;
 
     POINT pos = { 0 };
@@ -411,7 +412,8 @@ void CProviderTree::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CProviderTree::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    NMITEMACTIVATE* pActivate = (NMITEMACTIVATE*)pNMHDR;
+    UNREFERENCED_PARAMETER(pNMHDR);
+    UNREFERENCED_PARAMETER(pResult);
 
     bool bOpenLogSession = (theApp.GetTraceController()->GetSessionType() != eTraceControllerSessionType_ReadLog);
 

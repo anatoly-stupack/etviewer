@@ -315,7 +315,13 @@ void CHighLightFiltersEditor::SaveFilters()
     theApp.UpdateHighLightFilters();
 }
 
-void CHighLightFiltersEditor::OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult) { *pResult = TRUE; }
+void CHighLightFiltersEditor::OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult)
+{
+    UNREFERENCED_PARAMETER(pNMHDR);
+
+    *pResult = TRUE;
+}
+
 void CHighLightFiltersEditor::OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult)
 {
     NMITEMACTIVATE* pActivate = (NMITEMACTIVATE*)pNMHDR;

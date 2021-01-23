@@ -118,7 +118,6 @@ CETViewerView::~CETViewerView()
 
 BOOL CETViewerView::PreCreateWindow(CREATESTRUCT& cs)
 {
-    DWORD dwStyle = cs.style;
     cs.style |= LVS_REPORT | LVS_EDITLABELS;
     cs.style |= LVS_OWNERDATA;
     return CListView::PreCreateWindow(cs);
@@ -251,6 +250,8 @@ void CETViewerView::OnDestroy()
 
 void CETViewerView::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
+    UNREFERENCED_PARAMETER(pResult);
+
     NMITEMACTIVATE* pActivate = (NMITEMACTIVATE*)pNMHDR;
 
     HMENU hMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDM_TRACE_LIST)), 0);
@@ -273,7 +274,6 @@ void CETViewerView::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
     {
         if (res <= m_ColumnInfo.size())
         {
-            int colIndex = 0, colCount = GetListCtrl().GetHeaderCtrl()->GetItemCount();
             CColumnInfo* pColumn = &m_ColumnInfo[res - 1];
             pColumn->visible = !pColumn->visible;
 
@@ -525,7 +525,11 @@ LRESULT CALLBACK CETViewerView::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam
             pThis->GetListCtrl().GetItemRect(0, &firstRect, LVIR_BOUNDS);
             pThis->GetListCtrl().GetItemRect(itemCount - 1, &lastRect, LVIR_BOUNDS);
 
-            DWORD dwSize = pThis->GetListCtrl().SendMessage(LVM_APPROXIMATEVIEWRECT, -1, MAKELONG(0, pThis->GetListCtrl().GetItemCount()));
+            DWORD dwSize = pThis->GetListCtrl().SendMessage(
+                LVM_APPROXIMATEVIEWRECT,
+                (WPARAM)-1,
+                MAKELONG(0, pThis->GetListCtrl().GetItemCount()));
+
             SIZE size;
             size.cx = LOWORD(dwSize);
             size.cy = HIWORD(dwSize);
@@ -540,7 +544,7 @@ LRESULT CALLBACK CETViewerView::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam
 
     }
 
-    if (uMsg == WM_KEYDOWN) { pThis->ProcessSpecialKeyStroke(wParam); }
+    if (uMsg == WM_KEYDOWN) { pThis->ProcessSpecialKeyStroke((WORD)wParam); }
     if (uMsg == WM_MOUSEWHEEL)
     {
         bool pushedLControl = (GetKeyState(VK_LCONTROL) >> 15) ? true : false;
@@ -567,7 +571,6 @@ LRESULT CALLBACK CETViewerView::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam
             LPNMHEADER phdr = reinterpret_cast<LPNMHEADER>(lParam);
             CColumnInfo* pDraggedColumn = pThis->m_mVisibleColumns[phdr->iItem];
 
-            int iIndex = phdr->iItem;
             int iNewPosition = phdr->pitem->iOrder;
             int iOldPosition = pDraggedColumn->iOrder;
 
@@ -731,8 +734,6 @@ int CETViewerView::FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bo
     TCHAR textToFind[1024];
     _tcscpy_s(textToFind, pTextToFind);
     if (!m_bMatchCaseInFind) { _tcsupr_s(textToFind); }
-
-    CHeaderCtrl* pHeader = GetListCtrl().GetHeaderCtrl();
 
     int x = 0, count = GetListCtrl().GetItemCount(), increment = up ? -1 : 1;
     baseIndex += count; // to decrement with no danger.
@@ -1078,11 +1079,10 @@ void CETViewerView::GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTrace
     }
     else
     {
-        int x;
         TCHAR temp[2048], columnText[2048];
         std::list<DWORD>            selectedIndexes;
         std::list<DWORD>::iterator  i;
-        for (x = 0; x < GetListCtrl().GetItemCount(); x++)
+        for (auto x = 0; x < GetListCtrl().GetItemCount(); x++)
         {
             if (GetListCtrl().GetItemState(x, LVIS_SELECTED) & LVIS_SELECTED)
             {
@@ -1093,7 +1093,7 @@ void CETViewerView::GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTrace
         // insert all.
         if (selectedIndexes.size() == 0)
         {
-            for (int x = 0; x < GetListCtrl().GetItemCount(); x++)
+            for (auto x = 0; x < GetListCtrl().GetItemCount(); x++)
             {
                 selectedIndexes.push_back(x);
             }
@@ -1114,7 +1114,7 @@ void CETViewerView::GetTransferBuffer(int* pSize, TCHAR** buffer, bool bAllTrace
         {
             int templen = 0;
             temp[0] = 0;
-            for (x = 0; x < columns; x++)
+            for (auto x = 0; x < columns; x++)
             {
                 int index = (*i);
                 GetListCtrl().GetItemText(index, x, columnText, 1000);
@@ -1191,7 +1191,7 @@ void CETViewerView::OnTimer(UINT nIDEvent)
         KillTimer(CAPTURE_TIMER);
 
         WaitForSingleObject(m_hTracesMutex, INFINITE);
-        if (GetListCtrl().GetItemCount() != m_lTraces.size())
+        if (GetListCtrl().GetItemCount() != (int)m_lTraces.size())
         {
             SortItems(&m_ColumnInfo[m_SortColumn - eETViewerColumn_BASE]);
             GetListCtrl().SetItemCountEx((int)m_lTraces.size(), LVSICF_NOINVALIDATEALL | LVSICF_NOSCROLL);
@@ -1369,7 +1369,8 @@ void CETViewerView::OnGetItemInfo(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CETViewerView::OnEndEdit(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    NMLVDISPINFO* pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
+    UNREFERENCED_PARAMETER(pNMHDR);
+
     m_pEdit = NULL;
     *pResult = 0;
 }
@@ -1392,7 +1393,7 @@ void CETViewerView::OnFontSmaller()
     }
 }
 
-class CSortPredicate{public :virtual bool operator()(const SETViewerTrace *t1,const SETViewerTrace *t2) const{return false;}};
+class CSortPredicate{public :virtual bool operator()(const SETViewerTrace* /*t1*/,const SETViewerTrace* /*t2*/) const{return false;}};
 
 class CSortPredicateAscendingTimeStamp:public CSortPredicate{public:bool operator()(const SETViewerTrace *t1,const SETViewerTrace *t2) const{return t1->trace.timeStamp.QuadPart<t2->trace.timeStamp.QuadPart;}};
 class CSortPredicateDescendingTimeStamp:public CSortPredicate{public:bool operator()(const SETViewerTrace *t1,const SETViewerTrace *t2) const{return t1->trace.timeStamp.QuadPart>t2->trace.timeStamp.QuadPart;}};
@@ -1456,8 +1457,6 @@ public:
 void CETViewerView::SortItems(CColumnInfo* pColumn)
 {
     WaitForSingleObject(m_hTracesMutex, INFINITE);
-
-    CSortPredicate* pPredicate = NULL;
 
     if (pColumn->id == eETViewerColumn_Index)
     {
@@ -1633,14 +1632,18 @@ bool CETViewerView::Save()
 
 void CETViewerView::OnAddProvider(CTraceProvider* pProvider)
 {
+    UNREFERENCED_PARAMETER(pProvider);
 }
 
 void CETViewerView::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider)
 {
+    UNREFERENCED_PARAMETER(pOldProvider);
+    UNREFERENCED_PARAMETER(pNewProvider);
 }
 
 void CETViewerView::OnRemoveProvider(CTraceProvider* pProvider)
 {
+    UNREFERENCED_PARAMETER(pProvider);
 }
 
 void CETViewerView::OnProvidersModified()

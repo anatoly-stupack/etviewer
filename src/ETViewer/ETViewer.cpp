@@ -389,8 +389,11 @@ void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, T
 BOOL CETViewerApp::ProcessCommandLine(int argc, TCHAR** argw)
 {
     unsigned x = 0;
-    bool bPDBSpecified = false, bSilent = false, bSourceSpecified = false;
-    bool bLevelSpecified = false, bValidLevel = true, bFailedToOpenETL = false;
+    bool bPDBSpecified = false;
+    bool bSilent = false;
+    bool bSourceSpecified = false;
+    bool bValidLevel = true;
+    bool bFailedToOpenETL = false;
     DWORD dwLevel = TRACE_LEVEL_VERBOSE;
     std::wstring sETLFile;
 

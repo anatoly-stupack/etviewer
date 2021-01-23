@@ -133,8 +133,6 @@ void STraceFormatEntry::InitializeFromBuffer(TCHAR* pBuffer)
                 tempLen = 0;
             }
 
-            STraceFormatElement element;
-
             //Copy initial '%' TCHARacter
             pTempBuffer[tempLen] = pBuffer[x]; x++; tempLen++;
             // Read parameter index.
@@ -472,7 +470,6 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, std::vector<CTraceP
     HANDLE hFile = CreateFile(pPDB, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        DWORD dwResult = GetLastError();
         return eTraceReaderError_PDBNotFound;
     }
     DWORD dwFileSize = GetFileSize(hFile, NULL);
@@ -647,11 +644,12 @@ eTraceReaderError CTracePDBReader::LoadFromPDB(LPCTSTR pPDB, std::vector<CTraceP
 
 BOOL CALLBACK CTracePDBReader::TypeEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
+    UNREFERENCED_PARAMETER(SymbolSize);
+
     if (pSymInfo->Name == NULL) { return TRUE; }
     if (pSymInfo->Tag != 17 || pSymInfo->Size != 8) { return TRUE; }
 
     STypeEnumerationData* pData = (STypeEnumerationData*)UserContext;
-    CTracePDBReader* pThis = pData->pThis;
 
     if (_tcscmp(pSymInfo->Name, _T("HANDLE")) == 0 ||
         _tcscmp(pSymInfo->Name, _T("PBYTE")) == 0 ||
@@ -667,13 +665,14 @@ BOOL CALLBACK CTracePDBReader::TypeEnumerationCallback(PSYMBOL_INFO pSymInfo, UL
 
 BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext)
 {
+    UNREFERENCED_PARAMETER(SymbolSize);
+
     SSymbolEnumerationData* pData = (SSymbolEnumerationData*)UserContext;
     CTracePDBReader* pThis = pData->pThis;
 
     LPTSTR pTemp = pSymInfo->Name;
     LPTSTR pCompName = NULL;
     LPTSTR pGUIDName = NULL;
-    BOOL   bOK = FALSE;
 
     // 8 = SymTagAnnotation
     if (pSymInfo->Tag == SymTagAnnotation)
@@ -725,12 +724,12 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, 
             pFunctionSymbol->MaxNameLen = 1024;
 
             DWORD64 dwFunctionDisplacement = 0;
-            BOOL bFuncionOk = SymFromAddr(GetCurrentProcess(), pSymInfo->Address, &dwFunctionDisplacement, pFunctionSymbol);
+            SymFromAddr(GetCurrentProcess(), pSymInfo->Address, &dwFunctionDisplacement, pFunctionSymbol);
 
             DWORD dwLineDisplacement = 0;
             IMAGEHLP_LINE64 lineInfo = { 0 };
             lineInfo.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-            BOOL bLineOk = SymGetLineFromAddr64(GetCurrentProcess(), pSymInfo->Address, &dwLineDisplacement, &lineInfo);
+            SymGetLineFromAddr64(GetCurrentProcess(), pSymInfo->Address, &dwLineDisplacement, &lineInfo);
 
             STraceFormatEntry* pFormatEntry = new STraceFormatEntry;
 
@@ -747,7 +746,6 @@ BOOL CALLBACK CTracePDBReader::SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, 
 
                 if (stringIndex == 0) // <GUID> <module> // SRC=<source>
                 {
-                    int tokenindex = 0;
                     TCHAR* nextToken = NULL;
                     TCHAR* pToken = _tcstok_s(pFullString, _T(" "), &nextToken);
                     if (pToken)

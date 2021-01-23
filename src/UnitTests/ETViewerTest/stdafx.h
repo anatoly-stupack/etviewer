@@ -24,6 +24,10 @@
 
 #pragma once
 
+#pragma warning(push)
+#pragma warning(disable: 4389)
 #include <gtest/gtest.h>
+#pragma warning(pop)
+
 #include <windows.h>
 #include <list>

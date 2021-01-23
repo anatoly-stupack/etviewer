@@ -47,7 +47,8 @@ END_MESSAGE_MAP()
 
 BOOL CLeftPane::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
-    // TODO: Add your specialized code here and/or call the base class
+    UNREFERENCED_PARAMETER(lpcs);
+    UNREFERENCED_PARAMETER(pContext);
 
     // Crear ventana divisora
     if (!m_wndSplitter.CreateStatic(this, 2, 1))

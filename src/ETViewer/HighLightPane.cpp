@@ -278,7 +278,10 @@ void CHighLightPane::SaveFilters()
 
 void CHighLightPane::OnEndEdit(NMHDR* pNMHDR, LRESULT* pResult)
 {
+    UNREFERENCED_PARAMETER(pNMHDR);
+
     *pResult = TRUE;
+
     PostMessage(WM_USER + 100);
 }
 
@@ -434,7 +437,6 @@ void CHighLightPane::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 
 BOOL CHighLightPane::PreCreateWindow(CREATESTRUCT& cs)
 {
-    DWORD dwStyle = cs.style;
     cs.style |= LVS_REPORT | LVS_EDITLABELS | LVS_SINGLESEL;
     return CListView::PreCreateWindow(cs);
 }
@@ -451,7 +453,7 @@ void CHighLightPane::OnSize(UINT nType, int cx, int cy)
 
 BOOL CHighLightPane::OnEraseBkgnd(CDC* pDC)
 {
-    BOOL bRet = CListView::OnEraseBkgnd(pDC);
+    CListView::OnEraseBkgnd(pDC);
     RECT R = { 0 };
     GetClientRect(&R);
     TCHAR* pText = _T("Drag items here");
@@ -461,7 +463,7 @@ BOOL CHighLightPane::OnEraseBkgnd(CDC* pDC)
 
 void CHighLightPane::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    NMITEMACTIVATE* pActivate = (NMITEMACTIVATE*)pNMHDR;
+    UNREFERENCED_PARAMETER(pNMHDR);
 
     HMENU hMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDM_HIGHLIGHT_FILTERS)), 0);
     CMenu* pMenu = new CMenu;

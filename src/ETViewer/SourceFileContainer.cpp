@@ -128,8 +128,7 @@ void CSourceFileContainer::ShowSelectedFile()
 
 void CSourceFileContainer::OnSourceFileChanged(NMHDR* pNMHDR, LRESULT* pResult)
 {
-    // TODO: Add your control notification handler code here
-
+    UNREFERENCED_PARAMETER(pNMHDR);
     ShowSelectedFile();
     *pResult = 0;
 }

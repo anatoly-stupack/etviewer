@@ -177,6 +177,6 @@ private:
     int m_SortColumn;
     int m_SortDirection;
 
-    int m_nLastFocusedSequenceIndex;
+    DWORD m_nLastFocusedSequenceIndex;
     int m_nUnformattedTraces;
 };
