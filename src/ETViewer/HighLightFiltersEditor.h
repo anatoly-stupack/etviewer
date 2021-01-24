@@ -22,38 +22,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_VAHIGHLIGHTFILTERSEDITOR_H__9E949CE9_D21C_4D45_B4CC_6FAEA9BD8B01__INCLUDED_)
-#define AFX_VAHIGHLIGHTFILTERSEDITOR_H__9E949CE9_D21C_4D45_B4CC_6FAEA9BD8B01__INCLUDED_
-
-#include "afxwin.h"
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-// VAHighLightFiltersEditor.h : header file
-//
 
-/////////////////////////////////////////////////////////////////////////////
-// CHighLightFiltersEditor dialog
+#include "stdafx.h"
 
 class CHighLightFiltersEditor : public CDialog
 {
-    // Construction
 public:
-    CHighLightFiltersEditor(CWnd* pParent = NULL);   // standard constructor
+    CHighLightFiltersEditor(CWnd* pParent = NULL);
 
-// Dialog Data
     //{{AFX_DATA(CHighLightFiltersEditor)
     enum { IDD = IDD_HIGHLIGHT_FILTERS_EDITOR };
-    CButton	m_BTCancel;
-    CButton	m_BTOk;
-    CButton	m_BTDown;
-    CButton	m_BTUp;
-    CListCtrl	m_LWFilters;
     //}}AFX_DATA
-
-    WNDPROC				m_OldListViewProc;
-    HIMAGELIST			m_hImageList;
 
     static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -64,18 +44,8 @@ public:
     void SaveFilters();
     void SetMetrics();
 
-    // Overrides
-        // ClassWizard generated virtual function overrides
-        //{{AFX_VIRTUAL(CHighLightFiltersEditor)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
-
-// Implementation
-protected:
-
-    // Generated message map functions
-    //{{AFX_MSG(CHighLightFiltersEditor)
     virtual void OnCancel();
     afx_msg void OnDown();
     afx_msg void OnUp();
@@ -87,11 +57,15 @@ protected:
     afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult);
-    //}}AFX_MSG
+
     DECLARE_MESSAGE_MAP()
+
+private:
+    CButton	m_BTCancel;
+    CButton	m_BTOk;
+    CButton	m_BTDown;
+    CButton	m_BTUp;
+    CListCtrl m_LWFilters;
+    WNDPROC	m_OldListViewProc;
+    HIMAGELIST m_hImageList;
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_VAHIGHLIGHTFILTERSEDITOR_H__9E949CE9_D21C_4D45_B4CC_6FAEA9BD8B01__INCLUDED_)

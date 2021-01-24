@@ -24,10 +24,6 @@
 
 #pragma once
 
-#ifndef __AFXWIN_H__
-#error incluye 'stdafx.h' antes de incluir este archivo para PCH
-#endif
-
 #include "resource.h"
 #include "SourceFileContainer.h"
 #include "TraceController.h"

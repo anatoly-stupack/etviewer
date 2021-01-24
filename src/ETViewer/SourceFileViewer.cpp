@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include <string.h>
 #include "ETViewer.h"
 #include "SourceFileViewer.h"
 #include "SourceFileContainer.h"
@@ -311,7 +310,6 @@ void CSourceFileViewer::OnDestroy()
     if (m_pFindDialog) { m_pFindDialog->m_pFindClient = NULL; }
 
     CDialog::OnDestroy();
-
 
     delete[] m_pFileBufferUpper;
     delete[] m_pFileBufferWide;

@@ -28,40 +28,29 @@ class CHighLightPane : public CListView
 {
     DECLARE_DYNCREATE(CHighLightPane)
 
-    WNDPROC				m_OldListViewProc;
-    HIMAGELIST			m_hImageList;
-    bool				m_bDisableColumnResize;
+protected:
+    CHighLightPane();
+    virtual ~CHighLightPane();
+
+private:
+    DECLARE_MESSAGE_MAP()
+
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
     static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     void SwapItems(int index1, int index2);
     void GetItemColorRects(int index, RECT* pR1, RECT* pR2);
 
-    void LoadFilters();
     void SaveFilters();
-    void SetMetrics();
-
-protected:
 
     void OnDown();
     void OnUp();
     void OnNew();
     void OnRemove();
 
-    CHighLightPane();           // protected constructor used by dynamic creation
-    virtual ~CHighLightPane();
-
 public:
-#ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
-#endif
-
-protected:
-    DECLARE_MESSAGE_MAP()
-public:
-
-    void UpdateFilters();
+    void LoadFilters();
 
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnDestroy();
@@ -69,10 +58,12 @@ public:
     afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnFilterClicked(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult);
-protected:
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-public:
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
     afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
+
+private:
+    WNDPROC	m_OldListViewProc;
+    HIMAGELIST m_hImageList;
+    bool m_bDisableColumnResize;
 };

@@ -23,29 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "ETViewer.h"
-
 #include "ETViewerDoc.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
-
-// CETViewerDoc
 
 IMPLEMENT_DYNCREATE(CETViewerDoc, CDocument)
 
 BEGIN_MESSAGE_MAP(CETViewerDoc, CDocument)
 END_MESSAGE_MAP()
 
-
-// Construcción o destrucción de CETViewerDoc
-
 CETViewerDoc::CETViewerDoc()
 {
-    // TODO: agregar aquí el código de construcción único
-
 }
 
 CETViewerDoc::~CETViewerDoc()
@@ -54,30 +40,5 @@ CETViewerDoc::~CETViewerDoc()
 
 BOOL CETViewerDoc::OnNewDocument()
 {
-    if (!CDocument::OnNewDocument())
-        return FALSE;
-
-    // TODO: agregar aquí código de reinicio
-    // (los documentos SDI volverán a utilizar este documento)
-
-    return TRUE;
+    return CDocument::OnNewDocument();
 }
-
-
-
-// Diagnósticos de CETViewerDoc
-
-#ifdef _DEBUG
-void CETViewerDoc::AssertValid() const
-{
-    CDocument::AssertValid();
-}
-
-void CETViewerDoc::Dump(CDumpContext& dc) const
-{
-    CDocument::Dump(dc);
-}
-#endif //_DEBUG
-
-
-// Comandos de CETViewerDoc

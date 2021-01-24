@@ -26,8 +26,6 @@
 #include "ETViewer.h"
 #include "HighLightPane.h"
 
-// CHighLightPane
-
 IMPLEMENT_DYNCREATE(CHighLightPane, CListView)
 
 CHighLightPane::CHighLightPane()
@@ -52,24 +50,6 @@ BEGIN_MESSAGE_MAP(CHighLightPane, CListView)
     ON_WM_ERASEBKGND()
     ON_NOTIFY_REFLECT(NM_RCLICK, OnNMRclick)
 END_MESSAGE_MAP()
-
-
-// CHighLightPane diagnostics
-
-#ifdef _DEBUG
-void CHighLightPane::AssertValid() const
-{
-    CListView::AssertValid();
-}
-
-void CHighLightPane::Dump(CDumpContext& dc) const
-{
-    CListView::Dump(dc);
-}
-#endif //_DEBUG
-
-
-// CHighLightPane message handlers
 
 int CHighLightPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {

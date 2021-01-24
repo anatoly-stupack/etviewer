@@ -22,39 +22,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CSaveAllTracesQuestionDialog : public CDialog
 {
-    // Construction
 public:
-    CSaveAllTracesQuestionDialog(CWnd* pParent = NULL);   // standard constructor
+    CSaveAllTracesQuestionDialog(CWnd* pParent = NULL);
 
-// Dialog Data
     //{{AFX_DATA(CSaveAllTracesQuestionDialog)
     enum { IDD = IDD_SAVEALLTRACESQUESTIONDIALOG };
-    // NOTE: the ClassWizard will add data members here
-//}}AFX_DATA
+    //}}AFX_DATA
 
-
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CSaveAllTracesQuestionDialog)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
 
-// Implementation
 protected:
-
-    // Generated message map functions
-    //{{AFX_MSG(CSaveAllTracesQuestionDialog)
     afx_msg void OnSelectedTraces();
-    //}}AFX_MSG
+
     DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.

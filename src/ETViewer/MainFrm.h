@@ -32,49 +32,28 @@ class CProviderTree;
 class CHighLightPane;
 class CMainFrame : public CFrameWnd
 {
-
-protected: // Crear sólo a partir de serialización
+protected:
     CMainFrame();
     DECLARE_DYNCREATE(CMainFrame)
 
-    // Atributos
-protected:
-    CSplitterWnd m_wndSplitter;
-public:
-
-    // Operaciones
-public:
-    // Reemplazos
 public:
     virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
-    // Implementación
-public:
     virtual ~CMainFrame();
+
     CETViewerView* GetTracePane();
     CProviderTree* GetProviderTree();
     CHighLightPane* GetHighLightPane();
-#ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
-#endif
 
     bool OpenFile(const TCHAR* pFile, bool* pbKnownFileType);
     void LookupError(const TCHAR* pErrorString);
     void OnSessionTypeChanged();
-protected:  // Miembros incrustados de la barra de control
 
-    CReBar      m_wndReBar;
-    CMainDialogBar      m_MainDialogBar;
-    CFilterDialogBar    m_FilterDialogBar;
-
-    bool IsAncestorOf(HWND hWnd, HWND hAncestor);
-
-    // Funciones de asignación de mensajes generadas
 protected:
+    bool IsAncestorOf(HWND hWnd, HWND hAncestor);
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     DECLARE_MESSAGE_MAP()
+
 public:
     afx_msg void OnDestroy();
     afx_msg void OnStartStop();
@@ -99,4 +78,10 @@ public:
     afx_msg LRESULT OnIPCCommand(WPARAM wParam, LPARAM lParam);
     afx_msg void OnEditSettings();
     afx_msg void OnTimer(UINT nTimerId);
+
+private:
+    CSplitterWnd m_wndSplitter;
+    CReBar m_wndReBar;
+    CMainDialogBar m_MainDialogBar;
+    CFilterDialogBar m_FilterDialogBar;
 };

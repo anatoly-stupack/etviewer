@@ -31,10 +31,6 @@
 #include "FileMonitor.h"
 #include "PersistentSettings.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 #define ET_VIEWER_NAME "ETViewer"
 
 extern DWORD g_dwRegisteredMessage;

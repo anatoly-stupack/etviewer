@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+
 #include "resource.h"
 
 class CMainDialogBar : public CDialogBar
@@ -37,6 +38,18 @@ public:
     enum { IDD = IDD_MAIN_DIALOG_BAR };
     //}}AFX_DATA
 
+    void InitDialogBar();
+    void UpdateBitmaps();
+    void OnSessionTypeChanged();
+
+protected:
+    DECLARE_MESSAGE_MAP()
+
+public:
+    afx_msg void OnDestroy();
+
+// TODO: make private
+public:
     CButton	m_BTStartStop;
     CButton	m_BTOpenFile;
     CButton	m_BTShowSourceContainer;
@@ -49,12 +62,4 @@ public:
     CEdit	m_EDErrorLookup;
     CButton	m_BTErrorLookup;
 
-    void InitDialogBar();
-    void UpdateBitmaps();
-    void OnSessionTypeChanged();
-
-protected:
-    DECLARE_MESSAGE_MAP()
-public:
-    afx_msg void OnDestroy();
 };

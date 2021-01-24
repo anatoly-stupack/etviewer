@@ -26,19 +26,18 @@
 
 class CLeftPane : public CFrameWnd
 {
-
     DECLARE_DYNCREATE(CLeftPane)
 
 public:
-
-    CSplitterWnd m_wndSplitter;
-
     CLeftPane();
     virtual ~CLeftPane();
 
 protected:
     DECLARE_MESSAGE_MAP()
-public:
-protected:
+
     virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
+
+// TODO: make private
+public:
+    CSplitterWnd m_wndSplitter;
 };

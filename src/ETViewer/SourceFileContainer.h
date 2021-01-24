@@ -21,44 +21,25 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_SOURCEFILECONTAINER_H__9B0F676E_E7A4_4EB7_9C2C_6632F6172D3A__INCLUDED_)
-#define AFX_SOURCEFILECONTAINER_H__9B0F676E_E7A4_4EB7_9C2C_6632F6172D3A__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
+
 #include "SourceFileViewer.h"
 
 class CSourceFileContainer : public CDialog
 {
-    // Construction
 public:
-    CSourceFileContainer(CWnd* pParent = NULL);   // standard constructor
+    CSourceFileContainer(CWnd* pParent = NULL);
 
-// Dialog Data
     //{{AFX_DATA(CSourceFileContainer)
     enum { IDD = IDD_SOURCE_FILE_CONTAINER };
-    CButton	m_BTRecentFiles;
-    CButton	m_BTFind;
-    CButton	m_BTCopy;
-    CButton	m_BTOpenFile;
-    CTabCtrl	m_TCSourceFiles;
-    CButton		m_BTCloseFile;
     //}}AFX_DATA
 
-
-// Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CSourceFileContainer)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
 
     CSourceFileViewer* GetViewerAt(int index);
 
 public:
-
     void GetFiles(std::set<std::wstring>* psFiles);
     void ReloadFile(const TCHAR* sFile);
 
@@ -70,11 +51,7 @@ public:
     void SelectNext();
     void SelectPrevious();
 
-    // Implementation
 protected:
-
-    // Generated message map functions
-    //{{AFX_MSG(CSourceFileContainer)
     virtual BOOL OnInitDialog();
     afx_msg void OnDestroy();
     afx_msg void OnCloseFile();
@@ -84,13 +61,16 @@ protected:
     afx_msg void OnCopy();
     afx_msg void OnFind();
     afx_msg void OnRecentFile();
-    //}}AFX_MSG
+
     DECLARE_MESSAGE_MAP()
 public:
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+
+private:
+    CButton	m_BTRecentFiles;
+    CButton	m_BTFind;
+    CButton	m_BTCopy;
+    CButton	m_BTOpenFile;
+    CTabCtrl m_TCSourceFiles;
+    CButton	m_BTCloseFile;
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_SOURCEFILECONTAINER_H__9B0F676E_E7A4_4EB7_9C2C_6632F6172D3A__INCLUDED_)

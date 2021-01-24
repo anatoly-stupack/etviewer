@@ -24,17 +24,8 @@
 
 #include "stdafx.h"
 #include "ETViewer.h"
-
 #include "ETViewerDoc.h"
 #include "ProviderTree.h"
-#include ".\providertree.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
-
-// CProviderTree
 
 IMPLEMENT_DYNCREATE(CProviderTree, CTreeView)
 
@@ -46,12 +37,8 @@ BEGIN_MESSAGE_MAP(CProviderTree, CTreeView)
     ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
-
-// Construcción o destrucción de CProviderTree
-
 CProviderTree::CProviderTree()
 {
-    // TODO: agregar aquí el código de construcción
     m_hImageList = ImageList_Create(16, 16, ILC_COLOR4 | ILC_MASK, 0, 10);;
     m_hPlayIcon = (HICON)LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_PLAY), IMAGE_ICON, 16, 16, 0);
     m_hPlayBlockedIcon = (HICON)LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_PLAY_BLOCKED), IMAGE_ICON, 16, 16, 0);
@@ -81,8 +68,6 @@ CProviderTree::~CProviderTree()
 
 BOOL CProviderTree::PreCreateWindow(CREATESTRUCT& cs)
 {
-    // TODO: modificar aquí la clase Window o los estilos cambiando CREATESTRUCT cs
-
     cs.style |= TVS_FULLROWSELECT;
     cs.style |= TVS_HASBUTTONS;
     cs.style |= TVS_HASLINES;
@@ -94,35 +79,7 @@ BOOL CProviderTree::PreCreateWindow(CREATESTRUCT& cs)
 void CProviderTree::OnInitialUpdate()
 {
     CTreeView::OnInitialUpdate();
-
-    // TODO: puede rellenar TreeView con elementos obteniendo acceso directamente
-    //  a través de una llamada a GetTreeCtrl().
-
 }
-
-
-// Diagnósticos de CProviderTree
-
-#ifdef _DEBUG
-void CProviderTree::AssertValid() const
-{
-    CTreeView::AssertValid();
-}
-
-void CProviderTree::Dump(CDumpContext& dc) const
-{
-    CTreeView::Dump(dc);
-}
-
-CETViewerDoc* CProviderTree::GetDocument() // La versión de no depuración es en línea
-{
-    ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CETViewerDoc)));
-    return (CETViewerDoc*)m_pDocument;
-}
-#endif //_DEBUG
-
-
-// Controladores de mensaje de CProviderTree
 
 void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
 {
@@ -136,7 +93,6 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
         if (hChild) { treeCtrl.DeleteItem(hChild); }
     }
     while (hChild);
-
 
     if (theApp.GetTraceController()->GetSessionType() == eTraceControllerSessionType_ReadLog)
     {

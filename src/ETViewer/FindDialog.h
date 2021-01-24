@@ -23,42 +23,39 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "afxwin.h"
+
+#include "stdafx.h"
 
 class CFindDialog;
 class CFindDialogClient
 {
 public:
-
     CFindDialogClient();
 
-    HWND			m_hFindOwner;
-    bool			m_bFindDirectionUp;
-    bool			m_bMatchCaseInFind;
-    bool			m_bHideTracingOptions;
-    bool			m_bHideDeleteButtons;
-    bool			m_bHideMarkButtons;
-    bool			m_bFindInPIDName;
-    bool			m_bFindInTraceText;
-    static std::wstring	m_LastTextToFind;
-
-    CFindDialog* m_pFindDialog;
-
     virtual void BeginFind(CWnd* pParent, HWND owner, const TCHAR* pTextToFind = NULL);
-
     virtual bool FindAndDeleteAll(const TCHAR* pText) = 0;
     virtual bool FindAndMarkAll(const TCHAR* pText) = 0;
     virtual bool FindNext(const TCHAR* pText) = 0;
     virtual void SetFocusOnOwnerWindow() = 0;
-};
 
-// CFindDialog dialog
+// TODO: make private
+public:
+    HWND m_hFindOwner;
+    bool m_bFindDirectionUp;
+    bool m_bMatchCaseInFind;
+    bool m_bHideTracingOptions;
+    bool m_bHideDeleteButtons;
+    bool m_bHideMarkButtons;
+    bool m_bFindInPIDName;
+    bool m_bFindInTraceText;
+    static std::wstring	m_LastTextToFind;
+
+    CFindDialog* m_pFindDialog;
+};
 
 class CFindDialog : public CFindReplaceDialog
 {
     DECLARE_DYNAMIC(CFindDialog)
-
-    CFindDialogClient* m_pFindClient;
 
 public:
     CFindDialog(CFindDialogClient* pFindClient);   // standard constructor
@@ -80,9 +77,6 @@ public:
     //}}AFX_DATA
 
     bool UpdateOptions();
-
-    std::deque<std::wstring> m_TextList;
-
     void Save();
     void SetText(const TCHAR* pTextToFind);
 
@@ -100,5 +94,9 @@ protected:
     afx_msg void OnTextSelected();
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
+
+// TODO: make private
 public:
+    CFindDialogClient* m_pFindClient;
+    std::deque<std::wstring> m_TextList;
 };

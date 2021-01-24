@@ -24,21 +24,14 @@
 
 #include "stdafx.h"
 #include "ETViewer.h"
-
 #include "MainFrm.h"
 #include "ProviderTree.h"
 #include "LeftPane.h"
 #include "ETViewerView.h"
 #include "HighLightPane.h"
 #include "SettingsDialog.h"
-#include ".\mainfrm.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
 
 DWORD g_dwRegisteredMessage = RegisterWindowMessage(_T("ETVIEWER-IPC"));
-// CMainFrame
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
@@ -78,18 +71,13 @@ static UINT indicators[] =
     ID_INDICATOR_SCRL,
 };
 
-
-// Construcción o destrucción de CMainFrame
-
 CMainFrame::CMainFrame()
 {
-    // TODO: agregar aquí el código de inicialización adicional de miembros
 }
 
 CMainFrame::~CMainFrame()
 {
 }
-
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -162,25 +150,6 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
     cs.style &= ~FWS_PREFIXTITLE;
     return TRUE;
 }
-
-
-// Diagnósticos de CMainFrame
-
-#ifdef _DEBUG
-void CMainFrame::AssertValid() const
-{
-    CFrameWnd::AssertValid();
-}
-
-void CMainFrame::Dump(CDumpContext& dc) const
-{
-    CFrameWnd::Dump(dc);
-}
-
-#endif //_DEBUG
-
-
-// Controladores de mensaje de CMainFrame
 
 CETViewerView* CMainFrame::GetTracePane()
 {

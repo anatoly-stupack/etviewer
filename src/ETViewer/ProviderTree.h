@@ -24,14 +24,43 @@
 
 #pragma once
 
-class CETViewerDoc;
-
 class CProviderTree : public CTreeView
 {
-protected: // Crear sólo a partir de serialización
+protected:
     CProviderTree();
     DECLARE_DYNCREATE(CProviderTree)
 
+    void UpdateProviderIcons(HTREEITEM hItem);
+    void UpdateProviderSubTree(HTREEITEM hProviderItem);
+
+public:
+    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+
+protected:
+    virtual void OnInitialUpdate();
+
+public:
+    virtual ~CProviderTree();
+
+    void OnAddProvider(CTraceProvider* pProvider);
+    void OnRemoveProvider(CTraceProvider* pProvider);
+    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
+    void OnProvidersModified();
+    void OnSessionTypeChanged();
+    void OnRemoveSelectedProvider();
+    void SetAllProviderLevel(DWORD dwLevel);
+
+protected:
+    DECLARE_MESSAGE_MAP()
+
+public:
+    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnNMClick(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+
+private:
     HIMAGELIST	m_hImageList;
     HICON		m_hPlayIcon;
     HICON		m_hPlayBlockedIcon;
@@ -54,56 +83,4 @@ protected: // Crear sólo a partir de serialización
     int		m_iCheckedIcon;
     int		m_iUncheckedIcon;
     int		m_iSelectedIcon;
-
-    void UpdateProviderIcons(HTREEITEM hItem);
-    void UpdateProviderSubTree(HTREEITEM hProviderItem);
-
-    // Atributos
-public:
-    CETViewerDoc* GetDocument();
-
-    // Operaciones
-public:
-
-    // Reemplazos
-public:
-    virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-protected:
-    virtual void OnInitialUpdate(); // Se llama la primera vez después de la construcción
-
-// Implementación
-public:
-    virtual ~CProviderTree();
-#ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
-#endif
-
-    void OnAddProvider(CTraceProvider* pProvider);
-    void OnRemoveProvider(CTraceProvider* pProvider);
-    void OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider);
-    void OnProvidersModified();
-    void OnSessionTypeChanged();
-    void OnRemoveSelectedProvider();
-    void SetAllProviderLevel(DWORD dwLevel);
-
-protected:
-
-    // Funciones de asignación de mensajes generadas
-protected:
-    DECLARE_MESSAGE_MAP()
-public:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-    afx_msg void OnNMClick(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-    afx_msg void OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
-
-#ifndef _DEBUG  // Versión de depuración en ProviderTree.cpp
-inline CETViewerDoc* CProviderTree::GetDocument()
-{
-    return reinterpret_cast<CETViewerDoc*>(m_pDocument);
-}
-#endif
-

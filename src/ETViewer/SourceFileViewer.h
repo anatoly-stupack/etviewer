@@ -21,43 +21,22 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_SOURCEFILEVIEWER_H__D9C826CC_F6C0_46E5_8824_E5DE26B60136__INCLUDED_)
-#define AFX_SOURCEFILEVIEWER_H__D9C826CC_F6C0_46E5_8824_E5DE26B60136__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CSourceFileContainer;
+
 #include "FindDialog.h"
 
 class CSourceFileViewer : public CDialog, public CFindDialogClient
 {
-    DWORD				m_OldEditProc;
-    HFONT				m_hFileFont;
-    CHAR* m_pFileBuffer;
-    CHAR* m_pFileBufferUpper;
-    TCHAR* m_pFileBufferWide;
-    DWORD				m_FileBufferLength;
-
-    TCHAR m_SourceFile[MAX_PATH];
-    int  m_SourceLine;
-    CSourceFileContainer* m_pContainer;
-
-    // Construction
 public:
-    CSourceFileViewer(CSourceFileContainer* pParent = NULL);   // standard constructor
+    CSourceFileViewer(CSourceFileContainer* pParent = NULL);
 
     void ShowLine(int line);
     std::wstring GetFile();
 
-    // Dialog Data
-        //{{AFX_DATA(CSourceFileViewer)
+    //{{AFX_DATA(CSourceFileViewer)
     enum { IDD = IDD_SOURCE_FILE_VIEWER };
-    CEdit	m_EDLine;
-    CEdit	m_EDFullPath;
-    CRichEditCtrl	m_EDFile;
     //}}AFX_DATA
 
     DWORD OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
@@ -66,39 +45,43 @@ public:
     void Copy();
     void ShowFindDialog();
 
-    // Overrides
-        // ClassWizard generated virtual function overrides
-        //{{AFX_VIRTUAL(CSourceFileViewer)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
-
 
     bool FindAndDeleteAll(const TCHAR* pText);
     bool FindAndMarkAll(const TCHAR* pText);
     void SetFocusOnOwnerWindow();
 
     static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
     void SetMetrics();
     void UpdateLine();
     void OnFind();
 
-    // Implementation
 protected:
-
-    // Generated message map functions
-    //{{AFX_MSG(CSourceFileViewer)
     virtual void OnOK();
     virtual void OnCancel();
     virtual BOOL OnInitDialog();
     afx_msg void OnDestroy();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnUpdateSelectedLine();
-    //}}AFX_MSG
+
     DECLARE_MESSAGE_MAP()
+
+// TODO: make private
+public:
+    DWORD m_OldEditProc;
+    HFONT m_hFileFont;
+    CHAR* m_pFileBuffer;
+    CHAR* m_pFileBufferUpper;
+    TCHAR* m_pFileBufferWide;
+    DWORD m_FileBufferLength;
+
+    TCHAR m_SourceFile[MAX_PATH];
+    int m_SourceLine;
+    CSourceFileContainer* m_pContainer;
+
+    CEdit m_EDLine;
+    CEdit m_EDFullPath;
+    CRichEditCtrl m_EDFile;
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_SOURCEFILEVIEWER_H__D9C826CC_F6C0_46E5_8824_E5DE26B60136__INCLUDED_)

@@ -23,16 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "afxcmn.h"
-#include "afxwin.h"
+
+#include "stdafx.h"
 
 class CSettingsDialog : public CDialog
 {
-    CFont  m_TraceFont;
-    std::wstring m_sTraceFont;
-    DWORD  m_dwTraceFontSize;
-    WNDPROC	m_OldListViewProc;
-
     DECLARE_DYNAMIC(CSettingsDialog)
 
     void UpdateFont();
@@ -44,7 +39,7 @@ class CSettingsDialog : public CDialog
     static LRESULT CALLBACK ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
-    CSettingsDialog(CWnd* pParent = NULL);   // standard constructor
+    CSettingsDialog(CWnd* pParent = NULL);
     virtual ~CSettingsDialog();
 
     // Dialog Data
@@ -54,7 +49,20 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
     DECLARE_MESSAGE_MAP()
-public:
+
+private:
+    afx_msg void OnAddSourcePath();
+    afx_msg void OnRemoveSourcePath();
+    afx_msg void OnMoveSourceUp();
+    afx_msg void OnMoveSourceDown();
+    afx_msg void OnSelectFont();
+    afx_msg void OnPDBReloadChanged();
+    afx_msg void OnSourceReloadChanged();
+    afx_msg void OnOk();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
+
+private:
     CListCtrl m_LWSourcePaths;
     CButton m_BTAdd;
     CButton m_BTRemove;
@@ -73,14 +81,9 @@ public:
     CButton m_RBSourceReloadAuto;
     CButton m_RBSourceReloadAsk;
     CButton m_RBSourceReloadDisabled;
-    afx_msg void OnAddSourcePath();
-    afx_msg void OnRemoveSourcePath();
-    afx_msg void OnMoveSourceUp();
-    afx_msg void OnMoveSourceDown();
-    afx_msg void OnSelectFont();
-    afx_msg void OnPDBReloadChanged();
-    afx_msg void OnSourceReloadChanged();
-    afx_msg void OnOk();
-    virtual BOOL OnInitDialog();
-    afx_msg void OnDestroy();
+    CFont  m_TraceFont;
+    std::wstring m_sTraceFont;
+    DWORD  m_dwTraceFontSize;
+    WNDPROC	m_OldListViewProc;
+
 };
