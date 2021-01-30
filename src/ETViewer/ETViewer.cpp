@@ -605,9 +605,48 @@ void CETViewerApp::UpdateHighLightFilters()
     }
 }
 
-void CETViewerApp::LookupError(const TCHAR* pText)
+void CETViewerApp::LookupError(const std::wstring& errorText)
 {
-    m_pFrame->LookupError(pText);
+    auto errorCode = 0;
+    try
+    {
+        errorCode = std::stoi(errorText.c_str());
+    }
+    catch (const std::exception&)
+    {
+        auto finalMessage = L"Invalid error code: " + errorText;
+        GetMainWnd()->MessageBox(finalMessage.c_str(), L"ETViewer Error Lookup", MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    wchar_t* message = nullptr;
+    auto result = FormatMessage(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+        nullptr,
+        errorCode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPWSTR)&message,
+        0,
+        nullptr);
+
+    if (result > 0)
+    {
+        auto finalMessage = errorText + L": " + message;
+        GetMainWnd()->MessageBox(finalMessage.c_str(), L"ETViewer Error Lookup", MB_OK | MB_ICONINFORMATION);
+    }
+    else
+    {
+        auto finalMessage =
+            L"Cannot find description for the error '" + errorText + L"', error code " + std::to_wstring(::GetLastError());
+
+        GetMainWnd()->MessageBox(finalMessage.c_str(), L"ETViewer Error Lookup", MB_OK | MB_ICONSTOP);
+    }
+
+    if (message)
+    {
+        LocalFree(message);
+        message = nullptr;
+    }
 }
 
 void CETViewerApp::AddRecentSourceFile(const TCHAR* file)

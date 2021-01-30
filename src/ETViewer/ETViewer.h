@@ -149,7 +149,7 @@ public:
     void ProcessSessionChange();
     BOOL ProcessCommandLine(int argc, TCHAR** argv);
 
-    void LookupError(const TCHAR* pText);
+    void LookupError(const std::wstring& errorText);
     bool FilterTrace(const TCHAR* pText);
 
     // IFileMonitorCallback

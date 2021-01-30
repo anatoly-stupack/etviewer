@@ -61,9 +61,28 @@ public:
     CFindDialog(CFindDialogClient* pFindClient);   // standard constructor
     virtual ~CFindDialog();
 
-    // Dialog Data
-        //{{AFX_DATA(CFindDialog)
+    bool UpdateOptions();
+    void Save();
+    void SetText(const TCHAR* pTextToFind);
+
+protected:
+    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+
+    afx_msg void OnDeleteAll();
+    afx_msg void OnMarkAll();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnDestroy();
+    afx_msg void OnChangedText();
+    afx_msg void OnFind();
+    afx_msg void OnCancel();
+    afx_msg void OnTextSelected();
+
+    DECLARE_MESSAGE_MAP()
+
+// TODO: make private
+public:
     enum { IDD = IDD_FIND_DIALOG };
+
     CEdit	m_EDTextToFind;
     CButton m_BTUp;
     CButton m_BTDown;
@@ -74,29 +93,7 @@ public:
     CButton m_CBFindInPIDName;
     CButton m_CBFindInTraceText;
     CComboBox m_COTextToFind;
-    //}}AFX_DATA
 
-    bool UpdateOptions();
-    void Save();
-    void SetText(const TCHAR* pTextToFind);
-
-protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-    //{{AFX_MSG(CFindDialog)
-    afx_msg void OnDeleteAll();
-    afx_msg void OnMarkAll();
-    virtual BOOL OnInitDialog();
-    afx_msg void OnDestroy();
-    afx_msg void OnChangedText();
-    afx_msg void OnFind();
-    afx_msg void OnCancel();
-    afx_msg void OnTextSelected();
-    //}}AFX_MSG
-    DECLARE_MESSAGE_MAP()
-
-// TODO: make private
-public:
     CFindDialogClient* m_pFindClient;
     std::deque<std::wstring> m_TextList;
 };

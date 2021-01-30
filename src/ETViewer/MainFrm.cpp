@@ -228,52 +228,9 @@ void CMainFrame::OnHighlightFilters()
     GetTracePane()->OnHighLightFilters();
 }
 
-void CMainFrame::LookupError(const TCHAR* pErrorString)
-{
-    TCHAR finalMessage[2000] = { 0 }, message[2000] = { 0 }, errorStr[2000] = { 0 };
-    TCHAR* pValidChars = _T("0x1234567890abcdefABCDEFX");
-    unsigned  len = (unsigned)_tcslen(pErrorString), added = 0;
-    for (unsigned x = 0; x < len; x++)
-    {
-        if (_tcschr(pValidChars, pErrorString[x]) != 0)
-        {
-            errorStr[added] = pErrorString[x];
-            added++;
-        }
-        else
-        {
-            // a invalid TCHAR after valid TCHARs marks the end.
-            if (added) { break; }
-        }
-    }
-    if (_tcscmp(pErrorString, errorStr) != 0) { m_MainDialogBar.m_EDErrorLookup.SetWindowText(errorStr); }
-
-
-    DWORD errorCode = 0;
-    bool ok = (errorCode = _ttoi(errorStr)) != 0;
-    if (!ok) { ok = (_stscanf_s(errorStr, _T("%x"), &errorCode) != 0); }
-    if (!ok) { ok = (_stscanf_s(errorStr, _T("x%x"), &errorCode) != 0); }
-    if (!ok) { ok = (_stscanf_s(errorStr, _T("0x%x"), &errorCode) != 0); }
-    if (errorCode == 0) { return; }
-
-    if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&message, _countof(message), NULL) != 0)
-    {
-        _stprintf_s(finalMessage, _T("%s=%s"), errorStr, message);
-        MessageBox(finalMessage, _T("ETViewer"), MB_OK | MB_ICONINFORMATION);
-    }
-    else
-    {
-        _stprintf_s(finalMessage, _T("Cannot find the error %s"), errorStr);
-        MessageBox(finalMessage, _T("ETViewer"), MB_OK | MB_ICONSTOP);
-    }
-}
-
 void CMainFrame::OnErrorLookup()
 {
-    TCHAR temp[1024] = { 0 };
-    m_MainDialogBar.m_EDErrorLookup.GetWindowText(temp, _countof(temp));
-    LookupError(temp);
-    m_MainDialogBar.m_EDErrorLookup.SetFocus();
+    m_MainDialogBar.LookupError();
 }
 
 void CMainFrame::OnEnsureVisible()
@@ -291,7 +248,6 @@ void CMainFrame::OnFind()
 {
     GetTracePane()->OnFind();
 }
-
 
 bool CMainFrame::OpenFile(const TCHAR* pFile, bool* pbKnownFileType)
 {
@@ -450,7 +406,6 @@ void CMainFrame::OnSessionTypeChanged()
     }
     SetWindowText(sCaption.c_str());
 
-    m_MainDialogBar.OnSessionTypeChanged();
     m_FilterDialogBar.OnSessionTypeChanged();
 }
 

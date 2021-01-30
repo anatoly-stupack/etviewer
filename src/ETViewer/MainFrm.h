@@ -46,7 +46,6 @@ public:
     CHighLightPane* GetHighLightPane();
 
     bool OpenFile(const TCHAR* pFile, bool* pbKnownFileType);
-    void LookupError(const TCHAR* pErrorString);
     void OnSessionTypeChanged();
 
 protected:

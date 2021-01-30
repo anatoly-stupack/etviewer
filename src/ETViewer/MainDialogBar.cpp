@@ -24,14 +24,9 @@
 
 #include "stdafx.h"
 #include "ETViewer.h"
-#include "ETViewerDoc.h"
 #include "ETViewerView.h"
+#include "MainFrm.h"
 #include "MainDialogBar.h"
-#include ".\maindialogbar.h"
-#include ".\MainFrm.h"
-
-
-// CMainDialogBar
 
 IMPLEMENT_DYNAMIC(CMainDialogBar, CDialogBar)
 CMainDialogBar::CMainDialogBar()
@@ -41,7 +36,6 @@ CMainDialogBar::CMainDialogBar()
 CMainDialogBar::~CMainDialogBar()
 {
 }
-
 
 BEGIN_MESSAGE_MAP(CMainDialogBar, CDialogBar)
     ON_WM_DESTROY()
@@ -98,6 +92,13 @@ void CMainDialogBar::UpdateBitmaps()
     m_BTErrorLookup.SetIcon(LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_ERRORLOOKUP)));
 }
 
-void CMainDialogBar::OnSessionTypeChanged()
+void CMainDialogBar::LookupError()
 {
+    CString errorText;
+
+    m_EDErrorLookup.GetWindowText(errorText);
+
+    theApp.LookupError(errorText.GetBuffer());
+
+    m_EDErrorLookup.SetFocus();
 }

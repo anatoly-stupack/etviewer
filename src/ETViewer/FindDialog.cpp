@@ -56,8 +56,6 @@ void CFindDialogClient::BeginFind(CWnd* pParent, HWND owner, const TCHAR* pTextT
     m_pFindDialog->SetText(pTextToFind);
 }
 
-// CFindDialog dialog
-
 IMPLEMENT_DYNAMIC(CFindDialog, CFindReplaceDialog)
 
 CFindDialog::CFindDialog(CFindDialogClient* pFindClient)

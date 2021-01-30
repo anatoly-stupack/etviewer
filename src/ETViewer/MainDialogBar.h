@@ -34,13 +34,9 @@ public:
     CMainDialogBar();
     virtual ~CMainDialogBar();
 
-    //{{AFX_DATA(CMainDialogBar)
-    enum { IDD = IDD_MAIN_DIALOG_BAR };
-    //}}AFX_DATA
-
     void InitDialogBar();
     void UpdateBitmaps();
-    void OnSessionTypeChanged();
+    void LookupError();
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -48,8 +44,9 @@ protected:
 public:
     afx_msg void OnDestroy();
 
-// TODO: make private
-public:
+private:
+    enum { IDD = IDD_MAIN_DIALOG_BAR };
+
     CButton	m_BTStartStop;
     CButton	m_BTOpenFile;
     CButton	m_BTShowSourceContainer;
@@ -61,5 +58,4 @@ public:
     CButton	m_BTClearSelected;
     CEdit	m_EDErrorLookup;
     CButton	m_BTErrorLookup;
-
 };
