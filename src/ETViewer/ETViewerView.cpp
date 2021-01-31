@@ -659,23 +659,28 @@ LRESULT CALLBACK CETViewerView::ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam
     }
     if (uMsg == WM_RBUTTONDOWN)
     {
-        if (pThis->GetListCtrl().GetEditControl() == NULL || pThis->GetListCtrl().GetEditControl()->m_hWnd == NULL) { return 0; }
-        int begin = 0, end = 0;
-        TCHAR text[1024], codeAddress[1024] = { 0 };
-        POINT p;
-        ::GetCursorPos(&p);
-        pThis->GetListCtrl().GetEditControl()->GetSel(begin, end);
-        pThis->GetListCtrl().GetEditControl()->GetWindowText(text, 1024);
+        if (pThis->GetListCtrl().GetEditControl() == NULL || pThis->GetListCtrl().GetEditControl()->m_hWnd == NULL)
+        {
+            return 0;
+        }
+        
+        int beginSelection = 0, endSelection = 0;
+        pThis->GetListCtrl().GetEditControl()->GetSel(beginSelection, endSelection);
+
+        CString editorText;
+        pThis->GetListCtrl().GetEditControl()->GetWindowText(editorText);
+
         HMENU hMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDM_TRACE_LIST_EDIT)), 0);
 
-        DWORD command = ::TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_RETURNCMD, p.x, p.y, 0, pThis->GetListCtrl().m_hWnd, NULL);
+        POINT p = { 0 };
+        ::GetCursorPos(&p);
+        auto command = ::TrackPopupMenu(hMenu, TPM_LEFTALIGN | TPM_RETURNCMD, p.x, p.y, 0, pThis->GetListCtrl().m_hWnd, NULL);
         switch (command)
         {
         case ID_GET_ERROR_DESCRIPTION:
-            if (begin != -1 && end != -1)
+            if (beginSelection != -1 && endSelection != -1)
             {
-                memcpy(codeAddress, text + begin, end - begin);
-                theApp.LookupError(codeAddress);
+                theApp.LookupError(editorText.Mid(beginSelection, endSelection - beginSelection).GetBuffer());
             }
             break;
         case ID_COPY:
