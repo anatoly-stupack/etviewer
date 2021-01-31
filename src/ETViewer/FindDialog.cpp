@@ -77,7 +77,6 @@ void CFindDialog::DoDataExchange(CDataExchange* pDX)
 {
     CFindReplaceDialog::DoDataExchange(pDX);
 
-    //{{AFX_DATA_MAP(CFindDialog)
     DDX_Control(pDX, 1056, m_BTUp);
     DDX_Control(pDX, 1057, m_BTDown);
     DDX_Control(pDX, IDOK, m_BTFind);
@@ -87,12 +86,9 @@ void CFindDialog::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_CB_FIND_PID_NAME, m_CBFindInPIDName);
     DDX_Control(pDX, IDC_CB_FIND_IN_TRACE_TEXT, m_CBFindInTraceText);
     DDX_Control(pDX, IDC_CO_TEXT_TO_FIND, m_COTextToFind);
-    //}}AFX_DATA_MAP
 }
 
-
 BEGIN_MESSAGE_MAP(CFindDialog, CFindReplaceDialog)
-    //{{AFX_MSG_MAP(CFindDialog)
     ON_CBN_EDITCHANGE(IDC_CO_TEXT_TO_FIND, OnChangedText)
     ON_CBN_SELCHANGE(IDC_CO_TEXT_TO_FIND, OnTextSelected)
     ON_BN_CLICKED(IDOK, OnFind)
@@ -100,12 +96,7 @@ BEGIN_MESSAGE_MAP(CFindDialog, CFindReplaceDialog)
     ON_BN_CLICKED(IDC_BT_DELETE_ALL, OnDeleteAll)
     ON_BN_CLICKED(IDC_BT_MARK_ALL, OnMarkAll)
     ON_WM_DESTROY()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-
-// CFindDialog message handlers
-
 
 void CFindDialog::OnDeleteAll()
 {
@@ -127,7 +118,6 @@ BOOL CFindDialog::OnInitDialog()
 {
     CFindReplaceDialog::OnInitDialog();
 
-    unsigned x;
     m_CBFindInPIDName.SetCheck(m_pFindClient->m_bFindInPIDName ? BST_CHECKED : BST_UNCHECKED);
     m_CBFindInPIDName.ShowWindow(m_pFindClient->m_bHideTracingOptions ? SW_HIDE : SW_SHOW);
     m_CBFindInTraceText.SetCheck(m_pFindClient->m_bFindInTraceText ? BST_CHECKED : BST_UNCHECKED);
@@ -137,7 +127,10 @@ BOOL CFindDialog::OnInitDialog()
     m_BTMarkAll.ShowWindow(m_pFindClient->m_bHideMarkButtons ? SW_HIDE : SW_SHOW);
 
     m_EDTextToFind.Attach(m_COTextToFind.GetWindow(GW_CHILD)->m_hWnd);
-    for (x = 0; x < m_TextList.size(); x++) { m_COTextToFind.AddString(m_TextList[x].c_str()); }
+    for (auto& text : m_TextList)
+    {
+        m_COTextToFind.AddString(text.c_str());
+    }
 
     m_EDTextToFind.SetWindowText(m_pFindClient->m_LastTextToFind.c_str());
     OnChangedText();

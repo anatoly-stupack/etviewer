@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "ProviderTree.h"
+
 class CLeftPane : public CFrameWnd
 {
     DECLARE_DYNCREATE(CLeftPane)
@@ -32,12 +34,14 @@ public:
     CLeftPane();
     virtual ~CLeftPane();
 
+    CProviderTree* GetProviderTree();
+    CHighLightPane* GetHighLightPane();
+
 protected:
     DECLARE_MESSAGE_MAP()
 
     virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext);
 
-// TODO: make private
-public:
+private:
     CSplitterWnd m_wndSplitter;
 };

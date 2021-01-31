@@ -35,15 +35,12 @@ public:
     void ShowLine(int line);
     std::wstring GetFile();
 
-    //{{AFX_DATA(CSourceFileViewer)
-    enum { IDD = IDD_SOURCE_FILE_VIEWER };
-    //}}AFX_DATA
-
     DWORD OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
     void Reload();
     bool FindNext(const TCHAR* pText);
     void Copy();
     void ShowFindDialog();
+    void SetFocusOnEditor();
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -68,8 +65,9 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-// TODO: make private
-public:
+private:
+    enum { IDD = IDD_SOURCE_FILE_VIEWER };
+
     DWORD m_OldEditProc;
     HFONT m_hFileFont;
     CHAR* m_pFileBuffer;

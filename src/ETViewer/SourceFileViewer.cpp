@@ -307,8 +307,6 @@ BOOL CSourceFileViewer::OnInitDialog()
 
 void CSourceFileViewer::OnDestroy()
 {
-    if (m_pFindDialog) { m_pFindDialog->m_pFindClient = NULL; }
-
     CDialog::OnDestroy();
 
     delete[] m_pFileBufferUpper;
@@ -628,6 +626,11 @@ bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
 
 void CSourceFileViewer::SetFocusOnOwnerWindow()
 {
+}
+
+void CSourceFileViewer::SetFocusOnEditor()
+{
+    m_EDFile.SetFocus();
 }
 
 void CSourceFileViewer::Copy()

@@ -122,7 +122,7 @@ void CSourceFileContainer::ShowSelectedFile()
     {
         CSourceFileViewer* pViewer = GetViewerAt(x);
         pViewer->ShowWindow(x == index ? SW_SHOW : SW_HIDE);
-        pViewer->m_EDFile.SetFocus();
+        pViewer->SetFocusOnEditor();
     }
 }
 

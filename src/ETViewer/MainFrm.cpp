@@ -164,8 +164,7 @@ CProviderTree* CMainFrame::GetProviderTree()
     if (m_wndSplitter.m_hWnd == NULL) { return NULL; }
     CWnd* pWnd = m_wndSplitter.GetPane(0, 0);
     CLeftPane* pLeftPane = DYNAMIC_DOWNCAST(CLeftPane, pWnd);
-    CProviderTree* pProviderTree = DYNAMIC_DOWNCAST(CProviderTree, pLeftPane->m_wndSplitter.GetPane(0, 0));
-    return pProviderTree;
+    return pLeftPane->GetProviderTree();
 }
 
 CHighLightPane* CMainFrame::GetHighLightPane()
@@ -173,8 +172,7 @@ CHighLightPane* CMainFrame::GetHighLightPane()
     if (m_wndSplitter.m_hWnd == NULL) { return NULL; }
     CWnd* pWnd = m_wndSplitter.GetPane(0, 0);
     CLeftPane* pLeftPane = DYNAMIC_DOWNCAST(CLeftPane, pWnd);
-    CHighLightPane* pHighLightPane = DYNAMIC_DOWNCAST(CHighLightPane, pLeftPane->m_wndSplitter.GetPane(1, 0));
-    return pHighLightPane;
+    return pLeftPane->GetHighLightPane();
 }
 
 void CMainFrame::OnDestroy()

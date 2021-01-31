@@ -25,11 +25,7 @@
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "LeftPane.h"
-#include ".\leftpane.h"
-#include ".\ProviderTree.h"
 #include "HighLightPane.h"
-
-// CLeftPane
 
 IMPLEMENT_DYNCREATE(CLeftPane, CFrameWnd)
 CLeftPane::CLeftPane()
@@ -42,8 +38,6 @@ CLeftPane::~CLeftPane()
 
 BEGIN_MESSAGE_MAP(CLeftPane, CFrameWnd)
 END_MESSAGE_MAP()
-
-// CLeftPane message handlers
 
 BOOL CLeftPane::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
@@ -61,4 +55,14 @@ BOOL CLeftPane::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
         return FALSE;
     }
     return TRUE;
+}
+
+CProviderTree* CLeftPane::GetProviderTree()
+{
+    return DYNAMIC_DOWNCAST(CProviderTree, m_wndSplitter.GetPane(0, 0));
+}
+
+CHighLightPane* CLeftPane::GetHighLightPane()
+{
+    return DYNAMIC_DOWNCAST(CHighLightPane, m_wndSplitter.GetPane(1, 0));
 }

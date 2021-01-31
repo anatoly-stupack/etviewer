@@ -58,7 +58,7 @@ class CFindDialog : public CFindReplaceDialog
     DECLARE_DYNAMIC(CFindDialog)
 
 public:
-    CFindDialog(CFindDialogClient* pFindClient);   // standard constructor
+    CFindDialog(CFindDialogClient* pFindClient);
     virtual ~CFindDialog();
 
     bool UpdateOptions();
@@ -79,8 +79,7 @@ protected:
 
     DECLARE_MESSAGE_MAP()
 
-// TODO: make private
-public:
+private:
     enum { IDD = IDD_FIND_DIALOG };
 
     CEdit	m_EDTextToFind;
