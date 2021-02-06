@@ -28,49 +28,23 @@
 
 #define MAX_FIND_TEXTS 20
 
-std::wstring	CFindDialogClient::m_LastTextToFind;
-
-CFindDialogClient::CFindDialogClient()
-{
-    m_pFindDialog = NULL;
-    m_hFindOwner = NULL;
-    m_bFindDirectionUp = false;
-    m_bMatchCaseInFind = false;
-    m_bHideTracingOptions = true;
-    m_bHideDeleteButtons = false;
-    m_bHideMarkButtons = false;
-    m_bFindInPIDName = false;
-    m_bFindInTraceText = true;
-}
-
-void CFindDialogClient::BeginFind(CWnd* pParent, HWND owner, const TCHAR* pTextToFind)
-{
-    if (!m_pFindDialog)
-    {
-        m_hFindOwner = owner;
-        m_pFindDialog = new CFindDialog(this);
-        m_pFindDialog->Create(TRUE, _T(""), NULL, m_bFindDirectionUp ? 0 : FR_DOWN, pParent);
-
-    }
-    m_pFindDialog->ShowWindow(SW_SHOW);
-    m_pFindDialog->SetText(pTextToFind);
-}
-
 IMPLEMENT_DYNAMIC(CFindDialog, CFindReplaceDialog)
 
-CFindDialog::CFindDialog(CFindDialogClient* pFindClient)
+CFindDialog::CFindDialog(IFindDialogClient* findClient, HWND owner, bool extendedMode)
+    : m_FindClient(findClient)
+    , m_bFindDirectionUp(false)
+    , m_bMatchCaseInFind(false)
+    , m_bHideTracingOptions(!extendedMode)
+    , m_bHideDeleteButtons(!extendedMode)
+    , m_bHideMarkButtons(!extendedMode)
+    , m_bFindInPIDName(false)
+    , m_bFindInTraceText(true)
 {
-    m_pFindClient = pFindClient;
-    m_fr.hwndOwner = m_pFindClient->m_hFindOwner;
+    m_fr.hwndOwner = owner;
     m_fr.Flags |= FR_HIDEWHOLEWORD | FR_ENABLETEMPLATE;
-    m_fr.Flags |= m_pFindClient->m_bMatchCaseInFind ? FR_MATCHCASE : 0;
-    m_fr.lpstrFindWhat = const_cast<TCHAR*>(m_pFindClient->m_LastTextToFind.c_str());
+    m_fr.lpstrFindWhat = const_cast<wchar_t*>(m_LastTextToFind.c_str());
     m_fr.hInstance = AfxGetResourceHandle();
     m_fr.lpTemplateName = MAKEINTRESOURCE(IDD_FIND_DIALOG);
-}
-
-CFindDialog::~CFindDialog()
-{
 }
 
 void CFindDialog::DoDataExchange(CDataExchange* pDX)
@@ -100,17 +74,29 @@ END_MESSAGE_MAP()
 
 void CFindDialog::OnDeleteAll()
 {
-    if (UpdateOptions())
+    if (!UpdateOptions())
     {
-        if (m_pFindClient->FindAndDeleteAll(m_pFindClient->m_LastTextToFind.c_str())) { m_pFindClient->SetFocusOnOwnerWindow(); EndDialog(IDOK); }
+        return;
+    }
+
+    if (m_FindClient->FindAndDeleteAll(m_LastTextToFind, m_bFindDirectionUp, m_bMatchCaseInFind))
+    {
+        m_FindClient->SetFocusOnOwnerWindow();
+        EndDialog(IDOK);
     }
 }
 
 void CFindDialog::OnMarkAll()
 {
-    if (UpdateOptions())
+    if (!UpdateOptions())
     {
-        if (m_pFindClient->FindAndMarkAll(m_pFindClient->m_LastTextToFind.c_str())) { m_pFindClient->SetFocusOnOwnerWindow(); EndDialog(IDOK); }
+        return;
+    }
+
+    if (m_FindClient->FindAndMarkAll(m_LastTextToFind, m_bFindDirectionUp, m_bMatchCaseInFind))
+    {
+        m_FindClient->SetFocusOnOwnerWindow();
+        EndDialog(IDOK);
     }
 }
 
@@ -118,13 +104,13 @@ BOOL CFindDialog::OnInitDialog()
 {
     CFindReplaceDialog::OnInitDialog();
 
-    m_CBFindInPIDName.SetCheck(m_pFindClient->m_bFindInPIDName ? BST_CHECKED : BST_UNCHECKED);
-    m_CBFindInPIDName.ShowWindow(m_pFindClient->m_bHideTracingOptions ? SW_HIDE : SW_SHOW);
-    m_CBFindInTraceText.SetCheck(m_pFindClient->m_bFindInTraceText ? BST_CHECKED : BST_UNCHECKED);
-    m_CBFindInTraceText.ShowWindow(m_pFindClient->m_bHideTracingOptions ? SW_HIDE : SW_SHOW);
+    m_CBFindInPIDName.SetCheck(m_bFindInPIDName ? BST_CHECKED : BST_UNCHECKED);
+    m_CBFindInPIDName.ShowWindow(m_bHideTracingOptions ? SW_HIDE : SW_SHOW);
+    m_CBFindInTraceText.SetCheck(m_bFindInTraceText ? BST_CHECKED : BST_UNCHECKED);
+    m_CBFindInTraceText.ShowWindow(m_bHideTracingOptions ? SW_HIDE : SW_SHOW);
 
-    m_BTDeleteAll.ShowWindow(m_pFindClient->m_bHideDeleteButtons ? SW_HIDE : SW_SHOW);
-    m_BTMarkAll.ShowWindow(m_pFindClient->m_bHideMarkButtons ? SW_HIDE : SW_SHOW);
+    m_BTDeleteAll.ShowWindow(m_bHideDeleteButtons ? SW_HIDE : SW_SHOW);
+    m_BTMarkAll.ShowWindow(m_bHideMarkButtons ? SW_HIDE : SW_SHOW);
 
     m_EDTextToFind.Attach(m_COTextToFind.GetWindow(GW_CHILD)->m_hWnd);
     for (auto& text : m_TextList)
@@ -132,7 +118,7 @@ BOOL CFindDialog::OnInitDialog()
         m_COTextToFind.AddString(text.c_str());
     }
 
-    m_EDTextToFind.SetWindowText(m_pFindClient->m_LastTextToFind.c_str());
+    m_EDTextToFind.SetWindowText(m_LastTextToFind.c_str());
     OnChangedText();
 
     m_EDTextToFind.SetFocus();
@@ -141,94 +127,88 @@ BOOL CFindDialog::OnInitDialog()
 
 void CFindDialog::OnFind()
 {
-    bool		 bAddComboString = false;
-    CComboBox* pCombo = NULL;
-    CWnd* pEdit = NULL;
-    TCHAR		newText[2048];
+    CString text;
+    m_COTextToFind.GetWindowText(text);
 
-    m_COTextToFind.GetWindowText(newText, _countof(newText));
-    bAddComboString = true;
-    pCombo = &m_COTextToFind;
-    pEdit = &m_EDTextToFind;
-
-    if (bAddComboString)
+    if (!text.IsEmpty())
     {
-        if (_tcscmp(newText, _T("")) != 0)
+        for (auto index = 0; index < m_COTextToFind.GetCount(); index++)
         {
-            TCHAR existingText[2048] = { 0 };
-            TCHAR tempText[2048] = { 0 };
+            CString label;
+            m_COTextToFind.GetLBText(index, label);
 
-            _tcscpy_s(tempText, newText);
-            _tcsupr_s(tempText);
-
-            int x;
-            for (x = 0; x < pCombo->GetCount(); x++)
+            if (label.CompareNoCase(text) == 0)
             {
-                pCombo->GetLBText(x, existingText);
-                _tcsupr_s(existingText);
-                if (_tcscmp(existingText, tempText) == 0)
-                {
-                    pCombo->DeleteString(x);
-                    break;
-                }
+                m_COTextToFind.DeleteString(index);
+                break;
             }
-            pCombo->InsertString(0, newText);
-            if (pCombo->GetCount() > MAX_FIND_TEXTS) { pCombo->DeleteString(pCombo->GetCount() - 1); }
         }
-        pEdit->SetWindowText(newText);
 
+        m_COTextToFind.InsertString(0, text);
+
+        if (m_COTextToFind.GetCount() > MAX_FIND_TEXTS)
+        {
+            m_COTextToFind.DeleteString(m_COTextToFind.GetCount() - 1);
+        }
     }
+
+    m_EDTextToFind.SetWindowText(text);
 
     Save();
 
-    if (UpdateOptions())
+    if (!UpdateOptions())
     {
-        if (m_pFindClient->FindNext(newText))
-        {
-            m_pFindClient->SetFocusOnOwnerWindow();
-            EndDialog(IDOK);
-        }
+        return;
+    }
+
+    if (m_FindClient->FindNext(text.GetBuffer(), m_bFindDirectionUp, m_bMatchCaseInFind))
+    {
+        m_FindClient->SetFocusOnOwnerWindow();
+        EndDialog(IDOK);
     }
 }
 
 bool CFindDialog::UpdateOptions()
 {
-    bool res = true;
+    CString text;
+    m_EDTextToFind.GetWindowText(text);
 
-    TCHAR sTemp[1024] = { 0 };
-    m_EDTextToFind.GetWindowText(sTemp, 1024);
-    m_pFindClient->m_LastTextToFind = sTemp;
-    m_pFindClient->m_bFindDirectionUp = (m_BTUp.GetCheck() == BST_CHECKED);
-    m_pFindClient->m_bMatchCaseInFind = (m_CBMatchCase.GetCheck() == BST_CHECKED);
-    m_pFindClient->m_bFindInPIDName = (m_CBFindInPIDName.GetCheck() == BST_CHECKED);
-    m_pFindClient->m_bFindInTraceText = (m_CBFindInTraceText.GetCheck() == BST_CHECKED);
+    m_LastTextToFind = text.GetBuffer();
+    m_bFindDirectionUp = (m_BTUp.GetCheck() == BST_CHECKED);
+    m_bMatchCaseInFind = (m_CBMatchCase.GetCheck() == BST_CHECKED);
+    m_bFindInPIDName = (m_CBFindInPIDName.GetCheck() == BST_CHECKED);
+    m_bFindInTraceText = (m_CBFindInTraceText.GetCheck() == BST_CHECKED);
 
-    if (!m_pFindClient->m_bFindInPIDName && !m_pFindClient->m_bFindInTraceText)
+    if (!m_bFindInPIDName && !m_bFindInTraceText)
     {
-        MessageBox(_T("At least one search option must be selected\r\n\r\n\"Find in Process Id / Name\" \r\n\"Find in Trace Text\""), _T("ETViewer"), MB_ICONSTOP | MB_OK);
-        res = false;
+        MessageBox(
+            L"At least one search option must be selected\r\n\r\n\"Find in Process Id / Name\" \r\n\"Find in Trace Text\"",
+            L"ETViewer Search",
+            MB_ICONSTOP | MB_OK);
+
+        return false;
     }
-    return res;
+
+    return true;
 }
 
 void CFindDialog::Save()
 {
     m_TextList.clear();
-    int x;
-    for (x = 0; x < m_COTextToFind.GetCount(); x++)
+
+    for (auto index = 0; index < m_COTextToFind.GetCount(); index++)
     {
-        TCHAR sTemp[1024] = { 0 };
-        m_COTextToFind.GetLBText(x, sTemp);
-        m_TextList.push_back(sTemp);
+        CString label;
+        m_COTextToFind.GetLBText(index, label);
+        m_TextList.emplace_back(label.GetBuffer());
     }
 }
 
 void CFindDialog::OnDestroy()
 {
     m_EDTextToFind.Detach();
-    m_pFindClient->m_pFindDialog = NULL;
     CFindReplaceDialog::OnDestroy();
-    m_pFindClient->SetFocusOnOwnerWindow();
+    m_FindClient->SetFocusOnOwnerWindow();
 }
 
 void CFindDialog::OnCancel()
@@ -239,11 +219,14 @@ void CFindDialog::OnCancel()
 
 void CFindDialog::OnChangedText()
 {
-    if (m_EDTextToFind.m_hWnd == NULL) { return; }
+    if (m_EDTextToFind.m_hWnd == NULL)
+    {
+        return;
+    }
 
-    TCHAR A[200];
-    m_EDTextToFind.GetWindowText(A, 200);
-    bool anyText = _tcscmp(A, _T("")) != 0;
+    CString text;
+    m_EDTextToFind.GetWindowText(text);
+    bool anyText = !text.IsEmpty();
 
     m_BTDeleteAll.EnableWindow(anyText);
     m_BTMarkAll.EnableWindow(anyText);
@@ -252,12 +235,12 @@ void CFindDialog::OnChangedText()
 
 void CFindDialog::OnTextSelected()
 {
-    TCHAR newText[2048];
+    CString text;
     int index = m_COTextToFind.GetCurSel();
     if (index != -1)
     {
-        m_COTextToFind.GetLBText(index, newText);
-        m_EDTextToFind.SetWindowText(newText);
+        m_COTextToFind.GetLBText(index, text);
+        m_EDTextToFind.SetWindowText(text);
     }
     OnChangedText();
 }

@@ -53,8 +53,10 @@ CETViewerView::CETViewerView()
 {
     m_nUnformattedTraces = 0;
     m_nLastFocusedSequenceIndex = 0;
-    m_pEdit = NULL;
-    m_bFindDirectionUp = false;
+    m_pEdit = nullptr;
+    m_FindDialog = nullptr;
+    m_FindDirectionUp = false;
+    m_FindMatchCase = false;
     m_iHollowImage = 0;
     m_iMarkerImage = 0;
     m_iEditSubItem = 0;
@@ -242,6 +244,7 @@ void CETViewerView::OnDestroy()
 {
     Clear();
     CListView::OnDestroy();
+    m_FindDialog = nullptr;
 }
 
 void CETViewerView::OnNMRclick(NMHDR* pNMHDR, LRESULT* pResult)
@@ -654,7 +657,7 @@ LRESULT CALLBACK CETViewerView::ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam
                     pThis->m_LastTextToFind = textToFind;
                 }
             }
-            pThis->BeginFind(pThis, pThis->GetListCtrl().m_hWnd, (TCHAR*)pThis->m_LastTextToFind.c_str());
+            pThis->OnFind();
         }
     }
     if (uMsg == WM_RBUTTONDOWN)
@@ -698,26 +701,37 @@ LRESULT CALLBACK CETViewerView::ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam
 
 bool CETViewerView::FindNext()
 {
-    if (m_LastTextToFind == _T("")) { return false; }
-    return FindNext(m_LastTextToFind.c_str());
+    if (m_LastTextToFind.empty())
+    {
+        return false;
+    }
+
+    return FindNext(m_LastTextToFind, m_FindDirectionUp, m_FindMatchCase);
 }
 
-bool CETViewerView::FindNext(const TCHAR* pText)
+bool CETViewerView::FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
-    if (_tcscmp(pText, _T("")) == 0) { return false; }
+    if (text.empty())
+    {
+        return false;
+    }
 
-    m_LastTextToFind = pText;
+    m_LastTextToFind = text;
+    m_FindDirectionUp = findDirectionUp;
+    m_FindMatchCase = matchCase;
 
     int sel = GetListCtrl().GetNextItem(-1, LVIS_FOCUSED);
-    int index = FindText(pText, sel == -1 ? 0 : sel + (m_bFindDirectionUp ? -1 : 1), m_bFindDirectionUp);
+    int index = FindText(text.c_str(), sel == -1 ? 0 : sel + (m_FindDirectionUp ? -1 : 1), m_FindDirectionUp);
     if (index == -1)
     {
         CWnd* pParent = GetActiveWindow();
-        if (!pParent) { pParent = this; }
+        if (!pParent)
+        {
+            pParent = this;
+        }
 
-        std::wstring str = pText;
-        str += _T(" was not found");
-        pParent->MessageBox(str.c_str(), _T("ETViewer"), MB_OK);
+        std::wstring errorText = L"'" + text + L"'" + L"was not found";
+        pParent->MessageBox(errorText.c_str(), L"ETViewer", MB_OK);
         return false;
     }
     else
@@ -734,7 +748,10 @@ int CETViewerView::FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bo
 {
     TCHAR textToFind[1024];
     _tcscpy_s(textToFind, pTextToFind);
-    if (!m_bMatchCaseInFind) { _tcsupr_s(textToFind); }
+    if (!m_FindMatchCase)
+    {
+        _tcsupr_s(textToFind);
+    }
 
     int x = 0, count = GetListCtrl().GetItemCount(), increment = up ? -1 : 1;
     baseIndex += count; // to decrement with no danger.
@@ -745,7 +762,10 @@ int CETViewerView::FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bo
 
         TCHAR text[1024];
         GetListCtrl().GetItemText(index, eETViewerColumn_Text, text, 1000);
-        if (!m_bMatchCaseInFind) { _tcsupr_s(text); }
+        if (!m_FindMatchCase)
+        {
+            _tcsupr_s(text);
+        }
         if (_tcsstr(text, textToFind) != NULL) { return index; }
 
         if (stopAtEnd && up && index == 0)
@@ -760,11 +780,15 @@ int CETViewerView::FindText(const TCHAR* pTextToFind, int baseIndex, bool up, bo
     return -1;
 }
 
-bool CETViewerView::FindAndMarkAll(const TCHAR* pTextToFind)
+bool CETViewerView::FindAndMarkAll(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
     bool res = false;
     int currentIndex = 0;
-    while (currentIndex < GetListCtrl().GetItemCount() && (currentIndex = FindText(pTextToFind, currentIndex, false, true)) != -1)
+
+    m_FindDirectionUp = findDirectionUp;
+    m_FindMatchCase = matchCase;
+
+    while (currentIndex < GetListCtrl().GetItemCount() && (currentIndex = FindText(text.c_str(), currentIndex, false, true)) != -1)
     {
         WaitForSingleObject(m_hTracesMutex, INFINITE);
         SETViewerTrace* pTrace = m_lTraces[currentIndex];
@@ -776,18 +800,22 @@ bool CETViewerView::FindAndMarkAll(const TCHAR* pTextToFind)
 
         currentIndex++;
     }
+
     return res;
 }
 
-bool CETViewerView::FindAndDeleteAll(const TCHAR* pTextToFind)
+bool CETViewerView::FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
+    m_FindDirectionUp = findDirectionUp;
+    m_FindMatchCase = matchCase;
+
     WaitForSingleObject(m_hTracesMutex, INFINITE);
 
     std::deque<SETViewerTrace*> newList;
 
     bool res = false;
     int currentIndex = 0, oldIndex = -1;
-    while (currentIndex < GetListCtrl().GetItemCount() && (currentIndex = FindText(pTextToFind, currentIndex, false, true)) != -1)
+    while (currentIndex < GetListCtrl().GetItemCount() && (currentIndex = FindText(text.c_str(), currentIndex, false, true)) != -1)
     {
         for (int x = oldIndex + 1; x < currentIndex; x++)
         {
@@ -832,10 +860,10 @@ void CETViewerView::ProcessSpecialKeyStroke(WORD wParam)
 
     if (wParam == VK_F3 && !(pushedControl))
     {
-        bool dir = m_bFindDirectionUp;
-        m_bFindDirectionUp = pushedShift;
+        bool dir = m_FindDirectionUp;
+        m_FindDirectionUp = pushedShift;
         FindNext();
-        m_bFindDirectionUp = dir;
+        m_FindDirectionUp = dir;
     }
 
     if (wParam == VK_F2 && !(pushedControl) && !(pushedShift))
@@ -919,7 +947,13 @@ void CETViewerView::SetFocusOnOwnerWindow()
 
 void CETViewerView::OnFind()
 {
-    BeginFind(this, GetListCtrl().m_hWnd, m_LastTextToFind.c_str());
+    if (m_FindDialog == nullptr)
+    {
+        m_FindDialog = new CFindDialog(this, GetListCtrl().m_hWnd, true);
+        m_FindDialog->Create(true, L"", nullptr, m_FindDirectionUp ? 0 : FR_DOWN, this);
+    }
+    m_FindDialog->ShowWindow(SW_SHOW);
+    m_FindDialog->SetText(m_LastTextToFind.c_str());
 }
 
 void CETViewerView::OnEditFind()

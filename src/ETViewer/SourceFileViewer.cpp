@@ -60,15 +60,8 @@ void SetRichEditTextColor(CRichEditCtrl* pEdit, DWORD begin, DWORD end, COLORREF
 CSourceFileViewer::CSourceFileViewer(CSourceFileContainer* pParent /*=NULL*/)
     : CDialog(CSourceFileViewer::IDD, pParent)
 {
-
-    //{{AFX_DATA_INIT(CSourceFileViewer)
-        // NOTE: the ClassWizard will add member initialization here
-    //}}AFX_DATA_INIT
     LoadLibrary(_T("RICHED32.DLL"));
 
-    m_bHideTracingOptions = true;
-    m_bHideDeleteButtons = true;
-    m_bHideMarkButtons = true;
     m_pContainer = pParent;
 
     m_pFileBufferUpper = NULL;
@@ -78,32 +71,25 @@ CSourceFileViewer::CSourceFileViewer(CSourceFileContainer* pParent /*=NULL*/)
     m_OldEditProc = 0;
     m_SourceFile[0] = 0;
     m_SourceLine = 0;
+    m_FindDialog = nullptr;
+    m_FindDirectionUp = false;
+    m_FindMatchCase = false;
 }
-
 
 void CSourceFileViewer::DoDataExchange(CDataExchange* pDX)
 {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CSourceFileViewer)
     DDX_Control(pDX, IDC_ED_LINE, m_EDLine);
     DDX_Control(pDX, IDC_ED_FULL_PATH, m_EDFullPath);
     DDX_Control(pDX, IDC_ED_FILE, m_EDFile);
-    //}}AFX_DATA_MAP
 }
 
-
 BEGIN_MESSAGE_MAP(CSourceFileViewer, CDialog)
-    //{{AFX_MSG_MAP(CSourceFileViewer)
     ON_WM_DESTROY()
     ON_WM_SIZE()
     ON_BN_CLICKED(IDCANCEL, OnCancel)
     ON_BN_CLICKED(IDOK, OnOK)
-    //	ON_MESSAGE(WM_USER+1,OnUpdateSelectedLine)
-        //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CSourceFileViewer message handlers
 
 void CSourceFileViewer::OnOK()
 {
@@ -280,7 +266,6 @@ DWORD CSourceFileViewer::OpenFile(const TCHAR* pFile, int line, bool bShowErrorI
     return result;
 }
 
-
 void CSourceFileViewer::Reload()
 {
     OpenFile(m_SourceFile, m_SourceLine, false);
@@ -300,7 +285,6 @@ BOOL CSourceFileViewer::OnInitDialog()
     m_OldEditProc = GetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC);
     SetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC, (DWORD)FileEditProc);
     SetWindowLong(m_EDFile.m_hWnd, GWL_USERDATA, (DWORD)this);
-    m_hFindOwner = m_EDFile.m_hWnd;
     return FALSE;  // return TRUE unless you set the focus to a control
                   // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -314,6 +298,8 @@ void CSourceFileViewer::OnDestroy()
     delete[] m_pFileBuffer;
 
     if (m_hFileFont) { DeleteObject((HGDIOBJ)m_hFileFont); }
+
+    m_FindDialog = nullptr;
 }
 
 void CSourceFileViewer::OnSize(UINT nType, int cx, int cy)
@@ -321,7 +307,6 @@ void CSourceFileViewer::OnSize(UINT nType, int cx, int cy)
     CDialog::OnSize(nType, cx, cy);
     if (m_EDFile.m_hWnd) { SetMetrics(); }
 }
-
 
 void CSourceFileViewer::SetMetrics()
 {
@@ -397,10 +382,17 @@ void CSourceFileViewer::ShowFindDialog()
     m_EDFile.GetSel(selBegin, selEnd);
     CString sSelText = m_EDFile.GetSelText();
     m_LastTextToFind = sSelText.GetBuffer();
-    BeginFind(this, m_EDFile.m_hWnd, m_LastTextToFind.c_str());
+
+    if (m_FindDialog == nullptr)
+    {
+        m_FindDialog = new CFindDialog(this, m_EDFile.m_hWnd, false);
+        m_FindDialog->Create(true, L"", nullptr, m_FindDirectionUp ? 0 : FR_DOWN, this);
+    }
+    m_FindDialog->ShowWindow(SW_SHOW);
+    m_FindDialog->SetText(m_LastTextToFind.c_str());
+
     sSelText.ReleaseBuffer();
 }
-
 
 LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -537,13 +529,12 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
 
         if (wParam == VK_F3 && !(pushedControl))
         {
-            bool dir = pThis->m_bFindDirectionUp;
-            pThis->m_bFindDirectionUp = pushedShift;
-            pThis->FindNext(pThis->m_LastTextToFind.c_str());
-            pThis->m_bFindDirectionUp = dir;
+            bool dir = pThis->m_FindDirectionUp;
+            pThis->m_FindDirectionUp = pushedShift;
+            pThis->FindNext(pThis->m_LastTextToFind.c_str(), pThis->m_FindDirectionUp, pThis->m_FindMatchCase);
+            pThis->m_FindDirectionUp = dir;
             return 0;
         }
-
     }
 
     if ((uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST) || (uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) && uMsg != WM_MOUSEMOVE)
@@ -556,15 +547,19 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
     return CallWindowProc((WNDPROC)pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
 }
 
-bool CSourceFileViewer::FindAndDeleteAll(const TCHAR* pText)
+bool CSourceFileViewer::FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
-    UNREFERENCED_PARAMETER(pText);
+    UNREFERENCED_PARAMETER(text);
+    UNREFERENCED_PARAMETER(findDirectionUp);
+    UNREFERENCED_PARAMETER(matchCase);
     return false;
 }
 
-bool CSourceFileViewer::FindAndMarkAll(const TCHAR* pText)
+bool CSourceFileViewer::FindAndMarkAll(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
-    UNREFERENCED_PARAMETER(pText);
+    UNREFERENCED_PARAMETER(text);
+    UNREFERENCED_PARAMETER(findDirectionUp);
+    UNREFERENCED_PARAMETER(matchCase);
     return false;
 }
 
@@ -581,24 +576,34 @@ CHAR* strrstr(CHAR* pBuffer, DWORD offset, CHAR* pTextToFind)
     return NULL;
 }
 
-
-bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
+bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
-    UNREFERENCED_PARAMETER(pTextToFind);
+    m_LastTextToFind = text;
+    m_FindDirectionUp = findDirectionUp;
+    m_FindMatchCase = matchCase;
 
-    if (m_pFileBuffer == NULL) { return false; }
+    if (m_pFileBuffer == NULL)
+    {
+        return false;
+    }
 
     long begin = 0, end = 0;
     m_EDFile.GetSel(begin, end);
-    if (begin < 0) { begin = 0; }
+    if (begin < 0)
+    {
+        begin = 0;
+    }
 
     CHAR  textToFind[1024] = { 0 };
-    CHAR* pText = NULL, * pBufferToSearchIn = m_bMatchCaseInFind ? m_pFileBuffer : m_pFileBufferUpper;
+    CHAR* pText = NULL, * pBufferToSearchIn = m_FindMatchCase ? m_pFileBuffer : m_pFileBufferUpper;
     WideCharToMultiByte(CP_ACP, 0, m_LastTextToFind.c_str(), m_LastTextToFind.length(), textToFind, _countof(textToFind), 0, 0);
-    if (!m_bMatchCaseInFind) { _strupr_s(textToFind, 1024); }
+    if (!m_FindMatchCase)
+    {
+        _strupr_s(textToFind, 1024);
+    }
     unsigned textToFindLength = (unsigned)strlen(textToFind);
 
-    if (m_bFindDirectionUp)
+    if (m_FindDirectionUp)
     {
         pText = strrstr(pBufferToSearchIn, begin, textToFind);
         if (pText == NULL) { pText = strrstr(pBufferToSearchIn, m_FileBufferLength - 1, textToFind); }
@@ -615,10 +620,8 @@ bool CSourceFileViewer::FindNext(const TCHAR* pTextToFind)
     if (!pParent) { pParent = this; }
     if (pText == NULL)
     {
-        std::wstring sTemp;
-        sTemp = m_LastTextToFind;
-        sTemp += _T(" was not found");
-        pParent->MessageBox(sTemp.c_str(), _T(""), MB_OK);
+        std::wstring errorText = L"'" + m_LastTextToFind + L"' was not found";
+        pParent->MessageBox(errorText.c_str(), L"ETViewer Search", MB_OK);
     }
     if (pText) { m_EDFile.SetSel(begin, begin + textToFindLength); }
     return pText != NULL;

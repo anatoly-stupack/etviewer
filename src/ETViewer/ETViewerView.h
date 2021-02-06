@@ -45,7 +45,7 @@ struct SETViewerTrace
 
 class CETViewerView
     : public CListView
-    , public CFindDialogClient
+    , public IFindDialogClient
     , public ITraceEvents
 {
 public:
@@ -84,10 +84,11 @@ public:
     void EnableShowLastTrace(bool bEnable);
     void ResetShowLastTrace();
 
+    // IFindDialogClient
     bool FindNext();
-    bool FindNext(const TCHAR* pText);
-    bool FindAndMarkAll(const TCHAR* pText);
-    bool FindAndDeleteAll(const TCHAR* pText);
+    bool FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase);
+    bool FindAndMarkAll(const std::wstring& text, bool findDirectionUp, bool matchCase);
+    bool FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase);
 
     void Copy(bool bAllTraces);
     void Clear();
@@ -134,7 +135,8 @@ public:
 
 private:
     std::wstring m_LastTextToFind;
-    bool m_bFindDirectionUp;
+    bool m_FindDirectionUp;
+    bool m_FindMatchCase;
 
     std::deque<CColumnInfo> m_ColumnInfo;
     std::map<int, CColumnInfo*>	m_mVisibleColumns;
@@ -179,4 +181,6 @@ private:
 
     DWORD m_nLastFocusedSequenceIndex;
     int m_nUnformattedTraces;
+
+    CFindDialog* m_FindDialog;
 };

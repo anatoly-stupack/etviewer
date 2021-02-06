@@ -27,7 +27,7 @@ class CSourceFileContainer;
 
 #include "FindDialog.h"
 
-class CSourceFileViewer : public CDialog, public CFindDialogClient
+class CSourceFileViewer : public CDialog, public IFindDialogClient
 {
 public:
     CSourceFileViewer(CSourceFileContainer* pParent = NULL);
@@ -37,17 +37,19 @@ public:
 
     DWORD OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
     void Reload();
-    bool FindNext(const TCHAR* pText);
+
     void Copy();
     void ShowFindDialog();
     void SetFocusOnEditor();
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-    bool FindAndDeleteAll(const TCHAR* pText);
-    bool FindAndMarkAll(const TCHAR* pText);
-    void SetFocusOnOwnerWindow();
+    // IFindDialogClient
+    virtual bool FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase);
+    virtual bool FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase);
+    virtual bool FindAndMarkAll(const std::wstring& text, bool findDirectionUp, bool matchCase);
+    virtual void SetFocusOnOwnerWindow();
 
     static LRESULT CALLBACK FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -82,4 +84,9 @@ private:
     CEdit m_EDLine;
     CEdit m_EDFullPath;
     CRichEditCtrl m_EDFile;
+
+    CFindDialog* m_FindDialog;
+    bool m_FindDirectionUp;
+    bool m_FindMatchCase;
+    std::wstring m_LastTextToFind;
 };

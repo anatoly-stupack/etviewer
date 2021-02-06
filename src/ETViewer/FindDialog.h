@@ -26,31 +26,14 @@
 
 #include "stdafx.h"
 
-class CFindDialog;
-class CFindDialogClient
+class IFindDialogClient
 {
 public:
-    CFindDialogClient();
-
-    virtual void BeginFind(CWnd* pParent, HWND owner, const TCHAR* pTextToFind = NULL);
-    virtual bool FindAndDeleteAll(const TCHAR* pText) = 0;
-    virtual bool FindAndMarkAll(const TCHAR* pText) = 0;
-    virtual bool FindNext(const TCHAR* pText) = 0;
+    virtual ~IFindDialogClient() = default;
+    virtual bool FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase) = 0;
+    virtual bool FindAndMarkAll(const std::wstring& text, bool findDirectionUp, bool matchCase) = 0;
+    virtual bool FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase) = 0;
     virtual void SetFocusOnOwnerWindow() = 0;
-
-// TODO: make private
-public:
-    HWND m_hFindOwner;
-    bool m_bFindDirectionUp;
-    bool m_bMatchCaseInFind;
-    bool m_bHideTracingOptions;
-    bool m_bHideDeleteButtons;
-    bool m_bHideMarkButtons;
-    bool m_bFindInPIDName;
-    bool m_bFindInTraceText;
-    static std::wstring	m_LastTextToFind;
-
-    CFindDialog* m_pFindDialog;
 };
 
 class CFindDialog : public CFindReplaceDialog
@@ -58,15 +41,14 @@ class CFindDialog : public CFindReplaceDialog
     DECLARE_DYNAMIC(CFindDialog)
 
 public:
-    CFindDialog(CFindDialogClient* pFindClient);
-    virtual ~CFindDialog();
+    CFindDialog(IFindDialogClient* findClient, HWND owner, bool extendedMode);
 
     bool UpdateOptions();
     void Save();
     void SetText(const TCHAR* pTextToFind);
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual void DoDataExchange(CDataExchange* pDX);
 
     afx_msg void OnDeleteAll();
     afx_msg void OnMarkAll();
@@ -93,6 +75,16 @@ private:
     CButton m_CBFindInTraceText;
     CComboBox m_COTextToFind;
 
-    CFindDialogClient* m_pFindClient;
     std::deque<std::wstring> m_TextList;
+
+    IFindDialogClient* m_FindClient;
+
+    bool m_bFindDirectionUp;
+    bool m_bMatchCaseInFind;
+    bool m_bHideTracingOptions;
+    bool m_bHideDeleteButtons;
+    bool m_bHideMarkButtons;
+    bool m_bFindInPIDName;
+    bool m_bFindInTraceText;
+    std::wstring m_LastTextToFind;
 };
