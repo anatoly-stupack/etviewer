@@ -29,9 +29,14 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: 'bin/$(BuildConfiguration)/?(etviewer.exe|etviewer.pdb)'
+    contents: 'bin/$(BuildConfiguration)/?(etviewer.exe|etviewer.pdb|etviewer-setup.exe)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/etviewer-setup.exe'
+    artifactName: etviewer-setup.exe
 
 - task: PublishBuildArtifacts@1
   inputs:

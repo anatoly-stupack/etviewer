@@ -20,6 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1BBF85D8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installation", "Installation", "{3ED3A77D-2F02-42AA-9965-F7C4F2707AC3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "etviewer-setup", "Installer\etviewer-setup.vcxproj", "{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{62BB54A2-DFF8-49AC-830A-A49E8F44C308} = {62BB54A2-DFF8-49AC-830A-A49E8F44C308}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -50,6 +55,14 @@ Global
 		{4A5895F9-E851-4755-BB5C-FAAE5305D13B}.Release|Win32.Build.0 = Release|Win32
 		{4A5895F9-E851-4755-BB5C-FAAE5305D13B}.Release|x64.ActiveCfg = Release|x64
 		{4A5895F9-E851-4755-BB5C-FAAE5305D13B}.Release|x64.Build.0 = Release|x64
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Debug|Win32.Build.0 = Debug|Win32
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Debug|x64.ActiveCfg = Debug|x64
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Debug|x64.Build.0 = Debug|x64
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Release|Win32.ActiveCfg = Release|Win32
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Release|Win32.Build.0 = Release|Win32
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Release|x64.ActiveCfg = Release|x64
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +70,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{800932CA-CC84-4005-A370-7A1FA3A4E843} = {1BBF85D8-25DB-4ADA-B78A-2FEF79713336}
 		{4A5895F9-E851-4755-BB5C-FAAE5305D13B} = {22A714A8-EF0E-40A8-A7C9-381855D39BEB}
+		{5A36D6A0-67D0-4ABC-9AE1-4A3D6B0E21EF} = {3ED3A77D-2F02-42AA-9965-F7C4F2707AC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {733EA829-E187-4131-A2BC-D6CF442CAAD4}
