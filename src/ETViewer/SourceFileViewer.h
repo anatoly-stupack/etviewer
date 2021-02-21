@@ -30,12 +30,12 @@ class CSourceFileContainer;
 class CSourceFileViewer : public CDialog, public IFindDialogClient
 {
 public:
-    CSourceFileViewer(CSourceFileContainer* pParent = NULL);
+    CSourceFileViewer(CSourceFileContainer* parent);
 
     void ShowLine(int line);
     std::wstring GetFile();
 
-    DWORD OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
+    DWORD OpenFile(const std::wstring& filePath, int line, bool bShowErrorIfFailed);
     void Reload();
 
     void Copy();
@@ -70,15 +70,15 @@ protected:
 private:
     enum { IDD = IDD_SOURCE_FILE_VIEWER };
 
-    DWORD m_OldEditProc;
+    WNDPROC m_OldEditProc;
     HFONT m_hFileFont;
-    CHAR* m_pFileBuffer;
-    CHAR* m_pFileBufferUpper;
-    TCHAR* m_pFileBufferWide;
-    DWORD m_FileBufferLength;
 
-    TCHAR m_SourceFile[MAX_PATH];
+    std::wstring m_FileContent;
+    std::wstring m_FileContentUpperCase;
+
+    std::wstring m_SourceFile;
     int m_SourceLine;
+    
     CSourceFileContainer* m_pContainer;
 
     CEdit m_EDLine;
