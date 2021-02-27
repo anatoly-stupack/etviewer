@@ -670,6 +670,7 @@ bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp,
 
 void CSourceFileViewer::SetFocusOnOwnerWindow()
 {
+    m_EDFile.SetFocus();
 }
 
 void CSourceFileViewer::SetFocusOnEditor()
