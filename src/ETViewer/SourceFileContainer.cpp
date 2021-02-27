@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "SourceFileContainer.h"
-#include ".\sourcefilecontainer.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CSourceFileContainer dialog

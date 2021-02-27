@@ -628,12 +628,12 @@ bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp,
         end = 0;
     }
 
-    std::wstring& content = m_FileContent;
+    std::wstring* content = &m_FileContent;
     std::wstring textToSearch = text;
 
     if (matchCase == false)
     {
-        content = m_FileContentUpperCase;
+        content = &m_FileContentUpperCase;
 
         std::transform(textToSearch.begin(), textToSearch.end(), textToSearch.begin(), towupper);
     }
@@ -641,11 +641,11 @@ bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp,
     size_t position = 0;
     if (m_FindDirectionUp)
     {
-        position = content.rfind(textToSearch,  begin - 1);
+        position = content->rfind(textToSearch,  begin - 1);
     }
     else
     {
-        position = content.find(textToSearch, end);
+        position = content->find(textToSearch, end);
     }
 
     if (position == std::wstring::npos)
