@@ -642,10 +642,18 @@ bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp,
     if (m_FindDirectionUp)
     {
         position = content->rfind(textToSearch,  begin - 1);
+        if (position == std::wstring::npos)
+        {
+            position = content->rfind(textToSearch, content->size());
+        }
     }
     else
     {
         position = content->find(textToSearch, end);
+        if (position == std::wstring::npos)
+        {
+            position = content->find(textToSearch, 0);
+        }
     }
 
     if (position == std::wstring::npos)
