@@ -6,6 +6,7 @@
 [Setup]
 AppName=ETViewer
 AppVerName=ETViewer {#ApplicationVersion}
+AppVersion={#ApplicationVersion}
 AppPublisher=Anatoly Stupack
 AppPublisherURL=https://etviewer.netlify.app
 AppSupportURL=https://etviewer.netlify.app
@@ -13,12 +14,12 @@ AppUpdatesURL=https://etviewer.netlify.app
 DefaultDirName={commonpf}\ETViewer
 DefaultGroupName=ETViewer
 AllowNoIcons=yes
-InfoAfterFile=..\ETViewer\ReadMe.txt
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile=..\..\license.md
+SetupIconFile=..\ETViewer\res\ETViewer.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
