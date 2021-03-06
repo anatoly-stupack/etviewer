@@ -25,7 +25,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
 Source: "..\..\bin\Release\ETViewer.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -35,7 +34,6 @@ Name: "{group}\ETViewer"; Filename: "{app}\ETViewer.exe"
 Name: "{group}\{cm:ProgramOnTheWeb,ETViewer}"; Filename: "https://etviewer.netlify.app"
 Name: "{group}\{cm:UninstallProgram,ETViewer}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\ETViewer"; Filename: "{app}\ETViewer.exe"; Tasks: quicklaunchicon
 
 [Run]
 Filename: "{app}\ETViewer.exe"; Description: "{cm:LaunchProgram,ETViewer}"; Flags: nowait postinstall skipifsilent
