@@ -18,6 +18,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 VersionInfoVersion={#ApplicationVersion}
+LicenseFile=..\..\license.md
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
