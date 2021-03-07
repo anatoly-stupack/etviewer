@@ -25,7 +25,6 @@
 #include "stdafx.h"
 #include "ETViewer.h"
 #include "SourceFileContainer.h"
-#include ".\sourcefilecontainer.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CSourceFileContainer dialog
@@ -284,7 +283,7 @@ void CSourceFileContainer::BrowseForAndShowFile()
             std::wstring sFileName = sPath;
             sFileName += pString;
 
-            ShowFile(sFileName.c_str(), true);
+            ShowFile(sFileName.c_str(), true, true);
             pString = pString + _tcslen(pString) + 1;
         }
     }
