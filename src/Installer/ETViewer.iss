@@ -19,7 +19,6 @@ Compression=lzma
 SolidCompression=yes
 VersionInfoVersion={#ApplicationVersion}
 LicenseFile=..\..\license.md
-SetupIconFile=..\ETViewer\res\ETViewer.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
