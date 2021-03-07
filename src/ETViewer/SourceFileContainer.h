@@ -43,7 +43,7 @@ public:
     void GetFiles(std::set<std::wstring>* psFiles);
     void ReloadFile(const TCHAR* sFile);
 
-    bool ShowFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed = true);
+    bool ShowFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed);
     void BrowseForAndShowFile();
     void ShowSelectedFile();
     void SetMetrics();

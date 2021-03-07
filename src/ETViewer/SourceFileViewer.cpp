@@ -29,20 +29,25 @@
 
 #define TAB_SIZE 4
 
-CHAR* g_pKeywords[] = {
-    /*C++ Keywords*/			"asm1","auto","bad_cast","bad_typeid","bool","break","case","catch","TCHAR","class","const","const_cast","continue","default","delete","do","double","dynamic_cast","else","enum","except","explicit","extern","false","finally","float","for","friend","goto","if","inline","int","long","mutable","namespace","new","operator","private","protected","public","register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this","throw","true","try","type_info","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","while",
-    /*Preprocessor Directives*/	"#define","#error","#import","#undef","#elif","#if","#include","#else","#ifdef","#line","#endif","#ifndef","#pragma",
-                                "BOOL","HANDLE","DWORD","FALSE","TRUE","boolean","LRESULT","hyper","BYTE","LONG","ULONG","UINT","UIN16","set","map","list","deque","vector","BEGIN_DBTABLE","DBTABLE_COMP","END_DBTABLE","BEGIN_COM_MAP","COM_INTERFACE_ENTRY","COM_INTERFACE_ENTRY_CHAIN","END_COM_MAP","DECLARE_GUIOBJECT","DECLARE_PPAGE","DECLARE_COMPOSITE","BEGIN_MSG_MAP","CHAIN_MSG_MAP","MESSAGE_HANDLER","COMMAND_HANDLER",
-                                "COMMAND_ID_HANDLER","COMMAND_CODE_HANDLER","COMMAND_RANGE_HANDLER","NOTIFY_HANDLER","NOTIFY_ID_HANDLER","NOTIFY_CODE_HANDLER","NOTIFY_RANGE_HANDLER","END_MSG_MAP","VAA2W","VAW2A","_CSA2W","_GRS","LS","NULL","CLSID_NULL","GUID_NULL","IID_NULL","SUCCEEDED","FAILED","VA_SLAVE_DB","VA_MASTER_DB",
-    NULL };
+std::wstring g_Keywords[] = {
+    /*C++ Keywords*/
+    L"asm1", L"auto", L"bad_cast", L"bad_typeid", L"bool", L"break", L"case", L"catch", L"TCHAR", L"class", L"const", L"const_cast",
+    L"continue", L"default", L"delete", L"do", L"double", L"dynamic_cast", L"else", L"enum", L"except", L"explicit", L"extern",
+    L"false", L"finally", L"float", L"for", L"friend", L"goto", L"if", L"inline", L"int", L"long", L"mutable", L"namespace", L"new",
+    L"operator", L"private", L"protected", L"public", L"register", L"reinterpret_cast", L"return", L"short", L"signed", L"sizeof",
+    L"static", L"static_cast", L"struct", L"switch", L"template", L"this", L"throw", L"true", L"try", L"type_info", L"typedef",
+    L"typeid", L"typename", L"union", L"unsigned", L"using", L"virtual", L"void", L"volatile", L"while", L"this", L"nullptr"
+    /*Preprocessor Directives*/
+    L"#define", L"#error", L"#import", L"#undef", L"#elif", L"#if", L"#include", L"#else", L"#ifdef", L"#line", L"#endif", L"#ifndef",
+    L"#pragma", L"BOOL", L"HANDLE", L"DWORD", L"FALSE", L"TRUE", L"boolean", L"LRESULT", L"hyper", L"BYTE", L"LONG", L"ULONG", L"UINT",
+    L"UIN16", L"set", L"map", L"list", L"deque", L"vector", L"BEGIN_DBTABLE", L"DBTABLE_COMP", L"END_DBTABLE", L"BEGIN_COM_MAP",
+    L"COM_INTERFACE_ENTRY", L"COM_INTERFACE_ENTRY_CHAIN", L"END_COM_MAP", L"DECLARE_GUIOBJECT", L"DECLARE_PPAGE", L"DECLARE_COMPOSITE",
+    L"BEGIN_MSG_MAP", L"CHAIN_MSG_MAP", L"MESSAGE_HANDLER", L"COMMAND_HANDLER", L"COMMAND_ID_HANDLER", L"COMMAND_CODE_HANDLER",
+    L"COMMAND_RANGE_HANDLER", L"NOTIFY_HANDLER", L"NOTIFY_ID_HANDLER", L"NOTIFY_CODE_HANDLER", L"NOTIFY_RANGE_HANDLER", L"END_MSG_MAP",
+    L"VAA2W", L"VAW2A", L"_CSA2W", L"_GRS", L"LS", L"NULL", L"CLSID_NULL", L"GUID_NULL", L"IID_NULL", L"SUCCEEDED", L"FAILED",
+    L"VA_SLAVE_DB", L"VA_MASTER_DB"};
 
-
-
-
-CHAR* g_Separators = { " ,.:;'\\\"+-*/%=!?¿<>[](){}\t\n\r&|~^" };
-
-/////////////////////////////////////////////////////////////////////////////
-// CSourceFileViewer dialog
+std::wstring g_Separators = L" ,.:;'\\\"+-*/%=!?<>[](){}\t\n\r&|~^";
 
 void SetRichEditTextColor(CRichEditCtrl* pEdit, DWORD begin, DWORD end, COLORREF color)
 {
@@ -57,23 +62,17 @@ void SetRichEditTextColor(CRichEditCtrl* pEdit, DWORD begin, DWORD end, COLORREF
     pEdit->SetSel(0, 0);
 }
 
-CSourceFileViewer::CSourceFileViewer(CSourceFileContainer* pParent /*=NULL*/)
-    : CDialog(CSourceFileViewer::IDD, pParent)
+CSourceFileViewer::CSourceFileViewer(CSourceFileContainer* parent)
+    : CDialog(CSourceFileViewer::IDD, parent)
+    , m_pContainer(parent)
+    , m_hFileFont(nullptr)
+    , m_OldEditProc(nullptr)
+    , m_SourceLine(0)
+    , m_FindDialog(nullptr)
+    , m_FindDirectionUp(false)
+    , m_FindMatchCase(false)
 {
-    LoadLibrary(_T("RICHED32.DLL"));
-
-    m_pContainer = pParent;
-
-    m_pFileBufferUpper = NULL;
-    m_pFileBuffer = NULL;
-    m_FileBufferLength = 0;
-    m_hFileFont = NULL;
-    m_OldEditProc = 0;
-    m_SourceFile[0] = 0;
-    m_SourceLine = 0;
-    m_FindDialog = nullptr;
-    m_FindDirectionUp = false;
-    m_FindMatchCase = false;
+    LoadLibrary(L"RICHED32.DLL");
 }
 
 void CSourceFileViewer::DoDataExchange(CDataExchange* pDX)
@@ -99,169 +98,185 @@ void CSourceFileViewer::OnCancel()
 {
 }
 
-DWORD CSourceFileViewer::OpenFile(const TCHAR* pFile, int line, bool bShowErrorIfFailed)
+DWORD CSourceFileViewer::OpenFile(const std::wstring& filePath, int line, bool bShowErrorIfFailed)
 {
-    delete[] m_pFileBufferUpper;
-    delete[] m_pFileBuffer;
-    m_pFileBufferUpper = NULL;
-    m_pFileBuffer = NULL;
+    DWORD result = ERROR_SUCCESS;
 
-    DWORD result = 0;
-    _tcscpy_s(m_SourceFile, MAX_PATH, pFile);
+    std::wifstream file(filePath);
+    if (!file.is_open())
+    {
+        if (bShowErrorIfFailed)
+        {
+            std::wstring message = L"Cannot open source file '" + filePath;
+            MessageBox(message.c_str(), L"ETViewer", MB_ICONSTOP | MB_OK);
+        }
+        return ERROR_FILE_NOT_FOUND;
+    }
+
+    m_SourceFile = filePath;
     m_SourceLine = line;
 
-    HANDLE hFile = CreateFile(m_SourceFile, GENERIC_READ, FILE_SHARE_WRITE | FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        result = GetLastError();
+    theApp.AddRecentSourceFile(m_SourceFile.c_str());
 
-        TCHAR sTemp[1024];
-        _stprintf_s(sTemp, 1024, _T("Cannot open source file %s due to error %d"), m_SourceFile, result);
-        if (bShowErrorIfFailed) { MessageBox(sTemp, _T(""), MB_ICONSTOP | MB_OK); }
+    std::wstring contentLine;
+    while (std::getline(file, contentLine))
+    {
+        m_FileContent += contentLine + L"\r\n";
     }
-    else
+    file.close();
+
+    m_FileContentUpperCase = m_FileContent;
+
+    std::transform(
+        m_FileContentUpperCase.begin(),
+        m_FileContentUpperCase.end(),
+        m_FileContentUpperCase.begin(), towupper);
+
+    m_EDFile.SetWindowText(m_FileContent.c_str());
+
+    SetRichEditTextColor(&m_EDFile, 0, (DWORD)-1, RGB(0, 0, 0));
+
+    // Highlight C++ keywords and preprocessor directives
+    for (auto& keyword : g_Keywords)
     {
-        theApp.AddRecentSourceFile(m_SourceFile);
-
-        DWORD bytesRead = 0;
-        m_FileBufferLength = GetFileSize(hFile, NULL);
-
-        CHAR* pReadedBuffer = new CHAR[m_FileBufferLength + 1000];
-        DWORD* pKeywordLength = new DWORD[1000];
-        m_pFileBuffer = new CHAR[m_FileBufferLength * TAB_SIZE + 100];
-        m_pFileBufferUpper = new CHAR[m_FileBufferLength * TAB_SIZE + 100];
-        m_pFileBufferWide = new TCHAR[m_FileBufferLength * TAB_SIZE + 100];
-        ZeroMemory(m_pFileBufferWide, (m_FileBufferLength * TAB_SIZE + 100) * sizeof(TCHAR));
-        if (m_pFileBuffer && m_pFileBufferUpper)
+        size_t position = 0;
+        do
         {
-            unsigned x = 0, y = 0;
-            while (g_pKeywords[x] != NULL) { pKeywordLength[x] = (int)strlen(g_pKeywords[x]); x++; }
-
-            if (ReadFile(hFile, pReadedBuffer, m_FileBufferLength, &bytesRead, NULL))
+            position = m_FileContent.find(keyword, position);
+            if (position == std::wstring::npos)
             {
-                unsigned lastLineIndex = 0;
-                m_FileBufferLength = 0;
-                for (x = 0; x < bytesRead; x++)
-                {
-
-                    if (pReadedBuffer[x] == '\t')
-                    {
-                        int tabsToAdd = TAB_SIZE - ((m_FileBufferLength - lastLineIndex) % 4);
-
-                        memset(m_pFileBuffer + m_FileBufferLength, ' ', tabsToAdd);
-                        m_FileBufferLength += tabsToAdd;
-                    }
-                    else if (pReadedBuffer[x] != '\r')
-                    {
-                        m_pFileBuffer[m_FileBufferLength] = pReadedBuffer[x]; m_FileBufferLength++;
-                    }
-
-                    if (pReadedBuffer[x] == '\n')
-                    {
-                        lastLineIndex = m_FileBufferLength;
-                    }
-                }
-                m_pFileBuffer[m_FileBufferLength] = 0;
-                strcpy_s(m_pFileBufferUpper, m_FileBufferLength * TAB_SIZE + 100, m_pFileBuffer);
-                _strupr_s(m_pFileBufferUpper, m_FileBufferLength * TAB_SIZE + 100);
-                MultiByteToWideChar(CP_ACP, 0, m_pFileBuffer, m_FileBufferLength, m_pFileBufferWide, m_FileBufferLength);
-                m_EDFile.SetWindowText(m_pFileBufferWide);
-                SetRichEditTextColor(&m_EDFile, 0, (DWORD)-1, RGB(0, 0, 0));
-
-                for (x = 0; x < m_FileBufferLength; x++)
-                {
-                    CHAR* pToken = m_pFileBuffer + x;
-                    if (strchr(g_Separators, m_pFileBuffer[x]) == NULL && (x == 0 || strchr(g_Separators, m_pFileBuffer[x - 1]) != NULL))
-                    {
-                        DWORD offset = (DWORD)(pToken - m_pFileBuffer);
-                        for (y = 0; g_pKeywords[y] != NULL; y++)
-                        {
-                            if (m_pFileBuffer[x] == g_pKeywords[y][0])
-                            {
-                                DWORD keyLen = pKeywordLength[y];
-                                if ((offset + keyLen) <= m_FileBufferLength)
-                                {
-                                    if (strncmp(pToken, g_pKeywords[y], keyLen) == 0 && ((offset + keyLen) == (m_FileBufferLength) || strchr(g_Separators, pToken[keyLen]) != NULL))
-                                    {
-                                        int pos = pToken - m_pFileBuffer;
-                                        SetRichEditTextColor(&m_EDFile, pos, pos + keyLen, RGB(0, 0, 255));
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (m_pFileBuffer[x] == '"')
-                    {
-                        x++;
-                        while (x < m_FileBufferLength)
-                        {
-                            if (m_pFileBuffer[x] == '"' && (x == 0 || m_pFileBuffer[x - 1] != '\\'))
-                            {
-                                x++;
-                                break;
-                            }
-                            x++;
-                        }
-                    }
-                    else
-                    {
-                        CHAR* pBase = m_pFileBuffer + x;
-                        if (m_pFileBuffer[x] == '/' && m_pFileBuffer[x + 1] == '*')
-                        {
-                            x += 2;
-                            while (x < m_FileBufferLength)
-                            {
-                                if (m_pFileBuffer[x] == '*' && m_pFileBuffer[x + 1] == '/')
-                                {
-                                    x += 2;
-                                    break;
-                                }
-                                x++;
-                            }
-                            int pos = pBase - m_pFileBuffer;
-                            SetRichEditTextColor(&m_EDFile, pos, x, RGB(0, 128, 0));
-                        }
-                        if (m_pFileBuffer[x] == '/' && m_pFileBuffer[x + 1] == '/')
-                        {
-                            x += 2;
-                            while (x < m_FileBufferLength)
-                            {
-                                if (m_pFileBuffer[x] == '\n')
-                                {
-                                    break;
-                                }
-                                x++;
-                            }
-                            int pos = pBase - m_pFileBuffer;
-                            SetRichEditTextColor(&m_EDFile, pos, x, RGB(0, 128, 0));
-                        }
-                    }
-                }
-
-                m_EDFile.SetSel(0, 0);
+                break;
             }
+
+            // Ensure keyword is not in the middle of another word
+            if (position > 0 && g_Separators.find(m_FileContent[position - 1]) == std::wstring::npos)
+            {
+                break;
+            }
+            if ((position + keyword.size() + 1) < m_FileContent.size() &&
+                g_Separators.find(m_FileContent[position + keyword.size() + 1]) == std::wstring::npos)
+            {
+                break;
+            }
+
+            SetRichEditTextColor(&m_EDFile, position, position + keyword.size(), RGB(0, 0, 255));
+
+            position++;
         }
-        delete[] pReadedBuffer;
-        delete[] pKeywordLength;
-        if (hFile) { CloseHandle(hFile); hFile = NULL; }
+        while (true);
     }
+
+    // Highlight strings
+    size_t position = 0;
+    size_t startPosition = (size_t)-1;
+    do
+    {
+        position = m_FileContent.find(L"\"", position);
+        if (position == std::wstring::npos)
+        {
+            break;
+        }
+
+        // Ignore quotes prepended with '\\' sign
+        if (position > 0 && m_FileContent[position - 1] == L'\\')
+        {
+            position++;
+            continue;
+        }
+
+        if (startPosition == -1)
+        {
+            startPosition = position;
+        }
+        else
+        {
+            SetRichEditTextColor(&m_EDFile, startPosition, position, RGB(128, 0, 0));
+            startPosition = (size_t)-1;
+        }
+
+        position++;
+    }
+    while (true);
+
+    // Highlight one line comments
+    position = 0;
+    startPosition = (size_t)-1;
+    do
+    {
+        if (startPosition == -1)
+        {
+            position = m_FileContent.find(L"//", position);
+            if (position == std::wstring::npos)
+            {
+                break;
+            }
+
+            startPosition = position;
+        }
+        else
+        {
+            position = m_FileContent.find(L"\r\n", position);
+            if (position == std::wstring::npos)
+            {
+                break;
+            }
+
+            SetRichEditTextColor(&m_EDFile, startPosition, position, RGB(0, 128, 0));
+            startPosition = (size_t)-1;
+        }
+
+        position++;
+    }
+    while (true);
+
+    // Highlight multiline comments
+    position = 0;
+    startPosition = (size_t)-1;
+    do
+    {
+        if (startPosition == -1)
+        {
+            position = m_FileContent.find(L"/*", position);
+            if (position == std::wstring::npos)
+            {
+                break;
+            }
+
+            startPosition = position;
+        }
+        else
+        {
+            position = m_FileContent.find(L"*/", position);
+            if (position == std::wstring::npos)
+            {
+                break;
+            }
+
+            SetRichEditTextColor(&m_EDFile, startPosition, position + 2, RGB(0, 128, 0));
+            startPosition = (size_t)-1;
+        }
+
+        position++;
+    }
+    while (true);
 
     SetMetrics();
+
     UpdateLine();
+
     PostMessage(WM_USER + 1);
+
     ShowLine(m_SourceLine);
 
-    std::wstring sTemp;
-    sTemp = m_SourceFile;
+    std::wstring caption = m_SourceFile.c_str();
     if (m_SourceLine)
     {
-        TCHAR sTemp2[1024];
-        _stprintf_s(sTemp2, 1024, _T(" (%d)"), m_SourceLine);
-        sTemp += sTemp2;
+        caption += L" " + std::to_wstring(m_SourceLine);
     }
-    SetWindowText(sTemp.c_str());
-    m_EDFullPath.SetWindowText(m_SourceFile);
+
+    SetWindowText(caption.c_str());
+
+    m_EDFullPath.SetWindowText(m_SourceFile.c_str());
 
     return result;
 }
@@ -277,27 +292,29 @@ BOOL CSourceFileViewer::OnInitDialog()
 
     LOGFONT logFont = { 0 };
     logFont.lfHeight = 10;
-    StringCbPrintf(logFont.lfFaceName, sizeof(logFont.lfFaceName), _T("Courier"));
+
+    StringCbPrintf(logFont.lfFaceName, sizeof(logFont.lfFaceName), L"Courier");
 
     m_hFileFont = CreateFontIndirect(&logFont);
     m_EDFile.SendMessage(WM_SETFONT, (DWORD)m_hFileFont, true);
 
-    m_OldEditProc = GetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC);
+    m_OldEditProc = (WNDPROC)GetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC);
     SetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC, (DWORD)FileEditProc);
     SetWindowLong(m_EDFile.m_hWnd, GWL_USERDATA, (DWORD)this);
-    return FALSE;  // return TRUE unless you set the focus to a control
-                  // EXCEPTION: OCX Property Pages should return FALSE
+
+    return FALSE;
 }
 
 void CSourceFileViewer::OnDestroy()
 {
     CDialog::OnDestroy();
 
-    delete[] m_pFileBufferUpper;
-    delete[] m_pFileBufferWide;
-    delete[] m_pFileBuffer;
+    m_FileContent.clear();
 
-    if (m_hFileFont) { DeleteObject((HGDIOBJ)m_hFileFont); }
+    if (m_hFileFont)
+    {
+        DeleteObject((HGDIOBJ)m_hFileFont);
+    }
 
     m_FindDialog = nullptr;
 }
@@ -305,7 +322,11 @@ void CSourceFileViewer::OnDestroy()
 void CSourceFileViewer::OnSize(UINT nType, int cx, int cy)
 {
     CDialog::OnSize(nType, cx, cy);
-    if (m_EDFile.m_hWnd) { SetMetrics(); }
+
+    if (m_EDFile.m_hWnd)
+    {
+        SetMetrics();
+    }
 }
 
 void CSourceFileViewer::SetMetrics()
@@ -357,18 +378,19 @@ void CSourceFileViewer::OnUpdateSelectedLine()
         m_EDFile.LineScroll(-m_EDFile.GetLineCount(), 0);
         m_EDFile.LineScroll(lineToFocus - 1);
     }
-
 }
 
 void CSourceFileViewer::UpdateLine()
 {
-    long selBegin = 0, selEnd = 0, line = 0, col = 0;
+    long selBegin = 0;
+    long selEnd = 0;
     m_EDFile.GetSel(selBegin, selEnd);
-    line = m_EDFile.LineFromChar(selBegin);
-    col = selBegin - m_EDFile.LineIndex(line);
-    TCHAR sTemp[1024];
-    _stprintf_s(sTemp, 1024, _T("Ln %d,Col %d"), line + 1, col + 1);
-    m_EDLine.SetWindowText(sTemp);
+
+    auto line = m_EDFile.LineFromChar(selBegin);
+    auto column = selBegin - m_EDFile.LineIndex(line);
+
+    std::wstring text = L"Ln " + std::to_wstring(line + 1) + L", Col " + std::to_wstring(column + 1);
+    m_EDLine.SetWindowText(text.c_str());
 }
 
 void CSourceFileViewer::OnFind()
@@ -378,10 +400,11 @@ void CSourceFileViewer::OnFind()
 
 void CSourceFileViewer::ShowFindDialog()
 {
-    long selBegin = 0, selEnd = 0;
-    m_EDFile.GetSel(selBegin, selEnd);
-    CString sSelText = m_EDFile.GetSelText();
-    m_LastTextToFind = sSelText.GetBuffer();
+    long begin = 0;
+    long end = 0;
+    m_EDFile.GetSel(begin, end);
+
+    m_LastTextToFind = m_FileContent.substr(begin, end - begin);
 
     if (m_FindDialog == nullptr)
     {
@@ -390,8 +413,6 @@ void CSourceFileViewer::ShowFindDialog()
     }
     m_FindDialog->ShowWindow(SW_SHOW);
     m_FindDialog->SetText(m_LastTextToFind.c_str());
-
-    sSelText.ReleaseBuffer();
 }
 
 LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -425,7 +446,7 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                     pBegin = _tcsrchr(A, beginCharToFind);
                     if (pBegin)
                     {
-                        pBegin++;//skip " TCHARacter
+                        pBegin++; //skip " TCHARacter
                         (*pEnd) = 0;
                         _tcsncpy_s(fileToOpen, MAX_PATH, pBegin, _countof(fileToOpen) - 1);
                     }
@@ -460,7 +481,7 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
                 // include the same directory as the file showed by this viewer
                 std::wstring temp1;
                 TCHAR drive[MAX_PATH] = { 0 }, path[MAX_PATH] = { 0 };
-                _tsplitpath_s(pThis->m_SourceFile, drive, MAX_PATH, path, MAX_PATH, NULL, 0, NULL, 0);
+                _tsplitpath_s(pThis->m_SourceFile.c_str(), drive, MAX_PATH, path, MAX_PATH, NULL, 0, NULL, 0);
                 temp1 = drive;
                 temp1 += path;
                 if (_tcscmp(temp1.c_str(), _T("")) != 0) { dirs.push_back(temp1); }
@@ -491,7 +512,10 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
 
                         _tcsncat_s(fullPath, fileToOpen[0] == _T('\\') ? fileToOpen + 1 : fileToOpen, _countof(fullPath) - 1);
 
-                        if (theApp.OpenCodeAddress(fullPath, 0, false)) { break; }
+                        if (theApp.OpenCodeAddress(fullPath, 0, false))
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -504,7 +528,7 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
     {
         long begin = 0, end = 0;
         pThis->m_EDFile.GetSel(begin, end);
-        LRESULT res = CallWindowProc((WNDPROC)pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
+        LRESULT res = CallWindowProc(pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
         pThis->m_EDFile.SetSel(begin, end);
         return res;
     }
@@ -517,15 +541,33 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
         bool pushedRShift = (GetKeyState(VK_RSHIFT) >> 15) ? true : false;
         bool pushedControl = (pushedLControl || pushedRControl);
         bool pushedShift = (pushedLShift || pushedRShift);
-        if (wParam == 'F' && (pushedControl)) { pThis->OnFind(); return 0; }
-        if (wParam == VK_TAB && (pushedControl))
+        if (wParam == 'F' && (pushedControl))
         {
-            if (pushedShift) { pThis->m_pContainer->SelectPrevious(); }
-            else { pThis->m_pContainer->SelectNext(); }
+            pThis->OnFind();
             return 0;
         }
-        if (wParam == VK_NEXT && (pushedControl)) { pThis->m_pContainer->SelectNext(); return 0; }
-        if (wParam == VK_PRIOR && (pushedControl)) { pThis->m_pContainer->SelectPrevious(); return 0; }
+        if (wParam == VK_TAB && (pushedControl))
+        {
+            if (pushedShift)
+            {
+                pThis->m_pContainer->SelectPrevious();
+            }
+            else
+            {
+                pThis->m_pContainer->SelectNext();
+            }
+            return 0;
+        }
+        if (wParam == VK_NEXT && (pushedControl))
+        {
+            pThis->m_pContainer->SelectNext();
+            return 0;
+        }
+        if (wParam == VK_PRIOR && (pushedControl))
+        {
+            pThis->m_pContainer->SelectPrevious();
+            return 0;
+        }
 
         if (wParam == VK_F3 && !(pushedControl))
         {
@@ -539,12 +581,12 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
 
     if ((uMsg >= WM_KEYFIRST && uMsg <= WM_KEYLAST) || (uMsg >= WM_MOUSEFIRST && uMsg <= WM_MOUSELAST) && uMsg != WM_MOUSEMOVE)
     {
-        LRESULT res = CallWindowProc((WNDPROC)pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
+        LRESULT res = CallWindowProc(pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
         pThis->UpdateLine();
         return res;
     }
 
-    return CallWindowProc((WNDPROC)pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
+    return CallWindowProc(pThis->m_OldEditProc, hwnd, uMsg, wParam, lParam);
 }
 
 bool CSourceFileViewer::FindAndDeleteAll(const std::wstring& text, bool findDirectionUp, bool matchCase)
@@ -563,72 +605,72 @@ bool CSourceFileViewer::FindAndMarkAll(const std::wstring& text, bool findDirect
     return false;
 }
 
-CHAR* strrstr(CHAR* pBuffer, DWORD offset, CHAR* pTextToFind)
-{
-    unsigned textToFindLength = (unsigned)strlen(pTextToFind);
-    for (int x = (offset - textToFindLength); x >= 0; x--)
-    {
-        if (memcmp(pBuffer + x, (TCHAR*)pTextToFind, textToFindLength) == 0)
-        {
-            return pBuffer + x;
-        }
-    }
-    return NULL;
-}
-
 bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp, bool matchCase)
 {
     m_LastTextToFind = text;
     m_FindDirectionUp = findDirectionUp;
     m_FindMatchCase = matchCase;
 
-    if (m_pFileBuffer == NULL)
+    if (m_FileContent.empty())
     {
         return false;
     }
 
-    long begin = 0, end = 0;
+    long begin = 0;
+    long end = 0;
     m_EDFile.GetSel(begin, end);
     if (begin < 0)
     {
         begin = 0;
     }
-
-    CHAR  textToFind[1024] = { 0 };
-    CHAR* pText = NULL, * pBufferToSearchIn = m_FindMatchCase ? m_pFileBuffer : m_pFileBufferUpper;
-    WideCharToMultiByte(CP_ACP, 0, m_LastTextToFind.c_str(), m_LastTextToFind.length(), textToFind, _countof(textToFind), 0, 0);
-    if (!m_FindMatchCase)
+    if (end < 0)
     {
-        _strupr_s(textToFind, 1024);
+        end = 0;
     }
-    unsigned textToFindLength = (unsigned)strlen(textToFind);
 
+    std::wstring* content = &m_FileContent;
+    std::wstring textToSearch = text;
+
+    if (matchCase == false)
+    {
+        content = &m_FileContentUpperCase;
+
+        std::transform(textToSearch.begin(), textToSearch.end(), textToSearch.begin(), towupper);
+    }
+
+    size_t position = 0;
     if (m_FindDirectionUp)
     {
-        pText = strrstr(pBufferToSearchIn, begin, textToFind);
-        if (pText == NULL) { pText = strrstr(pBufferToSearchIn, m_FileBufferLength - 1, textToFind); }
-        begin = pText - pBufferToSearchIn;
+        position = content->rfind(textToSearch,  begin - 1);
+        if (position == std::wstring::npos)
+        {
+            position = content->rfind(textToSearch, content->size());
+        }
     }
     else
     {
-        pText = strstr(pBufferToSearchIn + end, textToFind);
-        if (pText == NULL) { pText = strstr(pBufferToSearchIn, textToFind); }
-        begin = pText - pBufferToSearchIn;
+        position = content->find(textToSearch, end);
+        if (position == std::wstring::npos)
+        {
+            position = content->find(textToSearch, 0);
+        }
     }
 
-    CWnd* pParent = GetActiveWindow();
-    if (!pParent) { pParent = this; }
-    if (pText == NULL)
+    if (position == std::wstring::npos)
     {
         std::wstring errorText = L"'" + m_LastTextToFind + L"' was not found";
-        pParent->MessageBox(errorText.c_str(), L"ETViewer Search", MB_OK);
+        MessageBox(errorText.c_str(), L"ETViewer Search", MB_OK);
+        return false;
     }
-    if (pText) { m_EDFile.SetSel(begin, begin + textToFindLength); }
-    return pText != NULL;
+
+    m_EDFile.SetSel(position, position + text.size());
+    
+    return true;
 }
 
 void CSourceFileViewer::SetFocusOnOwnerWindow()
 {
+    m_EDFile.SetFocus();
 }
 
 void CSourceFileViewer::SetFocusOnEditor()
