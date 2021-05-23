@@ -1180,7 +1180,10 @@ void CETViewerView::ProcessTrace(STraceEvenTracingNormalizedData* pTraceData)
 {
     if (pTraceData->bFormatted)
     {
-        if (!theApp.FilterTrace(pTraceData->sText.c_str())) { return; }
+        if (!theApp.FilterTrace(pTraceData->sText.c_str()))
+        {
+            return;
+        }
     }
 
     SETViewerTrace* pTrace = new SETViewerTrace;

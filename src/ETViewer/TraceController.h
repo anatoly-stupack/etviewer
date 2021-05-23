@@ -132,7 +132,8 @@ class CTraceController
 
     eTraceControllerSessionType m_eSessionType;
 
-    static VOID WINAPI	EventCallback(PEVENT_TRACE pEvent);
+    static VOID WINAPI EventCallback(PEVENT_TRACE pEvent);
+    static VOID WINAPI EventRecordCallback(PEVENT_RECORD pEvent);
     static DWORD WINAPI ConsumerThread(LPVOID lpThreadParameter);
 
     void InitializeRealTimeSession(const TCHAR* pSessionName);

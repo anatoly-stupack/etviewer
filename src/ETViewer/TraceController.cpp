@@ -23,8 +23,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include ".\tracecontroller.h"
+#include "Tracecontroller.h"
+#include "TraceFormatter.h"
 #include <versionhelpers.h>
+#include <Tdh.h>
 
 struct S_NEW_FORMAT_MOF_DATA
 {
@@ -43,6 +45,9 @@ struct S_OLD_FORMAT_MOF_DATA
 };
 
 DWORD g_TraceControllerTLS = TlsAlloc();
+
+// TODO: link to TraceController class
+std::unique_ptr<TraceFormatter> g_Formatter;
 
 CTraceController::CTraceController(void)
 {
@@ -66,7 +71,11 @@ CTraceController::CTraceController(void)
 
 CTraceController::~CTraceController(void)
 {
-    if (m_hMutex) { CloseHandle(m_hMutex); m_hMutex = NULL; }
+    if (m_hMutex)
+    {
+        CloseHandle(m_hMutex);
+        m_hMutex = NULL;
+    }
 }
 
 bool CTraceController::AddProvider(CTraceProvider* pProvider, DWORD dwFlags, DWORD dwLevel)
@@ -163,7 +172,10 @@ void CTraceController::RemoveProviderFormatEntries(CTraceProvider* pProvider)
 
 void CTraceController::ReplaceProvider(CTraceProvider* pOldProvider, CTraceProvider* pNewProvider)
 {
-    if (pOldProvider->GetGUID() != pNewProvider->GetGUID()) { return; }
+    if (pOldProvider->GetGUID() != pNewProvider->GetGUID())
+    {
+        return;
+    }
 
     WaitForSingleObject(m_hMutex, INFINITE);
     std::map<GUID, STraceProviderData, CGUIDComparer>::iterator i;
@@ -322,7 +334,7 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData* pData)
 }
 
 // {68FDD900-4A3E-11D1-84F4-0000F80464E3} ETL file header event GUID (GUID of the first event received when reading an ETL file. It containes header information)
-static const GUID GUID_EventTraceEvent = { 0x68fdd900, 0x4a3e, 0x11d1, { 0x84, 0xf4, 0, 0, 0xf8, 0x04, 0x64, 0xe3 } };
+const GUID GUID_EventTraceEvent = { 0x68fdd900, 0x4a3e, 0x11d1, { 0x84, 0xf4, 0, 0, 0xf8, 0x04, 0x64, 0xe3 } };
 
 VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
 {
@@ -331,7 +343,10 @@ VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
     CTraceController* pController = (CTraceController*)TlsGetValue(g_TraceControllerTLS);
     STraceEvenTracingNormalizedData eventData;
     if (pEvent->MofData == NULL) { return; }
-    if (pEvent->Header.Guid == GUID_EventTraceEvent) { return; }
+    if (pEvent->Header.Guid == GUID_EventTraceEvent)
+    {
+        return;
+    }
 
     if (pEvent->Header.HeaderType != 0 || pEvent->Header.Guid == GUID_NULL) // new WDK format.
     {
@@ -432,6 +447,25 @@ VOID WINAPI CTraceController::EventCallback(PEVENT_TRACE pEvent)
     eventData.pParamBuffer = NULL;
 }
 
+VOID WINAPI CTraceController::EventRecordCallback(PEVENT_RECORD Event)
+{
+    if (g_Formatter == nullptr)
+    {
+        return;
+    }
+
+    STraceEvenTracingNormalizedData data;
+    data.bFormatted = true;
+    auto result = g_Formatter->ProcessEvent(Event, data);
+    if (!result)
+    {
+        return;
+    }
+
+    CTraceController* pController = (CTraceController*)TlsGetValue(g_TraceControllerTLS);
+    pController->m_piEventCallback->ProcessTrace(&data);
+}
+
 DWORD WINAPI CTraceController::ConsumerThread(LPVOID lpThreadParameter)
 {
     CTraceController* pController = (CTraceController*)lpThreadParameter;
@@ -480,12 +514,14 @@ void CTraceController::InitializeRealTimeSession(const TCHAR* pSessionName)
     m_liReferenceCounter.QuadPart = (m_liReferenceCounter.QuadPart * 10000000) / m_liPerformanceFrequency.QuadPart;
 }
 
-
 ULONG CTraceController::OpenLog(const TCHAR* pLogFileName, ITraceEvents* piEvents)
 {
     ULONG errorCode = ERROR_SUCCESS;
 
-    if (m_eSessionType != eTraceControllerSessionType_None) { return ERROR_ALREADY_EXISTS; }
+    if (m_eSessionType != eTraceControllerSessionType_None)
+    {
+        return ERROR_ALREADY_EXISTS;
+    }
 
     m_eSessionType = eTraceControllerSessionType_ReadLog;
 
@@ -493,10 +529,19 @@ ULONG CTraceController::OpenLog(const TCHAR* pLogFileName, ITraceEvents* piEvent
     m_sLogFileName = pLogFileName;
     m_piEventCallback = piEvents;
 
+    auto position = m_sLogFileName.find_last_of(L"\\");
+    if (position == std::wstring::npos)
+    {
+        return ERROR_INVALID_PARAMETER;
+    }
+
+    auto tmfPath = m_sLogFileName.substr(0, position);
+    g_Formatter = std::make_unique<TraceFormatter>(tmfPath);
+
     m_ConsumerProperties.LogFileName = const_cast<TCHAR*>(m_sLogFileName.c_str());
     m_ConsumerProperties.LogFileMode = 0;
-    m_ConsumerProperties.EventCallback = EventCallback;
-
+    m_ConsumerProperties.ProcessTraceMode |= PROCESS_TRACE_MODE_EVENT_RECORD;
+    m_ConsumerProperties.EventRecordCallback = EventRecordCallback;
 
     m_hConsumerSession = OpenTrace(&m_ConsumerProperties);
     if (m_hConsumerSession != (TRACEHANDLE)INVALID_HANDLE_VALUE)
@@ -527,7 +572,10 @@ ULONG CTraceController::OpenLog(const TCHAR* pLogFileName, ITraceEvents* piEvent
 
 ULONG CTraceController::StartRealTime(TCHAR* pSessionName, ITraceEvents* piEvents)
 {
-    if (m_eSessionType != eTraceControllerSessionType_None) { return ERROR_ALREADY_EXISTS; }
+    if (m_eSessionType != eTraceControllerSessionType_None)
+    {
+        return ERROR_ALREADY_EXISTS;
+    }
 
     m_eSessionType = eTraceControllerSessionType_RealTime;
 
@@ -618,7 +666,10 @@ void CTraceController::InitializeCreateLog(const TCHAR* pSessionName, const TCHA
 
 ULONG CTraceController::CreateLog(const TCHAR* pFileName, ITraceEvents* piEvents)
 {
-    if (m_eSessionType != eTraceControllerSessionType_None) { return ERROR_ALREADY_EXISTS; }
+    if (m_eSessionType != eTraceControllerSessionType_None)
+    {
+        return ERROR_ALREADY_EXISTS;
+    }
 
     m_sLogFileName = pFileName;
     m_eSessionType = eTraceControllerSessionType_CreateLog;
@@ -688,7 +739,11 @@ void CTraceController::Stop()
         if (m_hConsumerThread) { CloseHandle(m_hConsumerThread); m_hConsumerThread = NULL; }
         memset(&m_ConsumerProperties, 0, sizeof(m_ConsumerProperties));
     }
-    if (m_hConsumerSession != (TRACEHANDLE)INVALID_HANDLE_VALUE) { CloseTrace(m_hConsumerSession); m_hConsumerSession = (TRACEHANDLE)INVALID_HANDLE_VALUE; }
+    if (m_hConsumerSession != (TRACEHANDLE)INVALID_HANDLE_VALUE)
+    {
+        CloseTrace(m_hConsumerSession);
+        m_hConsumerSession = (TRACEHANDLE)INVALID_HANDLE_VALUE;
+    }
 
     delete m_pSessionProperties;
     m_pSessionProperties = NULL;
