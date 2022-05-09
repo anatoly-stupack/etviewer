@@ -29,7 +29,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: 'bin/$(BuildConfiguration)/?(etviewer.exe|etviewer.pdb|etviewer-setup.exe)'
+    contents: 'bin/$(BuildConfiguration)/Win32/?(etviewer.exe|etviewer.pdb|etviewer-setup.exe)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
     flattenFolders: true
 
