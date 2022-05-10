@@ -14,4 +14,7 @@ IF NOT %ERRORLEVEL% == 0 goto end
 msbuild %ROOT%src\ETViewer.sln -p:Configuration=Release -p:Platform=Win32
 IF NOT %ERRORLEVEL% == 0 goto end
 
+msbuild %ROOT%src\ETViewer.sln -p:Configuration=Release -p:Platform=x64
+IF NOT %ERRORLEVEL% == 0 goto end
+
 :end
