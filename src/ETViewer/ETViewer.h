@@ -119,7 +119,7 @@ public:
     void RemoveExpiredFileChangeOperations();
     void CheckFileChangeOperations();
 
-    void SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, TCHAR* pFileDescription, TCHAR* pCommandLineTag);
+    void SetFileAssociation(wchar_t* pExtension, wchar_t* pFileTypeName, wchar_t* pFileDescription, wchar_t* pCommandLineTag);
 
     virtual BOOL InitInstance();
     virtual int ExitInstance();

@@ -175,7 +175,7 @@ void PersistentSettings::WriteStringValue(const std::wstring& name, const std::w
         name.c_str(),
         REG_SZ,
         value.c_str(),
-        (value.size() + 1) * sizeof(wchar_t));
+        static_cast<DWORD>((value.size() + 1) * sizeof(wchar_t)));
 
     if (result != ERROR_SUCCESS)
     {
@@ -212,7 +212,7 @@ void PersistentSettings::WriteMultiStringValue(const std::wstring& name, const s
         name.c_str(),
         REG_MULTI_SZ,
         buffer.data(),
-        buffer.size() * sizeof(wchar_t));
+        static_cast<DWORD>(buffer.size() * sizeof(wchar_t)));
 
     if (result != ERROR_SUCCESS)
     {

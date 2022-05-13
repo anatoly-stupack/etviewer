@@ -253,7 +253,7 @@ void CProviderTree::OnReplaceProvider(CTraceProvider* pOldProvider, CTraceProvid
         CTraceProvider* pTempProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hChild);
         if (pTempProvider == pOldProvider)
         {
-            treeCtrl.SetItemData(hChild, (DWORD)pNewProvider);
+            treeCtrl.SetItemData(hChild, (DWORD_PTR)pNewProvider);
             UpdateProviderSubTree(hChild);
             UpdateProviderIcons(hChild);
             break;
@@ -321,7 +321,7 @@ void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
         {
             HTREEITEM hProviderItem = GetTreeCtrl().GetParentItem(hParentItem);
             CTraceProvider* pProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hProviderItem);
-            theApp.GetTraceController()->SetProviderLevel(pProvider, GetTreeCtrl().GetItemData(hItem));
+            theApp.GetTraceController()->SetProviderLevel(pProvider, static_cast<DWORD>(GetTreeCtrl().GetItemData(hItem)));
             UpdateProviderIcons(hProviderItem);
         }
         else if (sText == "Flags")
@@ -329,7 +329,7 @@ void CProviderTree::OnNMClick(NMHDR* pNMHDR, LRESULT* pResult)
             HTREEITEM hProviderItem = GetTreeCtrl().GetParentItem(hParentItem);
             CTraceProvider* pProvider = (CTraceProvider*)GetTreeCtrl().GetItemData(hProviderItem);
             DWORD dwFlags = theApp.GetTraceController()->GetProviderFlags(pProvider);
-            DWORD dwSelectedFlag = GetTreeCtrl().GetItemData(hItem);
+            DWORD_PTR dwSelectedFlag = GetTreeCtrl().GetItemData(hItem);
             if (dwSelectedFlag & dwFlags)
             {
                 dwFlags &= ~dwSelectedFlag;

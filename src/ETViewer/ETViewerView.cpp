@@ -147,9 +147,9 @@ int CETViewerView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     GetListCtrl().SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP);
 
-    m_OldListViewProc = (WNDPROC)GetWindowLong(GetListCtrl().m_hWnd, GWL_WNDPROC);
-    SetWindowLong(GetListCtrl().m_hWnd, GWL_USERDATA, (DWORD)this);
-    SetWindowLong(GetListCtrl().m_hWnd, GWL_WNDPROC, (DWORD)ListViewProc);
+    m_OldListViewProc = (WNDPROC)GetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
+    SetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_WNDPROC, (DWORD_PTR)ListViewProc);
 
     ListView_SetImageList(GetListCtrl().m_hWnd, m_hImageList, LVSIL_SMALL);
     m_iHollowImage = ImageList_AddIcon(m_hImageList, m_hHollowIcon);
@@ -158,7 +158,7 @@ int CETViewerView::OnCreate(LPCREATESTRUCT lpCreateStruct)
     SetTimer(CAPTURE_TIMER, 250, NULL);
     SetTimer(SHOW_LAST_TRACE_TIMER, 1000, NULL);
 
-    int iCurrentOrder = (m_ColumnInfo.size() - 1);
+    int iCurrentOrder = (int)(m_ColumnInfo.size() - 1);
     while (iCurrentOrder >= 0)
     {
         unsigned x;
@@ -426,7 +426,7 @@ void CETViewerView::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
             }
         }
 
-        DWORD state = GetListCtrl().GetItemState(pDraw->nmcd.dwItemSpec, LVIS_SELECTED | LVIS_FOCUSED);
+        DWORD state = GetListCtrl().GetItemState((int)pDraw->nmcd.dwItemSpec, LVIS_SELECTED | LVIS_FOCUSED);
         if (state & LVIS_SELECTED)
         {
             pDraw->clrText = m_cSelectedTextColor;
@@ -514,7 +514,7 @@ TCHAR* CETViewerView::GetTraceText(SETViewerTrace* pTrace, CColumnInfo* pColumn,
 
 LRESULT CALLBACK CETViewerView::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CETViewerView* pThis = (CETViewerView*)GetWindowLong(hwnd, GWL_USERDATA);
+    CETViewerView* pThis = (CETViewerView*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_ERASEBKGND)
     {
         int itemCount = pThis->GetListCtrl().GetItemCount();
@@ -524,10 +524,10 @@ LRESULT CALLBACK CETViewerView::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam
             pThis->GetListCtrl().GetItemRect(0, &firstRect, LVIR_BOUNDS);
             pThis->GetListCtrl().GetItemRect(itemCount - 1, &lastRect, LVIR_BOUNDS);
 
-            DWORD dwSize = pThis->GetListCtrl().SendMessage(
+            DWORD dwSize = static_cast<DWORD>(pThis->GetListCtrl().SendMessage(
                 LVM_APPROXIMATEVIEWRECT,
                 (WPARAM)-1,
-                MAKELONG(0, pThis->GetListCtrl().GetItemCount()));
+                MAKELONG(0, pThis->GetListCtrl().GetItemCount())));
 
             SIZE size;
             size.cx = LOWORD(dwSize);
@@ -631,7 +631,7 @@ void CETViewerView::RemoveColumn(int id)
 
 LRESULT CALLBACK CETViewerView::ListEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CETViewerView* pThis = (CETViewerView*)GetWindowLong(hwnd, GWL_USERDATA);
+    CETViewerView* pThis = (CETViewerView*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_MOVE)
     {
         ::SetWindowPos(hwnd, NULL, pThis->m_ListEditPos.x, pThis->m_ListEditPos.y, pThis->m_ListEditSize.cx, pThis->m_ListEditSize.cy, SWP_NOZORDER);
@@ -1032,7 +1032,7 @@ void CETViewerView::OnSave()
     if (GetListCtrl().GetNextItem(-1, LVNI_SELECTED) != -1)
     {
         CSaveAllTracesQuestionDialog dialog;
-        int res = dialog.DoModal();
+        auto res = dialog.DoModal();
         bAllTraces = (res == IDOK);
         if (res == IDCANCEL) { return; }
     }
@@ -1217,7 +1217,7 @@ void CETViewerView::ProcessUnknownTrace(STraceEvenTracingNormalizedData* pTraceD
     ReleaseMutex(m_hTracesMutex);
 }
 
-void CETViewerView::OnTimer(UINT nIDEvent)
+void CETViewerView::OnTimer(UINT_PTR nIDEvent)
 {
     if (nIDEvent == CAPTURE_TIMER)
     {
@@ -1333,9 +1333,9 @@ void CETViewerView::OnBeginEdit(NMHDR* pNMHDR, LRESULT* pResult)
 
     // Hook window
 
-    m_OldListEditProc = (WNDPROC)GetWindowLong(m_pEdit->m_hWnd, GWL_WNDPROC);
-    SetWindowLong(m_pEdit->m_hWnd, GWL_USERDATA, (DWORD)this);
-    SetWindowLong(m_pEdit->m_hWnd, GWL_WNDPROC, (DWORD)ListEditProc);
+    m_OldListEditProc = (WNDPROC)GetWindowLongPtr(m_pEdit->m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(m_pEdit->m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
+    SetWindowLongPtr(m_pEdit->m_hWnd, GWLP_WNDPROC, (DWORD_PTR)ListEditProc);
 
     *pResult = 0;
 }
@@ -1349,7 +1349,7 @@ void CETViewerView::ResetShowLastTrace()
 {
     WaitForSingleObject(m_hTracesMutex, INFINITE);
     m_nLastFocusedSequenceIndex = 0;
-    unsigned nCount = m_lTraces.size();
+    auto nCount = m_lTraces.size();
     if (nCount)
     {
         SETViewerTrace* pLastTrace = m_lTraces[nCount - 1];

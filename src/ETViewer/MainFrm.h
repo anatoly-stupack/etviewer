@@ -76,7 +76,7 @@ public:
     afx_msg void OnUpdateFileStoploggintofile(CCmdUI* pCmdUI);
     afx_msg LRESULT OnIPCCommand(WPARAM wParam, LPARAM lParam);
     afx_msg void OnEditSettings();
-    afx_msg void OnTimer(UINT nTimerId);
+    afx_msg void OnTimer(UINT_PTR nTimerId);
 
 private:
     CSplitterWnd m_wndSplitter;

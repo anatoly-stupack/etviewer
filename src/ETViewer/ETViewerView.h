@@ -121,7 +121,7 @@ public:
     afx_msg void OnFind();
     afx_msg void OnHighLightFilters();
     afx_msg void OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnTimer(UINT nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnNMDblclk(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnClear();

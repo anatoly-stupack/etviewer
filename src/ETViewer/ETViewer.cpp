@@ -328,7 +328,7 @@ BOOL CETViewerApp::InitInstance()
     return bContinue;
 }
 
-void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, TCHAR* pFileDescription, TCHAR* pCommandLineTag)
+void CETViewerApp::SetFileAssociation(wchar_t* pExtension, wchar_t* pFileTypeName, wchar_t* pFileDescription, wchar_t* pCommandLineTag)
 {
     bool bAlreadyPresent = false;
     HKEY hKey = NULL;
@@ -338,7 +338,7 @@ void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, T
         long dwSize = MAX_PATH;
         TCHAR  sValue[MAX_PATH] = { 0 };
         dwError = RegQueryValue(hKey, NULL, sValue, &dwSize);
-        if (dwError == ERROR_SUCCESS && _tcscmp(sValue, pFileTypeName) == 0)
+        if (dwError == ERROR_SUCCESS && wcscmp(sValue, pFileTypeName) == 0)
         {
             bAlreadyPresent = true;
         }
@@ -350,7 +350,7 @@ void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, T
         dwError = RegCreateKey(HKEY_CLASSES_ROOT, pExtension, &hKey);
         if (dwError == ERROR_SUCCESS)
         {
-            dwError = RegSetValue(hKey, NULL, REG_SZ, pFileTypeName, _tcslen(pFileTypeName) + 1);
+            dwError = RegSetValue(hKey, NULL, REG_SZ, pFileTypeName, static_cast<DWORD>(wcslen(pFileTypeName) + 1));
         }
         RegCloseKey(hKey);
         hKey = NULL;
@@ -361,22 +361,22 @@ void CETViewerApp::SetFileAssociation(TCHAR* pExtension, TCHAR* pFileTypeName, T
     dwError = RegCreateKey(HKEY_CLASSES_ROOT, pFileTypeName, &hKey);
     if (dwError == ERROR_SUCCESS)
     {
-        dwError = RegSetValue(hKey, NULL, REG_SZ, pFileDescription, _tcslen(pFileDescription) + 1);
+        dwError = RegSetValue(hKey, NULL, REG_SZ, pFileDescription, static_cast<DWORD>(wcslen(pFileDescription) + 1));
     }
     if (hKey) { RegCloseKey(hKey); hKey = NULL; }
 
     if (dwError == ERROR_SUCCESS)
     {
         std::wstring sKeyName = pFileTypeName;
-        sKeyName += _T("\\shell\\open\\command");
+        sKeyName += L"\\shell\\open\\command";
         dwError = RegCreateKey(HKEY_CLASSES_ROOT, sKeyName.c_str(), &hKey);
         if (dwError == ERROR_SUCCESS)
         {
-            TCHAR pModule[MAX_PATH] = { 0 };
-            TCHAR pCommand[MAX_PATH] = { 0 };
+            wchar_t pModule[MAX_PATH] = { 0 };
+            wchar_t pCommand[MAX_PATH] = { 0 };
             GetModuleFileName(NULL, pModule, MAX_PATH);
-            _stprintf_s(pCommand, _T("\"%s\" %s"), pModule, pCommandLineTag);
-            dwError = RegSetValue(hKey, NULL, REG_SZ, pCommand, _tcslen(pCommand) + 1);
+            _stprintf_s(pCommand, L"\"%s\" %s", pModule, pCommandLineTag);
+            dwError = RegSetValue(hKey, NULL, REG_SZ, pCommand, static_cast<DWORD>(wcslen(pCommand) + 1));
         }
         if (hKey) { RegCloseKey(hKey); hKey = NULL; }
     }
@@ -398,7 +398,7 @@ BOOL CETViewerApp::ProcessCommandLine(int argc, TCHAR** argw)
 
     for (x = 0; x < (ULONG)argc; x++)
     {
-        DWORD dwTmpLen = _tcslen(argw[x]) + 1;
+        DWORD dwTmpLen = static_cast<DWORD>(_tcslen(argw[x]) + 1);
         TCHAR* sTemp = new TCHAR[dwTmpLen];
         _tcscpy_s(sTemp, dwTmpLen, argw[x]);
         _tcsupr_s(sTemp, dwTmpLen);

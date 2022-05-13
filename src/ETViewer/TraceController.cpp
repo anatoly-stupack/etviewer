@@ -26,6 +26,7 @@
 #include ".\tracecontroller.h"
 #include <versionhelpers.h>
 
+#pragma pack(push, 1)
 struct S_NEW_FORMAT_MOF_DATA
 {
     DWORD sequenceId;
@@ -41,6 +42,7 @@ struct S_OLD_FORMAT_MOF_DATA
     WORD  traceIndex;
     BYTE* params;
 };
+#pragma pack(pop)
 
 DWORD g_TraceControllerTLS = TlsAlloc();
 
@@ -291,7 +293,7 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData* pData)
         {
             USHORT length = *(USHORT*)pCurrentParam;
             wchar_t* buffer = (wchar_t*)(pCurrentParam + sizeof(USHORT));
-            _stprintf_s(pTempBuffer, _countof(sTraceText), L"%.*ws", length / sizeof(wchar_t), buffer);
+            _stprintf_s(pTempBuffer, _countof(sTraceText), L"%.*ws", static_cast<int>(length / sizeof(wchar_t)), buffer);
             DWORD dwBytes = _stprintf_s(sTraceText + currentLen, _countof(sTraceText) - currentLen, pElement->pFormatString, pTempBuffer);
             currentLen += dwBytes;
             pCurrentParam += length + sizeof(USHORT);
@@ -571,7 +573,7 @@ ULONG CTraceController::StartRealTime(TCHAR* pSessionName, ITraceEvents* piEvent
 
 void CTraceController::InitializeCreateLog(const TCHAR* pSessionName, const TCHAR* pFileName)
 {
-    ULONG dwBufferLen = sizeof(EVENT_TRACE_PROPERTIES) +
+    auto dwBufferLen = sizeof(EVENT_TRACE_PROPERTIES) +
         (_tcslen(pSessionName) + 1) * sizeof(TCHAR) +
         (_tcslen(pFileName) + 1) * sizeof(TCHAR);
 
@@ -579,7 +581,7 @@ void CTraceController::InitializeCreateLog(const TCHAR* pSessionName, const TCHA
 
     memset(m_pSessionProperties, 0, dwBufferLen);
 
-    m_pSessionProperties->Wnode.BufferSize = dwBufferLen;
+    m_pSessionProperties->Wnode.BufferSize = static_cast<DWORD>(dwBufferLen);
     CoCreateGuid(&m_pSessionProperties->Wnode.Guid);
     if (IsWindowsVistaOrGreater())
     {
@@ -596,7 +598,7 @@ void CTraceController::InitializeCreateLog(const TCHAR* pSessionName, const TCHA
     m_pSessionProperties->FlushTimer = 1;
     m_pSessionProperties->LogFileMode = EVENT_TRACE_FILE_MODE_CIRCULAR | EVENT_TRACE_USE_LOCAL_SEQUENCE | EVENT_TRACE_REAL_TIME_MODE;
     m_pSessionProperties->LoggerNameOffset = sizeof(EVENT_TRACE_PROPERTIES);
-    m_pSessionProperties->LogFileNameOffset = sizeof(EVENT_TRACE_PROPERTIES) + (_tcslen(pSessionName) + 1) * sizeof(TCHAR);
+    m_pSessionProperties->LogFileNameOffset = static_cast<ULONG>(sizeof(EVENT_TRACE_PROPERTIES) + (wcslen(pSessionName) + 1) * sizeof(wchar_t));
     m_pSessionProperties->MaximumFileSize = 100;
 
     _tcscpy_s(

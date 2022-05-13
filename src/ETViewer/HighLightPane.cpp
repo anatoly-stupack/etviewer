@@ -59,10 +59,10 @@ int CHighLightPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
     GetListCtrl().InsertColumn(1, _T("HighLight Filters"), LVCFMT_LEFT, 400, 0);
     GetListCtrl().SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_INFOTIP | LVS_EX_CHECKBOXES);
 
-    m_OldListViewProc = (WNDPROC)GetWindowLong(GetListCtrl().m_hWnd, GWL_WNDPROC);
-    SetWindowLong(GetListCtrl().m_hWnd, GWL_STYLE, GetListCtrl().GetStyle() | LVS_EDITLABELS);
-    SetWindowLong(GetListCtrl().m_hWnd, GWL_USERDATA, (DWORD)this);
-    SetWindowLong(GetListCtrl().m_hWnd, GWL_WNDPROC, (DWORD)ListViewProc);
+    m_OldListViewProc = (WNDPROC)GetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(GetListCtrl().m_hWnd, GWL_STYLE, GetListCtrl().GetStyle() | LVS_EDITLABELS);
+    SetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
+    SetWindowLongPtr(GetListCtrl().m_hWnd, GWLP_WNDPROC, (DWORD_PTR)ListViewProc);
     ListView_SetImageList(GetListCtrl().m_hWnd, m_hImageList, LVSIL_SMALL);
 
     CFont font;
@@ -143,7 +143,7 @@ void CHighLightPane::OnDestroy()
 
 LRESULT CALLBACK CHighLightPane::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CHighLightPane* pThis = (CHighLightPane*)GetWindowLong(hwnd, GWL_USERDATA);
+    CHighLightPane* pThis = (CHighLightPane*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_USER + 100)
     {
         pThis->SaveFilters();
@@ -186,7 +186,7 @@ void CHighLightPane::OnNew()
     int sel = GetListCtrl().GetNextItem(-1, LVNI_SELECTED);
     int index = GetListCtrl().InsertItem(sel == -1 ? GetListCtrl().GetItemCount() : sel, pFilter->GetText().c_str(), 0);
     GetListCtrl().SetItemState(index, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-    GetListCtrl().SetItemData(index, (DWORD)pFilter);
+    GetListCtrl().SetItemData(index, (DWORD_PTR)pFilter);
     GetListCtrl().SetCheck(index, true);
     GetListCtrl().EditLabel(index);
     SaveFilters();
@@ -223,7 +223,7 @@ void CHighLightPane::LoadFilters()
         CHighLightFilter* pFilter = new CHighLightFilter;
         *pFilter = filter;
         int index = GetListCtrl().InsertItem(itemIndex, pFilter->GetText().c_str(), 0);
-        GetListCtrl().SetItemData(index, (DWORD)pFilter);
+        GetListCtrl().SetItemData(index, (DWORD_PTR)pFilter);
         GetListCtrl().SetCheck(index, pFilter->GetEnabled());
         itemIndex++;
     }
@@ -324,7 +324,7 @@ void CHighLightPane::OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult)
     if (sel != -1) { GetListCtrl().EditLabel(sel); return; }
     int index = GetListCtrl().InsertItem(sel == -1 ? GetListCtrl().GetItemCount() : sel, pFilter->GetText().c_str(), 0);
     GetListCtrl().SetItemState(index, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-    GetListCtrl().SetItemData(index, (DWORD)pFilter);
+    GetListCtrl().SetItemData(index, (DWORD_PTR)pFilter);
     GetListCtrl().SetCheck(index, true);
     GetListCtrl().EditLabel(index);
     *pResult = 0;
@@ -387,7 +387,7 @@ void CHighLightPane::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
             {
                 RECT R = { 0,0,0,0 }, R1 = { 0 }, R2 = { 0 };
 
-                GetItemColorRects(pDraw->nmcd.dwItemSpec, &R1, &R2);
+                GetItemColorRects((int)pDraw->nmcd.dwItemSpec, &R1, &R2);
                 GetListCtrl().GetItemRect((int)pDraw->nmcd.dwItemSpec, &R, LVIR_ICON);
 
                 ::SetDCBrushColor(pDraw->nmcd.hdc, pFilter->GetTextColor());
@@ -437,7 +437,7 @@ BOOL CHighLightPane::OnEraseBkgnd(CDC* pDC)
     RECT R = { 0 };
     GetClientRect(&R);
     TCHAR* pText = _T("Drag items here");
-    DrawText(pDC->m_hDC, pText, _tcslen(pText), &R, DT_WORDBREAK | DT_CENTER | DT_VCENTER);
+    DrawText(pDC->m_hDC, pText, static_cast<int>(wcslen(pText)), &R, DT_WORDBREAK | DT_CENTER | DT_VCENTER);
     return FALSE;
 }
 
