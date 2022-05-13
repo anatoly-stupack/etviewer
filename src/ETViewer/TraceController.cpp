@@ -26,6 +26,7 @@
 #include ".\tracecontroller.h"
 #include <versionhelpers.h>
 
+#pragma pack(push, 1)
 struct S_NEW_FORMAT_MOF_DATA
 {
     DWORD sequenceId;
@@ -41,6 +42,7 @@ struct S_OLD_FORMAT_MOF_DATA
     WORD  traceIndex;
     BYTE* params;
 };
+#pragma pack(pop)
 
 DWORD g_TraceControllerTLS = TlsAlloc();
 
