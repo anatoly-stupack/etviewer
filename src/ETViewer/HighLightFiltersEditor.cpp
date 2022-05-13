@@ -159,7 +159,7 @@ void CHighLightFiltersEditor::OnDestroy()
 
 LRESULT CALLBACK CHighLightFiltersEditor::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CHighLightFiltersEditor* pThis = (CHighLightFiltersEditor*)GetWindowLong(hwnd, GWL_USERDATA);
+    CHighLightFiltersEditor* pThis = (CHighLightFiltersEditor*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_KEYDOWN)
     {
         bool pushedLControl = (GetKeyState(VK_LCONTROL) >> 15) ? true : false;
@@ -179,7 +179,7 @@ LRESULT CALLBACK CHighLightFiltersEditor::ListViewProc(HWND hwnd, UINT uMsg, WPA
             int sel = pThis->m_LWFilters.GetNextItem(-1, LVNI_SELECTED);
             int index = pThis->m_LWFilters.InsertItem(sel == -1 ? pThis->m_LWFilters.GetItemCount() : sel, pFilter->GetText().c_str(), 0);
             pThis->m_LWFilters.SetItemState(index, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-            pThis->m_LWFilters.SetItemData(index, (DWORD)pFilter);
+            pThis->m_LWFilters.SetItemData(index, (DWORD_PTR)pFilter);
             pThis->m_LWFilters.SetCheck(index, true);
             pThis->m_LWFilters.EditLabel(index);
             return 0;
@@ -212,10 +212,10 @@ BOOL CHighLightFiltersEditor::OnInitDialog()
     m_LWFilters.InsertColumn(1, _T("Filter"), LVCFMT_LEFT, 400, 0);
     m_LWFilters.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_INFOTIP | LVS_EX_CHECKBOXES);
 
-    m_OldListViewProc = (WNDPROC)GetWindowLong(m_LWFilters.m_hWnd, GWL_WNDPROC);
-    SetWindowLong(m_LWFilters.m_hWnd, GWL_STYLE, m_LWFilters.GetStyle() | LVS_EDITLABELS);
-    SetWindowLong(m_LWFilters.m_hWnd, GWL_USERDATA, (DWORD)this);
-    SetWindowLong(m_LWFilters.m_hWnd, GWL_WNDPROC, (DWORD)ListViewProc);
+    m_OldListViewProc = (WNDPROC)GetWindowLongPtr(m_LWFilters.m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(m_LWFilters.m_hWnd, GWL_STYLE, m_LWFilters.GetStyle() | LVS_EDITLABELS);
+    SetWindowLongPtr(m_LWFilters.m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
+    SetWindowLongPtr(m_LWFilters.m_hWnd, GWLP_WNDPROC, (DWORD_PTR)ListViewProc);
     ListView_SetImageList(m_LWFilters.m_hWnd, m_hImageList, LVSIL_SMALL);
 
     SetMetrics();
@@ -282,7 +282,7 @@ void CHighLightFiltersEditor::LoadFilters()
         CHighLightFilter* pFilter = new CHighLightFilter;
         *pFilter = filter;
         int index = m_LWFilters.InsertItem(itemIndex, pFilter->GetText().c_str(), 0);
-        m_LWFilters.SetItemData(index, (DWORD)pFilter);
+        m_LWFilters.SetItemData(index, (DWORD_PTR)pFilter);
         m_LWFilters.SetCheck(index, pFilter->GetEnabled());
         itemIndex++;
     }
@@ -408,7 +408,7 @@ void CHighLightFiltersEditor::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
             {
                 RECT R = { 0,0,0,0 }, R1 = { 0 }, R2 = { 0 };
 
-                GetItemColorRects(pDraw->nmcd.dwItemSpec, &R1, &R2);
+                GetItemColorRects((int)pDraw->nmcd.dwItemSpec, &R1, &R2);
                 m_LWFilters.GetItemRect((int)pDraw->nmcd.dwItemSpec, &R, LVIR_ICON);
 
                 ::SetDCBrushColor(pDraw->nmcd.hdc, pFilter->GetTextColor());
@@ -444,7 +444,7 @@ void CHighLightFiltersEditor::OnDoubleClick(NMHDR* pNMHDR, LRESULT* pResult)
     if (sel != -1) { m_LWFilters.EditLabel(sel); return; }
     int index = m_LWFilters.InsertItem(sel == -1 ? m_LWFilters.GetItemCount() : sel, pFilter->GetText().c_str(), 0);
     m_LWFilters.SetItemState(index, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-    m_LWFilters.SetItemData(index, (DWORD)pFilter);
+    m_LWFilters.SetItemData(index, (DWORD_PTR)pFilter);
     m_LWFilters.SetCheck(index, true);
     m_LWFilters.EditLabel(index);
     *pResult = 0;

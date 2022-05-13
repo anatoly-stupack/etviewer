@@ -58,7 +58,7 @@ void SetRichEditTextColor(CRichEditCtrl* pEdit, DWORD begin, DWORD end, COLORREF
     format.dwEffects &= ~CFE_AUTOCOLOR;
 
     pEdit->SetSel(begin, end);
-    pEdit->SendMessage(EM_SETCHARFORMAT, SCF_SELECTION, (DWORD)&format);
+    pEdit->SendMessage(EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format);
     pEdit->SetSel(0, 0);
 }
 
@@ -159,7 +159,7 @@ DWORD CSourceFileViewer::OpenFile(const std::wstring& filePath, int line, bool b
                 break;
             }
 
-            SetRichEditTextColor(&m_EDFile, position, position + keyword.size(), RGB(0, 0, 255));
+            SetRichEditTextColor(&m_EDFile, static_cast<DWORD>(position), static_cast<DWORD>(position + keyword.size()), RGB(0, 0, 255));
 
             position++;
         }
@@ -190,7 +190,7 @@ DWORD CSourceFileViewer::OpenFile(const std::wstring& filePath, int line, bool b
         }
         else
         {
-            SetRichEditTextColor(&m_EDFile, startPosition, position, RGB(128, 0, 0));
+            SetRichEditTextColor(&m_EDFile, static_cast<DWORD>(startPosition), static_cast<DWORD>(position), RGB(128, 0, 0));
             startPosition = (size_t)-1;
         }
 
@@ -221,7 +221,7 @@ DWORD CSourceFileViewer::OpenFile(const std::wstring& filePath, int line, bool b
                 break;
             }
 
-            SetRichEditTextColor(&m_EDFile, startPosition, position, RGB(0, 128, 0));
+            SetRichEditTextColor(&m_EDFile, static_cast<DWORD>(startPosition), static_cast<DWORD>(position), RGB(0, 128, 0));
             startPosition = (size_t)-1;
         }
 
@@ -252,7 +252,7 @@ DWORD CSourceFileViewer::OpenFile(const std::wstring& filePath, int line, bool b
                 break;
             }
 
-            SetRichEditTextColor(&m_EDFile, startPosition, position + 2, RGB(0, 128, 0));
+            SetRichEditTextColor(&m_EDFile, static_cast<DWORD>(startPosition), static_cast<DWORD>(position + 2), RGB(0, 128, 0));
             startPosition = (size_t)-1;
         }
 
@@ -296,11 +296,11 @@ BOOL CSourceFileViewer::OnInitDialog()
     StringCbPrintf(logFont.lfFaceName, sizeof(logFont.lfFaceName), L"Courier");
 
     m_hFileFont = CreateFontIndirect(&logFont);
-    m_EDFile.SendMessage(WM_SETFONT, (DWORD)m_hFileFont, true);
+    m_EDFile.SendMessage(WM_SETFONT, (DWORD_PTR)m_hFileFont, true);
 
-    m_OldEditProc = (WNDPROC)GetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC);
-    SetWindowLong(m_EDFile.m_hWnd, GWL_WNDPROC, (DWORD)FileEditProc);
-    SetWindowLong(m_EDFile.m_hWnd, GWL_USERDATA, (DWORD)this);
+    m_OldEditProc = (WNDPROC)GetWindowLongPtr(m_EDFile.m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(m_EDFile.m_hWnd, GWLP_WNDPROC, (DWORD_PTR)FileEditProc);
+    SetWindowLongPtr(m_EDFile.m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
 
     return FALSE;
 }
@@ -417,7 +417,7 @@ void CSourceFileViewer::ShowFindDialog()
 
 LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CSourceFileViewer* pThis = (CSourceFileViewer*)GetWindowLong(hwnd, GWL_USERDATA);
+    CSourceFileViewer* pThis = (CSourceFileViewer*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_RBUTTONDOWN)
     {
         long begin = 0, end = 0;
@@ -425,7 +425,7 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
         TCHAR fileToOpen[MAX_PATH] = { 0 };
         pThis->m_EDFile.GetSel(begin, end);
         POINTL P = { LOWORD(lParam),HIWORD(lParam) };
-        int TCHARacter = pThis->m_EDFile.SendMessage(EM_CHARFROMPOS, 0, (DWORD)&P);
+        int TCHARacter = (int)pThis->m_EDFile.SendMessage(EM_CHARFROMPOS, 0, (LPARAM)&P);
 
         if (TCHARacter<begin || TCHARacter>end || begin == end || begin > end)
         {
@@ -468,7 +468,7 @@ LRESULT CALLBACK CSourceFileViewer::FileEditProc(HWND hwnd, UINT uMsg, WPARAM wP
             std::wstring menuItemName = std::wstring(L"Open '") + fileToOpen + L"'";
             MENUITEMINFO itemInfo = { 0 };
             itemInfo.cbSize = sizeof(itemInfo);
-            itemInfo.cch = menuItemName.size();
+            itemInfo.cch = static_cast<UINT>(menuItemName.size());
             itemInfo.dwTypeData = const_cast<LPWSTR>(menuItemName.c_str());
             itemInfo.fMask = MIIM_STRING;
 
@@ -663,7 +663,7 @@ bool CSourceFileViewer::FindNext(const std::wstring& text, bool findDirectionUp,
         return false;
     }
 
-    m_EDFile.SetSel(position, position + text.size());
+    m_EDFile.SetSel(static_cast<long>(position), static_cast<long>(position + text.size()));
     
     return true;
 }

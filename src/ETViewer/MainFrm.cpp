@@ -427,7 +427,7 @@ void CMainFrame::OnEditSettings()
     theApp.UpdateFileMonitor();
 }
 
-void CMainFrame::OnTimer(UINT nTimerId)
+void CMainFrame::OnTimer(UINT_PTR nTimerId)
 {
     if (nTimerId == FILE_CHANGE_TIMER_ID)
     {

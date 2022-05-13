@@ -145,9 +145,9 @@ BOOL CSettingsDialog::OnInitDialog()
     m_LWSourcePaths.InsertColumn(1, _T("Path"), LVCFMT_LEFT, 400, 0);
     m_LWSourcePaths.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_INFOTIP);
 
-    m_OldListViewProc = (WNDPROC)GetWindowLong(m_LWSourcePaths.m_hWnd, GWL_WNDPROC);
-    SetWindowLong(m_LWSourcePaths.m_hWnd, GWL_USERDATA, (DWORD)this);
-    SetWindowLong(m_LWSourcePaths.m_hWnd, GWL_WNDPROC, (DWORD)ListViewProc);
+    m_OldListViewProc = (WNDPROC)GetWindowLongPtr(m_LWSourcePaths.m_hWnd, GWLP_WNDPROC);
+    SetWindowLongPtr(m_LWSourcePaths.m_hWnd, GWLP_USERDATA, (DWORD_PTR)this);
+    SetWindowLongPtr(m_LWSourcePaths.m_hWnd, GWLP_WNDPROC, (DWORD_PTR)ListViewProc);
 
     m_CBAssociateETL.SetCheck(theApp.GetAssociateEtl() ? BST_CHECKED : BST_UNCHECKED);
     m_CBAssociatePDB.SetCheck(theApp.GetAssociatePdb() ? BST_CHECKED : BST_UNCHECKED);
@@ -176,7 +176,7 @@ BOOL CSettingsDialog::OnInitDialog()
 
 LRESULT CALLBACK CSettingsDialog::ListViewProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CSettingsDialog* pThis = (CSettingsDialog*)GetWindowLong(hwnd, GWL_USERDATA);
+    CSettingsDialog* pThis = (CSettingsDialog*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
     if (uMsg == WM_KEYDOWN)
     {
         bool pushedLControl = (GetKeyState(VK_LCONTROL) >> 15) ? true : false;
@@ -256,7 +256,7 @@ void CSettingsDialog::AddSourcePath(int index)
     if (pResult)
     {
         SHGetPathFromIDList(pResult, sTempPath);
-        int pathLen = _tcslen(sTempPath);
+        auto pathLen = wcslen(sTempPath);
         if (pathLen)
         {
             if (sTempPath[pathLen - 1] == _T('\\')) { sTempPath[pathLen - 1] = 0; }

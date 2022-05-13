@@ -177,7 +177,7 @@ bool CSourceFileContainer::ShowFile(const TCHAR* pFile, int line, bool bShowErro
     _tsplitpath_s(pFile, NULL, 0, NULL, 0, file, MAX_PATH, ext, MAX_PATH);
     _tcscat_s(file, ext);
 
-    int index = m_TCSourceFiles.InsertItem(TCIF_PARAM | TCIF_TEXT, m_TCSourceFiles.GetItemCount(), file, 0, (DWORD)pViewer, 0, 0);
+    int index = m_TCSourceFiles.InsertItem(TCIF_PARAM | TCIF_TEXT, m_TCSourceFiles.GetItemCount(), file, 0, (LPARAM)pViewer, 0, 0);
     m_TCSourceFiles.SetCurSel(index);
     ShowSelectedFile();
     SetMetrics();
