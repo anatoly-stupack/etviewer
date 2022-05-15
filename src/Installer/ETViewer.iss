@@ -27,7 +27,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\bin\Release\Win32\ETViewer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\bin\Release\{#Architecture}\ETViewer.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\ETViewer"; Filename: "{app}\ETViewer.exe"

@@ -66,7 +66,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeOutput>etviewer-setup</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" /DArchitecture=$(Platform) $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
     <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(Configuration)\$(Platform)\</IntDir>
     <NMakeReBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeReBuildCommandLine>
@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakeOutput>etviewer-setup</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" /DArchitecture=$(Platform) $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
     <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(Configuration)\$(Platform)\</IntDir>
     <NMakeReBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeReBuildCommandLine>
@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeOutput>etviewer-setup</NMakeOutput>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" /DArchitecture=$(Platform) $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
     <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(Configuration)\$(Platform)\</IntDir>
     <NMakeReBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeReBuildCommandLine>
@@ -90,7 +90,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>etviewer-setup</NMakeOutput>
     <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" /DArchitecture=$(Platform) $(ProjectDir)ETViewer.iss</NMakeBuildCommandLine>
     <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(Configuration)\$(Platform)\</IntDir>
     <NMakeReBuildCommandLine>$(InnoSetupCompiler) /O"$(SolutionDir)..\bin\$(Configuration)\$(Platform)" /F"$(NMakeOutput)" $(ProjectDir)ETViewer.iss</NMakeReBuildCommandLine>
