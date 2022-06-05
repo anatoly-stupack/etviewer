@@ -109,7 +109,7 @@ class CTraceController
 
     HANDLE m_hMutex;
 
-    std::map<STraceFormatEntryKey, STraceFormatEntry*> m_FormatEntries;
+    std::map<STraceFormatEntryKey, std::shared_ptr<STraceFormatEntry>> m_FormatEntries;
     std::map<GUID, STraceProviderData, CGUIDComparer> m_Providers;
 
     ITraceEvents* m_piEventCallback;

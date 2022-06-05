@@ -135,24 +135,18 @@ void CTraceController::RemoveProvider(CTraceProvider* pProvider)
 
 void CTraceController::AddProviderFormatEntries(CTraceProvider* pProvider)
 {
-    std::vector<STraceFormatEntry*> lEntries;
-    pProvider->GetFormatEntries(&lEntries);
-
-    for (unsigned x = 0; x < lEntries.size(); x++)
+    auto entries = pProvider->GetFormatEntries();
+    for (auto& entry : entries)
     {
-        STraceFormatEntry* pEntry = lEntries[x];
-        m_FormatEntries[STraceFormatEntryKey(pEntry)] = pEntry;
+        m_FormatEntries[STraceFormatEntryKey(entry.get())] = entry;
     }
 }
 
 void CTraceController::RemoveProviderFormatEntries(CTraceProvider* pProvider)
 {
-    std::map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i;
-
-    for (i = m_FormatEntries.begin(); i != m_FormatEntries.end();)
+    for (auto i = m_FormatEntries.begin(); i != m_FormatEntries.end();)
     {
-        STraceFormatEntry* pEntry = i->second;
-        if (pEntry->m_pProvider->GetGUID() == pProvider->GetGUID())
+        if (i->second->m_pProvider->GetGUID() == pProvider->GetGUID())
         {
             i = m_FormatEntries.erase(i);
         }
@@ -194,15 +188,15 @@ bool CTraceController::Format(STraceEvenTracingNormalizedData* pData)
 
     STraceFormatEntryKey key(pData->sourceFileGUID, pData->sourceTraceIndex);
 
-    std::map<STraceFormatEntryKey, STraceFormatEntry*>::iterator i = m_FormatEntries.find(key);
+    auto i = m_FormatEntries.find(key);
     if (i == m_FormatEntries.end())
     {
         ReleaseMutex(m_hMutex);
         return false;
     }
 
-    STraceFormatEntry* pFormatEntry = i->second;
-    CTraceSourceFile* pSourceFile = pFormatEntry->m_pSourceFile;
+    auto pFormatEntry = i->second;
+    auto pSourceFile = pFormatEntry->m_pSourceFile;
 
     UCHAR* pCurrentParam = pData->pParamBuffer;
     int currentLen = 0;

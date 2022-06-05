@@ -266,7 +266,10 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TraceController.cpp" />
+    <ClCompile Include="TraceFormat.cpp" />
     <ClCompile Include="TraceProvider.cpp" />
+    <ClCompile Include="TraceReader.cpp" />
+    <ClCompile Include="TraceSourceFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColumnInfo.h" />
@@ -291,7 +294,10 @@
     <ClInclude Include="SourceFileViewer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TraceController.h" />
+    <ClInclude Include="TraceFormat.h" />
     <ClInclude Include="TraceProvider.h" />
+    <ClInclude Include="TraceReader.h" />
+    <ClInclude Include="TraceSourceFile.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\add_prov.ico" />

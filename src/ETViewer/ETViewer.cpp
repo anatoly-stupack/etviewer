@@ -954,7 +954,7 @@ void CETViewerApp::ReloadProvider(CTraceProvider* pProvider)
     CProviderTree* pTree = m_pFrame->GetProviderTree();
 
     std::vector<CTraceProvider*> loadedProviders;
-    CTracePDBReader reader;
+    CTraceReader reader;
 
     for (const auto sCurFileName : pProvider->GetFileList())
     {
@@ -1014,7 +1014,7 @@ void CETViewerApp::ReloadAllProviders()
     {
         std::wstring sPDB = *iPDB;
         std::vector<CTraceProvider*> loadedProviders;
-        CTracePDBReader reader;
+        CTraceReader reader;
         reader.LoadFromPDB(sPDB.c_str(), &loadedProviders);
         unsigned x;
         for (x = 0; x < loadedProviders.size(); x++)
@@ -1066,7 +1066,7 @@ bool CETViewerApp::ReloadPDBProviders(std::wstring sFileName)
     bool bModified = false;
     std::vector<CTraceProvider*> loadedProviders;
     std::set<CTraceProvider*>::iterator iProvider;
-    CTracePDBReader reader;
+    CTraceReader reader;
     if (reader.LoadFromPDB(sFileName.c_str(), &loadedProviders) != eTraceReaderError_Success)
     {
         return false;

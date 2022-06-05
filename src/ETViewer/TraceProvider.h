@@ -21,15 +21,16 @@
 // For any comment or question, mail to: etviewer@gmail.com
 //
 ////////////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
+
+#include "TraceFormat.h"
+#include "TraceSourceFile.h"
+#include "TraceReader.h"
+
 #include <windows.h>
 #include <set>
 #include <map>
-#include <vector>
-#include <deque>
 #include <string>
-#include <dbghelp.h>
 
 #define TRACE_LEVEL_NONE        0   // Tracing is not on
 #define TRACE_LEVEL_FATAL       1   // Abnormal exit or termination
@@ -42,182 +43,34 @@
 #define TRACE_LEVEL_RESERVED8   8
 #define TRACE_LEVEL_RESERVED9   9
 
-class CGUIDComparer
-{
-public:
-
-    bool operator ()(const GUID& ref1, const GUID& ref2) const
-    {
-        return memcmp(&ref1, &ref2, sizeof(GUID)) < 0;
-    }
-
-};
-
-enum eTraceFormatElementType
-{
-    eTraceFormatElementType_Unknown,
-    eTraceFormatElementType_ConstantString,
-    eTraceFormatElementType_Byte,
-    eTraceFormatElementType_Word,
-    eTraceFormatElementType_DWord,
-    eTraceFormatElementType_Float,
-    eTraceFormatElementType_Double,
-    eTraceFormatElementType_Quad,
-    eTraceFormatElementType_Pointer,
-    eTraceFormatElementType_QuadPointer,
-    eTraceFormatElementType_AnsiString,
-    eTraceFormatElementType_WideString,
-    eTraceFormatElementType_CountedWideString
-};
-
-struct STraceFormatElement
-{
-    TCHAR* pFormatString;
-    eTraceFormatElementType	 eType;
-
-    STraceFormatElement() :eType(eTraceFormatElementType_Unknown), pFormatString(NULL) {}
-};
-
-struct STraceFormatParam
-{
-    eTraceFormatElementType	 eType;
-
-    STraceFormatParam() :eType(eTraceFormatElementType_Unknown) {}
-};
-class CTraceSourceFile;
-class CTraceProvider;
-
-struct STraceFormatEntry
-{
-    GUID						        m_SourceFileGUID;
-    DWORD						        m_dwIndex;
-    DWORD						        m_dwLine;
-    std::vector<STraceFormatElement>    m_vElements;
-    std::vector<STraceFormatParam>	    m_vParams;
-    std::wstring						m_sFunction;
-    std::wstring						m_sLevel;
-    std::wstring						m_sFlag;
-    CTraceSourceFile* m_pSourceFile;
-    CTraceProvider* m_pProvider;
-
-    void InitializeFromBuffer(TCHAR* pBuffer);
-
-    STraceFormatEntry();
-    ~STraceFormatEntry();
-};
-
-struct STraceFormatEntryKey
-{
-    GUID	m_SourceFileGUID;
-    DWORD	m_dwIndex;
-
-    bool operator <(const STraceFormatEntryKey& other) const
-    {
-        int nComp = memcmp(&m_SourceFileGUID, &other.m_SourceFileGUID, sizeof(GUID));
-        if (nComp < 0) { return true; }
-        if (nComp > 0) { return false; }
-        return m_dwIndex < other.m_dwIndex;
-    }
-
-    STraceFormatEntryKey(STraceFormatEntry* pValue) { m_SourceFileGUID = pValue->m_SourceFileGUID; m_dwIndex = pValue->m_dwIndex; }
-    STraceFormatEntryKey(GUID& sourceFileGUID, DWORD dwIndex) { m_SourceFileGUID = sourceFileGUID; m_dwIndex = dwIndex; }
-};
-
-class CTraceProvider;
-
-class CTraceSourceFile
-{
-    GUID	m_SourceFileGUID;
-    LPCTSTR	m_SourceFileName;
-    TCHAR	m_SourceFileNameWithPath[MAX_PATH];
-
-    CTraceProvider* m_pProvider;
-
-public:
-
-    GUID			GetGUID();
-    std::wstring	GetFileName();
-    std::wstring    GetFileNameWithPath();
-
-    CTraceProvider* GetProvider();
-    void			SetProvider(CTraceProvider* pProvider);
-
-    CTraceSourceFile(GUID sourceFileGUID, const TCHAR* pSourceFile);
-    ~CTraceSourceFile(void);
-};
-
-
 class CTraceProvider
 {
-    GUID						    m_ProviderGUID;
-    std::map<std::wstring, DWORD>	m_TraceFlags;
-    std::wstring					m_sComponentName;
-    std::set<std::wstring>          m_sFileList;
-    DWORD						    m_dwAllSupportedFlagsMask;
-
-    std::vector<STraceFormatEntry*>				m_FormatEntries;
-    std::map<GUID, CTraceSourceFile*, CGUIDComparer>	m_sSourceFiles;
-
-    void FreeAll();
-
 public:
+    CTraceProvider(const std::wstring& componentName, const GUID& providerGuid, const std::wstring& fileName);
 
-    GUID	GetGUID();
-    void	SetGUID(GUID guid);
+    const GUID& GetGUID() const;
+    DWORD GetAllSupportedFlagsMask() const;
 
-    DWORD	GetAllSupportedFlagsMask();
-    void	GetSupportedFlags(std::map<std::wstring, DWORD>* pmFlags);
-    void	AddSupportedFlag(std::wstring sName, DWORD dwValue);
-    DWORD	GetSupportedFlagValue(std::wstring sName);
+    const std::map<std::wstring, DWORD>& GetSupportedFlags() const;
+    DWORD GetSupportedFlagValue(const std::wstring& name) const;
+    void AddSupportedFlag(const std::wstring& name, DWORD value);
 
-    std::wstring	GetComponentName();
-    std::set<std::wstring>	GetFileList();
+    const std::wstring& GetComponentName() const;
+    const std::set<std::wstring>& GetFileList() const;
 
-    void                AddFileName(std::wstring sFileName);
-    void				AddSourceFile(CTraceSourceFile* pSourceFile);
-    void 				GetSourceFiles(std::vector<CTraceSourceFile*>* pvSources);
-    CTraceSourceFile* GetSourceFile(GUID sourceGUID);
+    void AddFileName(const std::wstring& fileName);
+    void AddSourceFile(const std::shared_ptr<CTraceSourceFile>& sourceFile);
+    std::shared_ptr<CTraceSourceFile> GetSourceFile(const GUID& sourceGUID) const;
 
-    void				AddFormatEntry(STraceFormatEntry* pFormatEntry);
-    void 				GetFormatEntries(std::vector<STraceFormatEntry*>* pvFormatEntries);
+    void AddFormatEntry(const std::shared_ptr<STraceFormatEntry>& formatEntry);
+    const std::vector<std::shared_ptr<STraceFormatEntry>>& GetFormatEntries() const;
 
-    CTraceProvider(std::wstring sComponentName, std::wstring sFileName);
-    ~CTraceProvider(void);
-};
-
-enum eTraceReaderError
-{
-    eTraceReaderError_Success,
-    eTraceReaderError_Generic,
-    eTraceReaderError_PDBNotFound,
-    eTraceReaderError_NoProviderFoundInPDB,
-    eTraceReaderError_FailedToEnumerateSymbols,
-    eTraceReaderError_DBGHelpNotFound,
-    eTraceReaderError_DBGHelpWrongVersion,
-    eTraceReaderError_SymEngineLoadModule,
-    eTraceReaderError_SymEngineInitFailed,
-    eTraceReaderError_NoMemory,
-};
-
-class CTraceReader
-{
-protected:
-    std::deque<STraceFormatEntry*>                     m_sTempFormatEntries;
-    std::map<GUID, CTraceSourceFile*, CGUIDComparer>    m_sTempSourceFiles;
-    std::map<std::wstring, CTraceProvider*>             m_sTempProviders;
-    std::wstring                                        m_sFileName;
-
-    void				 AddSourceFile(GUID guid, std::wstring sFileName);
-    CTraceSourceFile* FindSourceFile(GUID sourceFile);
-    CTraceProvider* FindOrCreateProvider(std::wstring sProviderName);
-    CTraceProvider* FindProviderByFlag(std::wstring sFlagName);
-
-};
-
-class CTracePDBReader : protected CTraceReader
-{
-public:
-    eTraceReaderError LoadFromPDB(LPCTSTR pPDB, std::vector<CTraceProvider*>* pvProviders);
-    static BOOL CALLBACK TypeEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
-    static BOOL CALLBACK SymbolEnumerationCallback(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
+private:
+    const GUID m_ProviderGUID;
+    DWORD m_AllSupportedFlagsMask;
+    std::map<std::wstring, DWORD> m_TraceFlags;
+    std::wstring m_ComponentName;
+    std::set<std::wstring> m_FileList;
+    std::vector<std::shared_ptr<STraceFormatEntry>> m_FormatEntries;
+    std::map<GUID, std::shared_ptr<CTraceSourceFile>, CGUIDComparer> m_SourceFiles;
 };

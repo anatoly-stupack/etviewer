@@ -114,20 +114,19 @@ void CProviderTree::UpdateProviderSubTree(HTREEITEM hProviderItem)
         }
     }
 
-    std::map<std::wstring, DWORD> traceLevels;
-    std::map<std::wstring, DWORD>::iterator i;
-
-    pProvider->GetSupportedFlags(&traceLevels);
+    auto traceLevels = pProvider->GetSupportedFlags();
 
     HTREEITEM hTraceFlagItems = treeCtrl.InsertItem(_T("Flags"), m_iFlagsIcon, m_iFlagsIcon, hProviderItem, TVI_LAST);
 
-    for (i = traceLevels.begin(); i != traceLevels.end(); i++)
+    for (auto& entry : traceLevels)
     {
-        if (_tcslen(i->first.c_str()))
+        if (entry.first.empty())
         {
-            hTempItem = treeCtrl.InsertItem(i->first.c_str(), 0, 0, hTraceFlagItems, TVI_SORT);
+            continue;
         }
-        treeCtrl.SetItemData(hTempItem, i->second);
+
+        hTempItem = treeCtrl.InsertItem(entry.first.c_str(), 0, 0, hTraceFlagItems, TVI_SORT);
+        treeCtrl.SetItemData(hTempItem, entry.second);
     }
 
     HTREEITEM hTraceLevelItems = treeCtrl.InsertItem(_T("Levels"), m_iLevelIcon, m_iLevelIcon, hProviderItem, TVI_LAST);

@@ -164,7 +164,7 @@ public:
 
 private:
     std::set<CTraceProvider*> m_sProviders;
-    CTracePDBReader m_PDBReader;
+    CTraceReader m_PDBReader;
 
     HANDLE m_hInstantTraceMutex;
     HANDLE m_hSingleInstanceMutex;
